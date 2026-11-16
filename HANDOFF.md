@@ -17,9 +17,11 @@ studio and where the two meet.
 - Pierre emailed a Quo API key on Nov 13. It is treated as exposed: it is
   never used, and a new one is made on Call 2 only if the Quo webhook is
   wanted (step 13).
-- **Where showcasemedia.pro is registered and where its DNS lives is not
-  confirmed yet** (his site is built on Framer). Before any DNS change,
-  export or screenshot the whole zone. Nothing in this list changes an email
+- **showcasemedia.pro is registered at Porkbun, and its DNS and email are
+  there too** (mailboxes pierre@ and mediahero@). Today the domain forwards
+  to his old domain, pierrestephenson.com, which points at his Framer site.
+  Hosting moves to Vercel; the domain, DNS and email stay at Porkbun.
+  Before any DNS change, export or screenshot the whole zone. Nothing in this list changes an email
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
@@ -29,7 +31,8 @@ studio and where the two meet.
 |---|---|---|
 | GitHub | `pierre-showcasemedia/pierre-site` and `pierre-showcasemedia/pierre-studio` | Invites accepted. Both repos are public and empty (Hammad: fine for now). **Pushes are refused until the Claude GitHub App is installed on the pierre-showcasemedia account** |
 | Vercel | Team "Showcase Media LLC" | build@ accepted (Nov 16) |
-| Cloudflare | Pierre's account (DNS and R2 Admin) | build@ accepted (Nov 16); R2 to switch on if not yet |
+| Cloudflare | Pierre's account (R2 storage only; DNS stays at Porkbun) | build@ accepted; R2 switched on (Nov 16) |
+| Porkbun | Domain, DNS and email for showcasemedia.pro | Logins ready on Call 2 |
 | Resend | Team "showcasemedia" | build@ accepted (Nov 16) |
 | Formspree | Form "Booking requests" | ID `mjywydge` (not secret) |
 | Payments | Wave today | **Open: how to connect Wave (ask Jacob)**. The studio starts on manual payments |
@@ -123,9 +126,8 @@ curl "https://<studio project>.vercel.app/api/studio/health" -H "x-migrate-token
 
 1. Studio project, Settings, Domains: add `portal.showcasemedia.pro`.
    Vercel shows one **CNAME**.
-2. Wherever showcasemedia.pro's DNS lives (Cloudflare if the domain is on
-   it; otherwise the registrar or Framer): add that CNAME for `portal`. On
-   Cloudflare, set it to **DNS only** (grey cloud). Touch nothing else.
+2. Porkbun, showcasemedia.pro, DNS: add that CNAME for `portal`. Touch
+   nothing else (the nameservers stay at Porkbun: his email is there).
 3. When Vercel shows it valid, open https://portal.showcasemedia.pro.
 
 ## 8. Email: Resend on showcasemedia.pro (Call 2, 15 min)
@@ -206,17 +208,20 @@ Use a second email of Pierre's as the client.
 
 ## 15. The website on showcasemedia.pro (Call 2, last)
 
-Today showcasemedia.pro is his Framer site.
+Today showcasemedia.pro forwards to pierrestephenson.com, his Framer site.
 
-1. Export the DNS zone first (or screenshot every record).
+1. Export the Porkbun DNS zone first (or screenshot every record).
 2. Website project, Domains: add `showcasemedia.pro` and
    `www.showcasemedia.pro`.
-3. Point the root and `www` at Vercel exactly as Vercel shows. **Every email
-   record stays as it is**, plus `portal`, `send` and `resend._domainkey`
+3. Porkbun: turn off the domain forwarding for showcasemedia.pro, then point
+   the root and `www` at Vercel exactly as Vercel shows (records only; the
+   nameservers stay at Porkbun). **Every email record stays as it is**
+   (Porkbun email for pierre@ and mediahero@), plus `portal`, `send` and `resend._domainkey`
    from steps 7 and 8.
 4. Send Pierre a test email from another account and check it arrives; book
    once more from the live site.
-5. Keep the Framer site until the new one has been live for a week.
+5. Keep the Framer site and pierrestephenson.com until the new one has been
+   live for a week.
 
 ---
 
@@ -228,7 +233,6 @@ and Resend in one click each.
 - Claude GitHub App on the pierre-showcasemedia account, so the code can be pushed.
 - His price list, logo files, best photos, city and service area (the website
   waits on these; the studio's brand.ts and prices too).
-- Where showcasemedia.pro is registered and where its DNS is.
 - Payments through Wave: ask Jacob.
 - Time zone (Central assumed), shoot hours and days, editing path, any other
   shooters, anyone who must never get an automated message.
