@@ -1,0 +1,121 @@
+/* Bookings list, booking page and the dashboard's upcoming shoots (Oct 2026).
+   Imported by those pages; every class starts with bk- so nothing here can
+   reach another page's styles. Tokens come from globals.css. */
+
+/* Whole-row click target */
+.bk-row { cursor: pointer; }
+.bk-row td { transition: background-color .14s ease; }
+.bk-row:hover td,
+.bk-row:focus-within td { background: var(--color-fog, #F3F4F6); }
+.bk-row a:focus-visible,
+.bk-row select:focus-visible { outline: 2px solid var(--color-blue-bright, #0A84FF); outline-offset: 2px; border-radius: 6px; }
+.bk-row__main { font-weight: 500; color: var(--color-ink, #0B0C0F); }
+.bk-row:hover .bk-row__main { text-decoration: underline; text-underline-offset: 3px; }
+.bk-chev { width: 28px; text-align: right; color: var(--color-ink-faint, #8A8F98); font-size: 16px; line-height: 1; vertical-align: middle !important; }
+.bk-row:hover .bk-chev { color: var(--color-ink, #0B0C0F); }
+.bk-row--stale td:first-child { box-shadow: inset 3px 0 0 #D7342A; }
+
+/* When cell */
+.bk-when { white-space: nowrap; font-family: var(--font-mono); font-size: 12.5px; }
+.bk-prop { min-width: 220px; }
+.bk-services { min-width: 160px; max-width: 260px; }
+.bk-pay { white-space: nowrap; }
+.bk-sub { font-size: 12px; margin-top: 3px; line-height: 1.45; }
+.bk-when__sub { margin-top: 4px; font-family: var(--font-sans); font-size: 11.5px; color: var(--color-ink-faint, #8A8F98); white-space: nowrap; }
+.bk-when__sub .adm-pill { padding: 4px 9px; font-size: 9.5px; }
+
+/* Shooter */
+.bk-shooter { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--color-ink, #0B0C0F); white-space: nowrap; }
+.bk-shooter__dot { width: 22px; height: 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; background: var(--color-blue-wash, #E6F1FF); color: var(--color-blue-deep, #0052B0); flex: none; }
+.bk-shooter--none { color: var(--color-ink-faint, #8A8F98); }
+.bk-shooter--none .bk-shooter__dot { background: transparent; border: 1px dashed var(--line-strong, #C4C8CF); color: var(--color-ink-faint, #8A8F98); }
+.bk-shooter--need { color: #9A6400; }
+.bk-shooter--need .bk-shooter__dot { border-color: #9A6400; color: #9A6400; }
+
+/* Status select (list) */
+.bk-status-inline { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.bk-status-wrap { position: relative; display: inline-flex; border-radius: 999px; }
+.bk-status-wrap::after { content: ""; position: absolute; right: 11px; top: 50%; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.bk-status-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; margin: 0; border: 1px solid transparent; border-radius: 999px; padding: 7px 28px 7px 12px; background: transparent; color: inherit; font-family: inherit; font-size: 10.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; line-height: 1; cursor: pointer; }
+.bk-status-select:hover { border-color: currentColor; }
+.bk-status-select option { color: #0B0C0F; background: #FFFFFF; text-transform: none; letter-spacing: 0; font-size: 13px; }
+.bk-status-wrap[data-s="requested"] { background: rgba(154,100,0,.10); color: #9A6400; }
+.bk-status-wrap[data-s="confirmed"] { background: rgba(0,102,214,.09); color: #0066D6; }
+.bk-status-wrap[data-s="shot"] { background: rgba(95,100,110,.12); color: #3F444D; }
+.bk-status-wrap[data-s="delivered"] { background: rgba(26,127,75,.10); color: #1A7F4B; }
+.bk-status-wrap[data-s="canceled"] { background: rgba(215,52,42,.08); color: #D7342A; }
+.bk-saving { font-size: 11.5px; color: var(--color-ink-faint, #8A8F98); }
+
+/* Status control (booking page) */
+.bk-status-card { display: grid; gap: 14px; }
+.bk-status-form { display: grid; gap: 14px; margin: 0; }
+.bk-seg { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bk-seg button { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-strong, #C4C8CF); background: var(--color-surface, #FFFFFF); color: var(--color-ink, #0B0C0F); font-family: inherit; font-size: 13px; font-weight: 450; cursor: pointer; transition: border-color .14s ease, background-color .14s ease; }
+.bk-seg button:hover:not(:disabled) { border-color: var(--color-ink, #0B0C0F); }
+.bk-seg button:focus-visible { outline: 2px solid var(--color-blue-bright, #0A84FF); outline-offset: 2px; }
+.bk-seg button[aria-pressed="true"] { font-weight: 500; cursor: default; }
+.bk-seg button:disabled:not([aria-pressed="true"]) { opacity: .45; cursor: not-allowed; }
+.bk-seg__danger { color: #D7342A !important; }
+.bk-seg__dot { width: 7px; height: 7px; border-radius: 999px; flex: none; }
+.bk-status-note { max-width: 560px; }
+.bk-note-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+.bk-status-help { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--color-ink-soft, #5F646E); }
+
+/* Dashboard: upcoming shoots */
+.bk-up-time { white-space: nowrap; font-family: var(--font-mono); }
+.bk-up-time small { display: block; margin-top: 2px; font-family: var(--font-sans); font-size: 11.5px; color: var(--color-ink-faint, #8A8F98); }
+.bk-up-flags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+@media (max-width: 720px) {
+  .bk-up-flags { justify-content: flex-start; }
+  .bk-chev { display: none !important; }
+}
+
+/* Bookings on a phone (Oct 28 2026): each row is a card. The address and
+   client first, then the time, the services, and a last line with payment,
+   shooter and the status menu. The whole card opens the booking. */
+@media (max-width: 759px) {
+  .bk-table, .bk-table > tbody { display: block; width: 100%; }
+  .bk-table > thead { display: none; }
+  .bk-table > tbody > tr {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px 12px;
+    grid-template-areas: "prop prop" "when when" "svc svc" "pay pay" "shoot stat";
+    padding: 14px 16px 14px 18px; border-top: 1px solid var(--line, #E6E8EC);
+  }
+  .bk-table > tbody > tr:first-child { border-top: 0; }
+  .bk-table > tbody > tr > td { display: block; padding: 0; border: 0 !important; min-width: 0; max-width: none; background: none !important; }
+  .bk-table .bk-prop { grid-area: prop; }
+  .bk-table .bk-row__main { font-size: 16.5px; }
+  .bk-table .bk-when { grid-area: when; white-space: normal; font-size: 13px; }
+  .bk-table .bk-when__sub { display: inline-block; margin: 0 0 0 8px; vertical-align: 1px; }
+  .bk-table .bk-services { grid-area: svc; font-size: 13px; }
+  .bk-table .bk-pay { grid-area: pay; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .bk-table .bk-pay .bk-sub { margin: 0; }
+  .bk-table .bk-shoot { grid-area: shoot; }
+  .bk-table .bk-stat { grid-area: stat; justify-self: end; text-align: right; }
+  .bk-table .bk-status-select { padding: 11px 28px 11px 12px; font-size: 11px; letter-spacing: .1em; }
+  .bk-table .bk-chev { display: none; }
+  .bk-table .bk-row--stale, .bk-table > tbody > tr.bk-row--stale { box-shadow: inset 3px 0 0 #D7342A; }
+  .bk-table .bk-row--stale td:first-child { box-shadow: none; }
+  .bk-row:active { background: var(--color-fog, #F3F4F6); }
+}
+
+/* The client moved the shoot from the portal; cleared by Confirm time. */
+.bk-moved { background: rgba(0,102,214,.09); color: #0066D6; padding: 3px 8px; font-size: 10.5px; }
+
+/* Edit booking (Oct 2026): the collapsible form on the booking page */
+.bk-edit { padding: 0; }
+.bk-edit__summary { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; padding: 18px 20px; cursor: pointer; font-size: 13.5px; line-height: 1.5; color: var(--color-ink, #0B0C0F); list-style: none; }
+.bk-edit__summary::-webkit-details-marker { display: none; }
+.bk-edit__summary::before { content: "Open"; font-size: 10.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink-soft, #5F646E); margin-right: 4px; }
+.bk-edit[open] > .bk-edit__summary::before { content: "Close"; }
+.bk-edit__form { display: grid; gap: 16px; padding: 0 20px 20px; border-top: 1px solid var(--line, #E6E8EC); padding-top: 18px; margin: 0; }
+.bk-edit__label { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-ink-soft, #5F646E); margin-bottom: 8px; }
+.bk-edit__checks { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.bk-edit__check { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer; }
+.bk-edit__check input { width: 16px; height: 16px; accent-color: var(--color-blue, #0066D6); margin: 0; }
+
+/* Additional shoots (Oct 27 2026): the "Add second shoot" button opens the form inline. */
+.bk-visit-add__summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 16px 20px; cursor: pointer; list-style: none; }
+.bk-visit-add__summary::-webkit-details-marker { display: none; }
+.bk-visit-add[open] > .bk-visit-add__summary .btn { background: transparent; color: var(--color-ink, #0B0C0F); border-color: var(--line-strong, #C9CDD3); }

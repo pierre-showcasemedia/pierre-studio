@@ -1,0 +1,122 @@
+/* ===== The Video board and its cards (Oct 26 2026) =====
+   Five columns side by side on a computer; on a phone one column at a time,
+   picked from the strip above the board or by swiping (BoardTabs, Oct 28
+   2026). the design tokens: white cards, thin lines, one blue. */
+
+.vb-board {
+  display: grid; grid-template-columns: repeat(5, minmax(196px, 1fr)); gap: 12px;
+  margin-top: 26px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x proximity;
+}
+.vb-col {
+  min-width: 0; display: flex; flex-direction: column; border-radius: 16px; padding: 12px;
+  background: var(--color-fog); border: 1px solid transparent; scroll-snap-align: start;
+  transition: border-color .16s var(--ease), background .16s var(--ease);
+}
+.vb-col.is-over { border-color: var(--color-blue); background: var(--color-blue-wash); }
+.vb-col__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 4px 0; }
+.vb-col__label { font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--color-ink); }
+.vb-col__n { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-soft); }
+.vb-col__hint { margin: 4px 4px 10px; font-size: 12px; color: var(--color-ink-faint); }
+.vb-col__cards { display: grid; gap: 8px; align-content: start; min-height: 80px; }
+.vb-empty { padding: 18px 8px; text-align: center; font-size: 12.5px; color: var(--color-ink-faint); border: 1px dashed var(--line-strong); border-radius: 12px; }
+
+.vb-card {
+  position: relative; display: grid; gap: 8px; padding: 12px 12px 10px; border-radius: 12px; cursor: grab;
+  background: var(--color-surface); border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(11,12,15,.04);
+  transition: box-shadow .16s var(--ease), transform .16s var(--ease), opacity .16s var(--ease);
+}
+.vb-card:hover { box-shadow: 0 6px 18px rgba(11,12,15,.08); }
+.vb-card.is-dragging { opacity: .45; }
+.vb-card.has-revision { border-color: rgba(215,52,42,.45); }
+.vb-card__link { display: grid; gap: 2px; text-decoration: none; color: inherit; }
+.vb-card__body { display: grid; gap: 8px; text-decoration: none; color: inherit; cursor: pointer; }
+.vb-card__body:hover .vb-card__street { text-decoration: underline; text-underline-offset: 3px; }
+.vb-card__street { font-family: var(--font-serif); font-style: italic; font-size: 18px; line-height: 1.2; }
+.vb-card__client { font-size: 12.5px; color: var(--color-ink-soft); }
+.vb-card__meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-family: var(--font-mono); font-size: 11px; color: var(--color-ink-soft); }
+.vb-card__tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.vb-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; background: var(--color-fog); color: var(--color-ink-soft); white-space: nowrap; }
+.vb-tag--speed { background: var(--color-blue-wash); color: var(--color-blue-deep); }
+.vb-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.vb-card__flags { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.vb-flag { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 999px; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; background: rgba(95,100,110,.10); color: #5F646E; white-space: nowrap; }
+.vb-flag--ok { background: rgba(26,127,75,.10); color: var(--color-success); }
+.vb-flag--rev { background: rgba(215,52,42,.10); color: var(--color-live); }
+.vb-who { flex: none; width: 26px; height: 26px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600; background: rgba(91,63,181,.12); color: #5B3FB5; }
+.vb-who--none { background: var(--color-fog); color: var(--color-ink-faint); }
+.vb-card__move select {
+  width: 100%; height: 30px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--color-paper);
+  font: inherit; font-size: 12px; color: var(--color-ink-soft); cursor: pointer;
+}
+
+/* The column strip (BoardTabs) is for phones only. */
+.bt-tabs { display: none; }
+.bt-n { margin-left: 7px; font-family: var(--font-mono); font-size: 11.5px; color: var(--color-ink-faint); }
+@media (max-width: 759px) {
+  .bt-tabs { display: flex; margin-top: 22px; }
+  .bt-tabs .is-active .bt-n { color: var(--color-ink); }
+  .bt-tabs .is-hot .bt-n { color: var(--color-blue); font-weight: 600; }
+  .vb-board, .vb-board.pqc-board { display: block; margin: 12px 0 0; padding: 0; overflow: visible; }
+  .vb-col { padding: 12px 10px; border-radius: 18px; }
+  .vb-col__head { display: none; }
+  .vb-col__hint { margin: 2px 6px 10px; font-size: 12.5px; }
+  .vb-col__cards { gap: 10px; }
+  .vb-card { padding: 14px 14px 12px; cursor: pointer; }
+  .vb-card__street { font-size: 20px; }
+  .vb-card__move select { height: 42px; border-radius: 10px; }
+  .vb-empty { padding: 28px 8px; }
+}
+@media (hover: hover) and (pointer: fine) {
+  /* With a mouse, dragging is the way; the menu stays for keyboards. */
+  .vb-card__move select { height: 26px; font-size: 11.5px; }
+}
+
+/* ---- The card page ---- */
+.vc-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; margin-top: 26px; align-items: start; }
+@media (max-width: 959px) { .vc-grid { grid-template-columns: minmax(0, 1fr); } }
+.vc-stack { display: grid; gap: 16px; min-width: 0; }
+.vc-stages { display: flex; flex-wrap: wrap; gap: 6px; }
+.vc-h { margin: 0 0 12px; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--color-ink-soft); }
+.vc-rows { display: grid; gap: 10px; margin: 0; }
+.vc-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; font-size: 14px; line-height: 1.55; }
+.vc-row dt { font-size: 12px; color: var(--color-ink-soft); padding-top: 2px; }
+.vc-row dd { margin: 0; min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+@media (max-width: 559px) { .vc-row { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+.vc-big { font-size: 15px; font-weight: 500; }
+.vc-dbx { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.vc-dbx__btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; background: #0061FF; color: #fff; font-size: 13.5px; font-weight: 500; text-decoration: none; }
+.vc-dbx__btn[aria-disabled="true"] { background: var(--color-panel); color: var(--color-ink-faint); pointer-events: none; }
+.vc-comments { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.vc-comment { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14px; line-height: 1.5; }
+.vc-tc { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 999px; font-family: var(--font-mono); font-size: 11.5px; background: var(--color-blue-wash); color: var(--color-blue-deep); white-space: nowrap; }
+.vc-film { display: grid; gap: 8px; }
+.vc-film video { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; display: block; }
+.vc-film__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
+.vc-hist { display: grid; gap: 14px; }
+.vc-hist__item { padding-top: 12px; border-top: 1px solid var(--line); }
+.vc-hist__item:first-child { padding-top: 0; border-top: 0; }
+.vc-hist__when { font-family: var(--font-mono); font-size: 11.5px; color: var(--color-ink-faint); }
+.vc-quote { margin: 6px 0 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+.vc-lines { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; line-height: 1.55; }
+.vc-textarea { width: 100%; min-height: 110px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-strong); background: var(--color-paper); font: inherit; font-size: 14px; line-height: 1.55; resize: vertical; }
+.vc-textarea:focus { outline: none; border-color: var(--color-blue); box-shadow: 0 0 0 3px rgba(10,132,255,.18); }
+.vc-upload { display: grid; gap: 10px; }
+.vc-upload__drop { display: grid; place-items: center; gap: 6px; padding: 22px; border-radius: 14px; border: 1px dashed var(--line-strong); background: var(--color-fog); text-align: center; cursor: pointer; font-size: 13.5px; }
+.vc-upload__drop.is-over { border-color: var(--color-blue); background: var(--color-blue-wash); }
+.vc-upload__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; }
+.vc-upload__bar { height: 3px; border-radius: 999px; background: var(--color-panel); overflow: hidden; }
+.vc-upload__bar > span { display: block; height: 100%; background: var(--color-blue); transition: width .2s linear; }
+
+/* ---- The Photo QC board (Oct 26 2026): same columns and cards, read only ---- */
+.pqc-card { cursor: pointer; text-decoration: none; color: inherit; }
+.pqc-card:hover { border-color: var(--line-strong); }
+.pqc-card--go { border-color: rgba(0,102,214,.35); }
+.pqc-col--hot { background: var(--color-blue-wash); }
+.pqc-go { font-size: 12.5px; font-weight: 500; color: var(--color-blue); }
+.pqc-flag--warn { background: rgba(154,100,0,.10); color: var(--color-warning); }
+/* Photo QC has six columns (Final review, Oct 28 2026). */
+.vb-board.pqc-board { grid-template-columns: repeat(6, minmax(176px, 1fr)); }
+.pqc-error { font-size: 12px; line-height: 1.45; color: var(--color-live); overflow-wrap: anywhere; }
+/* The status bar at the foot of every card (Nov 6 2026), the Video board's menu. */
+.pqc-status { display: grid; gap: 4px; }

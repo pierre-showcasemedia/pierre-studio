@@ -1,0 +1,40 @@
+/* Upload a shoot, step 1: the listing picker. */
+.upl-picks { display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow: auto; margin: 0 -4px; padding: 2px 4px; }
+.upl-pick { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto 22px; gap: 14px; align-items: center; width: 100%; padding: 10px 12px 10px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--color-surface); text-align: left; cursor: pointer; font: inherit; color: inherit; animation: st-pop-in .4s var(--ease) both; transition: border-color .16s var(--ease), background .16s var(--ease), transform .16s var(--ease); }
+.upl-pick:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.upl-pick.is-on { border-color: var(--color-blue); background: var(--color-blue-wash); }
+.upl-pick__thumb { width: 52px; height: 38px; border-radius: 6px; overflow: hidden; background: var(--color-panel); display: flex; align-items: center; justify-content: center; color: var(--color-ink-faint); }
+.upl-pick__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.upl-pick__text { display: flex; flex-direction: column; min-width: 0; }
+.upl-pick__street { font-weight: 500; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upl-pick__text small, .upl-pick__meta small { font-size: 12.5px; color: var(--color-ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upl-pick__meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13px; white-space: nowrap; }
+.upl-pick__check { color: var(--color-blue); font-size: 15px; text-align: center; }
+.upl-pick--ghost { height: 60px; cursor: default; background: linear-gradient(90deg, var(--color-fog), var(--color-panel), var(--color-fog)); background-size: 200% 100%; animation: upl-shimmer 1.2s linear infinite; border-color: transparent; }
+@keyframes upl-shimmer { to { background-position: -200% 0; } }
+@media (max-width: 560px) {
+  .upl-pick { grid-template-columns: 44px minmax(0, 1fr) 18px; gap: 10px; }
+  .upl-pick__thumb { width: 44px; height: 34px; }
+  .upl-pick__meta { grid-column: 2; grid-row: 2; align-items: flex-start; flex-direction: row; gap: 10px; }
+  .upl-pick__check { grid-column: 3; grid-row: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .upl-pick, .upl-pick--ghost { animation: none; } }
+
+/* Upload a shoot, step 2 (Oct 21 2026): two boxes, photos (to editing) and
+   raw video (to Dropbox only). Side by side on a desk, stacked on a phone. */
+.upl-boxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.upl-box { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.upl-box__kicker { position: absolute; top: 12px; left: 14px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink-faint); }
+.upl-box[data-box="video"] { background: var(--color-surface); }
+.upl-tag { display: inline-block; margin-right: 8px; padding: 1px 6px; border-radius: 999px; background: var(--color-panel); color: var(--color-ink-soft); font-family: var(--font-sans); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; vertical-align: 1px; }
+@media (max-width: 640px) {
+  .upl-boxes { grid-template-columns: 1fr; }
+}
+/* The resume note with Start over (Oct 30 2026): text and button side by
+   side on a desk; on a phone the button takes the full width under it. */
+.upl-resume { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.upl-resume > p { flex: 1 1 320px; min-width: 0; }
+.upl-resume__btn { flex: none; }
+@media (max-width: 640px) {
+  .upl-resume__btn { flex: 1 1 100%; justify-content: center; }
+}

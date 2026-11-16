@@ -1,0 +1,292 @@
+/* Client visible / Internal only (Oct 2026): the state row under every frame
+   on the shoot review grid, the badge on the listing media grid, and the
+   upload panel's visibility choice. the design tokens state colors, always with a
+   word. */
+
+.vis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.vis-badge::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; flex: none; }
+.vis-badge[data-vis="client"] { background: rgba(26, 127, 75, .10); color: #1A7F4B; }
+.vis-badge[data-vis="internal"] { background: rgba(95, 100, 110, .12); color: #4A4F58; }
+.vis-badge--on-image { background: rgba(255, 255, 255, .96) !important; box-shadow: 0 2px 10px rgba(11, 12, 15, .28); }
+
+.vis-badge__short { display: none; }
+
+/* Shoot review: one row between the filename and the QC buttons. */
+.adm-frame__vis { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding: 8px 10px 0; min-height: 30px; }
+.adm-frame__vis .vis-badge { padding: 5px 9px; font-size: 10px; }
+.adm-frame__why { font-size: 11px; color: var(--color-ink-faint); padding: 3px 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vis-toggle {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--color-surface);
+  font-size: 11.5px;
+  font-weight: 450;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vis-toggle:hover { border-color: var(--color-ink); color: var(--color-ink); }
+.vis-toggle[data-to="client"] { color: #1A7F4B; border-color: rgba(26, 127, 75, .45); }
+.vis-toggle[data-to="client"]:hover { background: rgba(26, 127, 75, .08); }
+
+/* The internal summary strip above a grid. */
+.vis-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 12.5px; color: var(--color-ink-soft); }
+.vis-strip strong { color: var(--color-ink); font-weight: 500; font-family: var(--font-mono); font-size: 12px; }
+
+/* Upload panel: Client visible / Internal only. */
+.vis-choice { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--color-panel); border: 1px solid var(--line); }
+.vis-choice label { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 450; color: var(--color-ink-soft); cursor: pointer; }
+.vis-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.vis-choice label:has(input:checked) { color: var(--color-ink); background: var(--color-paper); border: 1px solid var(--line); }
+.vis-choice label:has(input:focus-visible) { outline: 2px solid var(--color-blue); outline-offset: 2px; }
+
+/* Listing media grid (MediaGrid): the visibility badge on each tile and the
+   All / Client visible / Internal only filter. */
+.amg-badge[data-tone="client"] { color: #1A7F4B; }
+.amg-badge[data-tone="client"]::before,
+.amg-badge[data-tone="internal"]::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; flex: none; }
+.amg-badge[data-tone="internal"] { color: #4A4F58; background: rgba(236, 238, 241, .96); }
+.amg-filter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: -6px 0 18px; }
+.amg-filter .adm-seg { flex-wrap: wrap; }
+.amg-filter .adm-chip svg { width: 15px; height: 15px; }
+
+/* Shoot review sections and selection (Oct 28 2026). Gallery, Final review,
+   Twilight: each with Select all and a collapse; a checkbox on every frame;
+   one bar at the bottom of the screen for whatever is selected. */
+.sr-section { display: grid; gap: 10px; padding-top: 8px; }
+.sr-section + .sr-section { border-top: 1px solid var(--line); padding-top: 18px; margin-top: 6px; }
+.sr-section--final { background: var(--color-blue-wash); border-radius: 16px; padding: 14px; border-top: 0 !important; }
+/* Rejected (Nov 2 2026): the last section, never client visible, folded by default. */
+.sr-section--rejected { background: rgba(215,52,42,.045); border: 1px solid rgba(215,52,42,.22); border-radius: 16px; padding: 14px; border-top-width: 1px !important; scroll-margin-top: calc(var(--adm-top, 0px) + 16px); }
+.sr-section--rejected .kicker { color: var(--color-live); }
+/* A section folds with motion: the grid row eases to 0fr, so there is no
+   height to measure and the frames stay in the page (inert while shut). */
+.sr-fold { display: grid; grid-template-rows: 1fr; opacity: 1; transition: grid-template-rows .42s var(--ease), opacity .3s var(--ease) .1s; }
+.sr-fold[data-open="false"] { grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .42s var(--ease), opacity .2s var(--ease); }
+.sr-fold__in { overflow: hidden; min-height: 0; }
+/* The Publish bar on top of the grid: how many approved photos go, and where. */
+.sr-publish { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 18px; padding: 14px 16px; border-radius: 16px; background: var(--color-surface); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(11,12,15,.04); scroll-margin-top: calc(var(--adm-top, 0px) + 16px); }
+.sr-publish__facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-size: 13px; color: var(--color-ink-soft); }
+.sr-publish__fact strong { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.sr-publish__fact[data-tone="ok"] strong { color: var(--color-success); }
+.sr-publish__fact[data-tone="bad"] strong { color: var(--color-live); }
+.sr-publish__act { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.sr-publish__dest { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12.5px; }
+.sr-publish .btn[disabled] { opacity: .5; cursor: not-allowed; }
+@media (max-width: 559px) { .sr-publish { padding: 12px; } .sr-publish__act { width: 100%; } .sr-publish__act .btn-primary { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .sr-fold, .sr-fold[data-open="false"] { transition: none; } }
+.sr-section__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.sr-section__title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-width: 0; }
+.sr-check {
+  position: absolute; top: 8px; left: 8px; z-index: 2; width: 26px; height: 26px; padding: 0;
+  border-radius: 8px; border: 1.5px solid rgba(255,255,255,.95); background: rgba(11,12,15,.28);
+  color: #fff; font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(11,12,15,.25);
+}
+.sr-check:hover { background: rgba(11,12,15,.45); }
+.sr-check.is-on { background: var(--color-blue); border-color: var(--color-blue); }
+.sr-check:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; }
+.sr-pills { position: absolute; left: 8px; top: 40px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none; }
+.sr-bar {
+  position: sticky; bottom: 12px; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: 16px; background: var(--color-surface); border: 1px solid var(--line-strong);
+  box-shadow: 0 10px 30px rgba(11,12,15,.16);
+}
+.sr-bar__n { font-size: 13px; font-weight: 500; margin-right: 4px; font-variant-numeric: tabular-nums; }
+.sr-bar__btn { height: 36px; padding: 0 14px; font-size: 13px; }
+.sr-bar__del { color: var(--color-live); border-color: rgba(215,52,42,.45); }
+@media (max-width: 559px) { .sr-bar { bottom: 8px; gap: 6px; } .sr-bar__btn { padding: 0 10px; } }
+
+/* An opened frame (FrameViewer, Oct 28 2026): the listing preview's full
+   screen frame (.amg-lb in admin-media.css) with the QC notes folded and the
+   three decisions in one row. On a phone the row is in thumb reach and the
+   photo takes whatever height is left. */
+.srl { background: #0B0C0F; view-transition-name: srl-viewer; }
+/* The opened photo keeps its own layer above the page cross-fade
+   (globals.css .page-swap). Without this, a server refresh while a photo
+   was open painted the grid over it for 380 ms: the photo looked like it
+   closed and reopened on every R or A (Nov 2 2026). */
+::view-transition-group(srl-viewer) { z-index: 300; animation: none; }
+::view-transition-old(srl-viewer) { display: none; }
+::view-transition-new(srl-viewer) { animation: none; }
+.srl .amg-lb__stage { min-height: 0; }
+.srl .amg-lb__frame { width: 100%; height: 100%; }
+/* The photo takes all the room the stage has (Nov 2 2026: "the
+   previews are very, very, very tiny"): the 2048px derivative letterboxed
+   into the frame, never a thumb sitting at its own 600px. */
+.srl .amg-lb__frame img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0; }
+.srl .amg-lb__frame img.is-zoomable { cursor: zoom-in; }
+.srl-demo { height: 100%; max-width: 100%; aspect-ratio: 3 / 2; border-radius: 3px; }
+/* Z, or a click on the photo: the original at one image pixel per screen
+   pixel, panned by scroll or drag. Transparent until it has loaded, so the
+   fitted photo stays in view meanwhile. */
+.srl-zoom { position: absolute; inset: 0; overflow: auto; cursor: zoom-out; overscroll-behavior: contain; touch-action: auto; scrollbar-width: none; }
+.srl-zoom::-webkit-scrollbar { display: none; }
+.srl-zoom.is-ready { background: #0B0C0F; }
+.srl-zoom__in { display: flex; align-items: center; justify-content: center; width: max-content; min-width: 100%; min-height: 100%; }
+.srl .srl-zoom img { width: auto; height: auto; max-width: none; max-height: none; object-fit: fill; opacity: 0; transition: opacity .18s var(--ease); }
+.srl .srl-zoom.is-ready img { opacity: 1; }
+.srl-zoom__wait { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 8px 14px; border-radius: 999px; background: rgba(11,12,15,.7); font-size: 13px; color: rgba(255,255,255,.85); pointer-events: none; white-space: nowrap; }
+.srl .amg-lb__stage.is-zoomed { touch-action: auto; }
+.srl-foot { display: grid; gap: 8px; justify-items: center; padding: 8px 16px calc(12px + env(safe-area-inset-bottom)); }
+.srl-qc { width: min(900px, 100%); border-radius: 12px; background: rgba(255,255,255,.08); padding: 0 14px; max-height: 30dvh; overflow: auto; overscroll-behavior: contain; }
+.srl-qc > summary { display: flex; align-items: center; gap: 10px; min-height: 40px; cursor: pointer; list-style: none; }
+.srl-qc > summary::-webkit-details-marker { display: none; }
+.srl-qc > summary::after { content: "Show"; margin-left: auto; font-size: 11.5px; color: rgba(255,255,255,.55); }
+.srl-qc[open] > summary::after { content: "Hide"; }
+.srl-qc[open] { padding-bottom: 12px; }
+.srl-qc__title { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.srl-qc__sev { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.92); }
+/* Nov 2 2026: every automatic QC flag is a checkbox the Photo QC team ticks
+   when the fix is done (src/lib/qc-fixes.ts). */
+.srl-qc__done { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+.srl-qc__done.is-all { background: rgba(142,224,176,.18); color: #8EE0B0; }
+.qc-fixes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.qc-fix { padding: 6px 8px; border-radius: 8px; background: rgba(255,255,255,.04); }
+.qc-fix__label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.qc-fix__box { flex: none; width: 18px; height: 18px; margin: 1px 0 0; accent-color: #1A7F4B; cursor: pointer; }
+.qc-fix.is-done .qc-fix__text { opacity: .6; text-decoration: line-through; text-decoration-color: rgba(255,255,255,.45); }
+.qc-fix__by { display: block; margin: 2px 0 0 28px; font-size: 11.5px; color: #8EE0B0; }
+.adm-frame__fixes { padding: 2px 10px 0; font-size: 11px; color: var(--color-ink-soft); }
+.adm-frame__fixes.is-all { color: #1A7F4B; }
+/* The decisions and the extras (Download, Make twilight, Full resolution)
+   share one row on a computer; on a phone the extras wrap underneath. */
+.srl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; width: 100%; }
+.srl-acts { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); gap: 8px; justify-content: center; }
+.srl-act {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.08); color: #fff;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: background .16s var(--ease), border-color .16s var(--ease), transform .12s var(--ease);
+}
+.srl-act:hover { background: rgba(255,255,255,.16); }
+.srl-act:active { transform: scale(.97); }
+.srl-act kbd, .srl-more kbd { font-family: var(--font-mono); font-size: 10.5px; padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,.14); color: rgba(255,255,255,.75); }
+.srl-act--reject { color: #FF9E95; }
+.srl-act--reject.is-on { background: #D7342A; border-color: #D7342A; color: #fff; }
+.srl-act--approve { color: #8EE0B0; }
+.srl-act--approve.is-on { background: #1A7F4B; border-color: #1A7F4B; color: #fff; }
+.srl-act--publish { background: #fff; border-color: #fff; color: var(--color-ink); }
+.srl-act--publish:hover { background: rgba(255,255,255,.88); }
+.srl-act--publish.is-live { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
+/* Unreviewed or rejected: no way onto the listing from here. */
+.srl-act[disabled] { cursor: not-allowed; }
+.srl-act--publish[disabled] { background: transparent; color: rgba(255,255,255,.55); border-color: rgba(255,255,255,.22); }
+.srl-act--publish[disabled]:hover { background: transparent; }
+.srl-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.srl-note { margin: 0; max-width: 900px; text-align: center; font-size: 13px; line-height: 1.5; color: #A8E6C1; }
+.srl-note.is-bad { color: #FFB4AD; }
+@media (hover: none) { .srl-act kbd, .srl-more kbd { display: none; } }
+@media (max-width: 759px) {
+  .srl .amg-lb__top { padding: calc(10px + env(safe-area-inset-top)) 12px 8px 16px; gap: 8px; }
+  .srl .amg-lb__icon { width: 44px; height: 44px; }
+  .srl .amg-lb__stage { padding: 0; }
+  .srl .amg-lb__frame img { border-radius: 0; }
+  .srl-foot { gap: 8px; padding: 8px 12px calc(10px + env(safe-area-inset-bottom)); }
+  .srl-qc { max-height: 24dvh; }
+  .qc-fix__box { width: 22px; height: 22px; }
+  .qc-fix__by { margin-left: 32px; }
+  .srl-acts { grid-template-columns: 1fr 1fr 1.25fr; width: 100%; gap: 8px; }
+  .srl-act { height: 52px; padding: 0 10px; font-size: 15px; border-radius: 16px; }
+  .srl-more { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; gap: 8px; }
+  .srl-more .amg-lb__btn { height: 40px; padding: 0 8px; font-size: 12.5px; justify-content: center; min-width: 0; overflow: hidden; }
+}
+
+/* The shoot page on a phone: the frames come right after the header and
+   notices (the pipeline, QC report and details follow them), the sticky
+   selection bar rides above the tab bar and scrolls sideways, and the
+   tools above the grid scroll sideways in one line. */
+@media (max-width: 759px) {
+  .shoot-page { display: flex; flex-direction: column; }
+  .shoot-page > .shoot-info { order: 3; }
+  .shoot-page > #frames { order: 1; margin-top: 24px; }
+  .shoot-page > #finals { order: 2; }
+  .shoot-page > .shoot-files { order: 4; }
+  .sr-bar {
+    position: fixed; left: 8px; right: 8px; bottom: calc(var(--adm-bottom, 0px) + 8px); z-index: 62;
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; border-radius: 18px;
+    background: rgba(255,255,255,.96); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  }
+  .sr-bar::-webkit-scrollbar { display: none; }
+  .sr-bar__n { flex: none; }
+  .sr-bar__btn { flex: none; height: 42px; padding: 0 14px; font-size: 14px; }
+  .sr-tools { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding-bottom: 2px; }
+  .sr-tools::-webkit-scrollbar { display: none; }
+  .sr-tools > * { flex: none; white-space: nowrap; }
+  .sr-check { width: 34px; height: 34px; top: 6px; left: 6px; border-radius: 10px; }
+  .sr-pills { top: 46px; }
+  .sr-section__head .adm-actions { width: auto; }
+  .sr-selecting { padding-bottom: 76px; }
+  /* Frame cards: the state in one word beside Publish, no second state line. */
+  .adm-frame__vis { flex-wrap: nowrap; padding: 8px 8px 0; }
+  .adm-frame__vis .vis-badge { padding: 5px 8px; }
+  .adm-frame__vis .vis-badge__long { display: none; }
+  .adm-frame__vis .vis-badge__short { display: inline; }
+  .adm-frame__why { display: none; }
+  .adm-frame__name { padding: 8px 8px 0; }
+  .adm-frame__note { padding: 4px 8px 0; }
+  .adm-frame__acts { gap: 6px; padding: 8px; }
+  .adm-frame__acts button { font-size: 13px; }
+}
+
+/* The client's revision round (Oct 30 2026): its own section at the very top
+   of the shoot's frames, amber so it is found at a glance; each card says what
+   the client asked and whether the fix is in. */
+.sr-section--revision { background: rgba(154,100,0,.07); border: 1px solid rgba(154,100,0,.28); border-radius: 16px; padding: 14px; scroll-margin-top: calc(var(--adm-top, 0px) + 16px); }
+.sr-section--revision + .sr-section { border-top: 0; }
+.sr-section--revision .kicker { color: var(--color-warning); }
+.sr-ask { display: grid; gap: 4px; padding: 8px 10px 0; }
+.sr-ask__state { justify-self: start; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 10.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; background: rgba(154,100,0,.12); color: var(--color-warning); }
+.sr-ask__state.is-fixed { background: var(--color-blue-wash); color: var(--color-blue-deep); }
+.sr-ask__state.is-live { background: rgba(26,127,75,.10); color: var(--color-success); }
+.sr-ask__note { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--color-ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* In the opened frame: the client's words above the QC notes, Before / After. */
+.srl-ask { width: min(900px, 100%); border-radius: 12px; background: rgba(255,214,140,.12); border: 1px solid rgba(255,214,140,.3); padding: 10px 14px; max-height: 26dvh; overflow: auto; }
+.srl-ask__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.srl-ask__title { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,226,170,.9); }
+.srl-ask__state { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: rgba(255,214,140,.18); color: #FFE2AA; }
+.srl-ask__state.is-fixed { background: rgba(142,224,176,.18); color: #8EE0B0; }
+.srl-ask__flip { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; font-family: var(--font-sans); font-size: 13px; cursor: pointer; }
+.srl-ask__flip[aria-pressed="true"] { background: #fff; color: var(--color-ink); }
+.srl-ask__flip kbd { font-family: var(--font-mono); font-size: 10.5px; padding: 2px 6px; border-radius: 6px; background: rgba(127,127,127,.2); }
+.srl-ask__note { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: #fff; }
+.srl-ask__note.is-general { color: rgba(255,255,255,.7); font-size: 13px; }
+.srl-which { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 999px; background: rgba(11,12,15,.7); color: #fff; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
+.srl .amg-lb__frame { position: relative; }
+@media (hover: none) { .srl-ask__flip kbd { display: none; } }
+@media (max-width: 759px) {
+  .sr-section--revision { padding: 12px 10px; margin: 0 -6px; }
+  .srl-ask { max-height: 22dvh; padding: 8px 12px; }
+  .srl-ask__flip { height: 40px; }
+}
+
+/* Send for final review (Nov 3 2026, src/components/admin/FinalReviewPanel.tsx):
+   what is still open on the left, the one button on the right; a phone
+   stacks them, the button full width. */
+.frv { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px 20px; flex-wrap: wrap; border-left: 3px solid var(--color-blue-deep, #0066D6); }
+.frv.is-sent { border-left-color: var(--color-success); }
+.frv__text { flex: 1 1 360px; min-width: 0; display: grid; gap: 6px; }
+.frv__line { margin: 0; font-size: 14px; line-height: 1.55; }
+.frv__warn { margin: 0; font-size: 13px; line-height: 1.5; color: var(--color-warning); }
+.frv__ok { margin: 0; font-size: 13px; color: var(--color-success); }
+.frv__err { margin: 0; font-size: 13px; color: var(--color-live); }
+.frv__info { margin: 0; font-size: 13px; color: var(--color-ink-soft); }
+.frv__act { flex: none; }
+@media (max-width: 759px) {
+  .frv__act, .frv__act .btn { width: 100%; justify-content: center; text-align: center; }
+}

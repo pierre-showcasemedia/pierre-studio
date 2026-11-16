@@ -1,0 +1,90 @@
+/* ===== The film review (Oct 26 2026): src/components/gallery/VideoReview.tsx =====
+   Dark like the lightbox: the film on the left with its note timeline and the
+   composer under it, the notes and Send on the right. Phones stack it all
+   and scroll. Reuses the lightbox's note box and buttons (.g-rev__*). */
+
+.g-vr {
+  position: fixed; inset: 0; z-index: 96; display: flex; flex-direction: column;
+  background: #0B0C0F; color: #fff; -webkit-tap-highlight-color: transparent;
+}
+.g-vr__top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 12px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.g-vr__title { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+.g-vr__eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); white-space: nowrap; }
+.g-vr__file { font-family: var(--g-mono); font-size: 12px; color: rgba(255,255,255,.5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.g-vr__body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 380px; }
+.g-vr__stage { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 18px 20px 20px; overflow: auto; }
+.g-vr__player { position: relative; flex: 1; min-height: 220px; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 12px; overflow: hidden; }
+.g-vr__video { width: 100%; height: 100%; max-height: calc(100svh - 300px); object-fit: contain; background: #000; display: block; }
+
+/* The timeline with a marker per note. */
+.g-vr__track { position: relative; height: 26px; margin: 0 6px; }
+.g-vr__rail { position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 999px; background: rgba(255,255,255,.16); }
+.g-vr__head { position: absolute; top: 4px; bottom: 4px; width: 2px; margin-left: -1px; border-radius: 2px; background: rgba(255,255,255,.7); pointer-events: none; transition: left .12s linear; }
+.g-vr__mark {
+  position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; padding: 0; border-radius: 999px; cursor: pointer;
+  border: 2px solid #0B0C0F; background: var(--g-blue-bright); box-shadow: 0 0 0 1px rgba(255,255,255,.35);
+  transition: transform .16s var(--g-ease);
+}
+.g-vr__mark:hover, .g-vr__mark:focus-visible { transform: scale(1.25); outline: none; }
+.g-vr__mark.is-sent { background: #fff; opacity: .6; }
+.g-vr__mark.is-new { background: #fff; cursor: default; animation: g-vr-pulse 1.4s var(--g-ease) infinite; }
+@keyframes g-vr-pulse { 50% { box-shadow: 0 0 0 6px rgba(255,255,255,.12); } }
+
+.g-vr__compose { padding: 14px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); }
+.g-vr__composehead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.g-vr__at { font-family: var(--g-mono); font-size: 12.5px; color: rgba(255,255,255,.85); }
+
+.g-vr__side { min-height: 0; display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); }
+.g-vr__sidehead { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 12px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+.g-vr__count { font-family: var(--g-mono); letter-spacing: 0; font-size: 12px; color: rgba(255,255,255,.5); }
+.g-vr__empty { margin: 0; padding: 0 20px; font-size: 13.5px; line-height: 1.6; color: rgba(255,255,255,.55); }
+.g-vr__list { list-style: none; margin: 0; padding: 0 12px; flex: 1; min-height: 0; overflow: auto; }
+.g-vr__item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 12px 8px; border-top: 1px solid rgba(255,255,255,.07); }
+.g-vr__item:first-child { border-top: 0; }
+.g-vr__tc {
+  align-self: start; height: 26px; padding: 0 9px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(10,132,255,.55); background: rgba(10,132,255,.14); color: #fff;
+  font-family: var(--g-mono); font-size: 11.5px; white-space: nowrap;
+}
+.g-vr__item.is-sent .g-vr__tc { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.06); }
+.g-vr__itembody { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.g-vr__note { font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.g-vr__acts { display: flex; align-items: center; gap: 10px; }
+.g-vr__acts .g-rev__link { padding: 0; font-size: 12.5px; }
+.g-vr__sent { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #7BD8A4; }
+.g-vr__editbox { min-height: 64px; font-size: 14px; }
+.g-vr__small { height: 32px; padding: 0 14px; font-size: 12.5px; }
+
+.g-vr__send { padding: 16px 20px calc(18px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255,255,255,.08); display: flex; flex-direction: column; gap: 8px; }
+.g-vr__other { margin: 0; font-size: 12.5px; color: rgba(255,255,255,.6); }
+.g-vr__generallabel { font-size: 12px; color: rgba(255,255,255,.72); }
+.g-vr__general { min-height: 60px; font-size: 14px; }
+.g-vr__sendbtn {
+  height: 46px; border-radius: 999px; border: 0; cursor: pointer; margin-top: 4px;
+  background: #fff; color: var(--g-ink); font: inherit; font-size: 14px; font-weight: 500;
+  transition: transform .16s var(--g-ease), opacity .16s var(--g-ease);
+}
+.g-vr__sendbtn:active { transform: scale(.985); }
+.g-vr__sendbtn[disabled] { opacity: .4; cursor: default; transform: none; }
+.g-vr__fine { margin: 0; font-size: 11.5px; color: rgba(255,255,255,.45); }
+.g-vr__done { margin: 0; font-size: 14px; line-height: 1.6; color: #7BD8A4; }
+
+@media (max-width: 899px) {
+  .g-vr__body { display: block; overflow: auto; }
+  .g-vr__stage { overflow: visible; padding: 12px 12px 16px; }
+  .g-vr__player { min-height: 0; aspect-ratio: 16 / 9; flex: none; }
+  .g-vr__video { max-height: none; }
+  .g-vr__side { border-left: 0; border-top: 1px solid rgba(255,255,255,.08); }
+  .g-vr__list { overflow: visible; }
+  .g-vr__file { display: none; }
+  .g-vr .g-rev__hint { display: none; }
+  .g-vr .g-rev__box { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-vr__mark.is-new { animation: none; }
+  .g-vr__head { transition: none; }
+}
