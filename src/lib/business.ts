@@ -42,7 +42,7 @@ export const business = {
   // The sender of every email (a Resend-verified domain; it has no mailbox).
   emailFrom: "Showcase Media <portal@showcasemedia.pro>",
   // Where client replies go, and the address shown when something fails.
-  supportEmail: "mediahero@showcasemedia.pro",
+  supportEmail: "pierre@showcasemedia.pro",
   // The one phone number clients ever see (the business line, never a
   // personal number). Empty: no phone is shown.
   phone: "(608) 345-2123",

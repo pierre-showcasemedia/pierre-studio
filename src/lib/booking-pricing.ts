@@ -2,12 +2,12 @@
 // booking form and /api/booking. The ONLY place prices live on the website:
 // nothing else on the public site shows a price.
 //
-// Source: Pierre's published price sheet (his current site, "Price Sheet",
-// "Bundled Packages", "3D Virtual Tours - Floor Plans", "Video Walkthrough",
-// "Drone Aerials", "Twilight", "Business Portraits" pages, read Nov 17 2026).
-// These are his public rates. His agent rate sheets (Stark Company Realtors,
-// Preferred Agent, HomeTeam4U) are NOT on the public site: those clients are
-// invoiced at their own rates from the studio. Never invent a price here.
+// Source: Pierre's Nov 2026 price sheet (PriceSheet-Nov2026.pdf), with
+// Showcase Photography and the drone and 3D tour prices on their own from the
+// pages of his current site (the PDF doesn't list them). His agent rate sheets
+// (Stark Preferred, Preferred Agent, HomeTeam4U) are private: they live only in
+// the studio (src/lib/agent-rates.ts), never in this file, because this file
+// ships in the public website's code. Never invent a price here.
 //
 // How it works: the client picks the size of the home (it sets the tier), then
 // one package or one service on its own, then add-ons. Size bands follow the
@@ -22,16 +22,19 @@
 // Safe to import from client components (no server code).
 
 // ---- Business rules the form needs ----------------------------------------------
-// Where Pierre shoots. No travel fee within 30 miles of his east Madison
-// location; anywhere farther, Pierre confirms any travel fee (not published).
+// Where Pierre shoots. No travel fee within 25 miles of Madison and Sun
+// Prairie; farther, $0.50 a mile round trip, which Pierre confirms from the
+// address (the form doesn't know the miles).
+export const TRAVEL_FREE_MILES = 25;
+export const TRAVEL_CENTS_PER_MILE = 50; // round trip
 export const AREAS = [
-  "Within 30 miles of Madison",
+  "Within 25 miles of Madison or Sun Prairie",
   "Elsewhere in Wisconsin",
   "Northern Illinois",
   "Somewhere else",
 ] as const;
 export type Area = (typeof AREAS)[number];
-export const HOME_AREAS = new Set<string>(["Within 30 miles of Madison"]);
+export const HOME_AREAS = new Set<string>(["Within 25 miles of Madison or Sun Prairie"]);
 export const isOutsideArea = (area: string | null | undefined) => Boolean(area && !HOME_AREAS.has(area));
 
 export const CLIENT_TYPES = ["agent", "homeowner", "builder", "other"] as const;
@@ -64,7 +67,7 @@ export const CONFIRM_WITHIN = "the same day";
 // ==== BEGIN SHARED PRICE TABLE ====
 // Every amount is US cents. No sales tax line.
 
-export const PRICING_VERSION = "scm-v1-2026-11-17";
+export const PRICING_VERSION = "scm-v2-2026-11-17";
 
 // The client picks the home's size first; it sets the tier (0 to 5) for every
 // tier-priced item. Over 10,000 sq ft is a custom quote. "cents" is the
@@ -137,10 +140,10 @@ const WALKTHROUGHS = ["walkthrough_bundle", "grand", "walkthrough_showcase", "wa
 export const ITEMS: readonly Item[] = [
   // Showcase Photography and the bundles. Every one includes up to 40 Showcase Photography images.
   { id: "photos", name: "Showcase Photography", desc: "Up to 40 images, with Showcase editing: HDR detail, blue sky replacement as needed, window views, fire in the fireplaces and green grass.", group: "package", role: "service", pickOne: true, floorPlan: true, price: { kind: "tier", cents: [175_00, 175_00, 175_00, 175_00, 175_00, 175_00] }, minutes: 0 },
-  { id: "photo_drone", name: "Photo Drone Bundle", desc: "Showcase Photography and up to 16 drone aerial photos.", group: "package", role: "service", pickOne: true, floorPlan: true, price: { kind: "tier", cents: [234_00, 234_00, 234_00, 234_00, 234_00, 234_00] }, minutes: 20 },
+  { id: "photo_drone", name: "Photo Drone Bundle", desc: "Showcase Photography and up to 16 drone aerial photos.", group: "package", role: "service", pickOne: true, floorPlan: true, price: { kind: "tier", cents: [240_00, 240_00, 240_00, 240_00, 240_00, 240_00] }, minutes: 20 },
   { id: "tour_bundle", name: "3D Tour Bundle", desc: "Showcase Photography and a 3D virtual tour (Matterport or Zillow), hosted for up to 1 year.", group: "package", role: "service", pickOne: true, floorPlan: true, price: { kind: "tier", cents: [300_00, 325_00, 325_00, 375_00, 470_00] }, minutes: [30, 45, 45, 60, 75] },
   { id: "classic", name: "Classic Bundle", desc: "Showcase Photography, up to 16 drone aerial photos and a 3D virtual tour with aerial infospots, hosted for up to 1 year.", group: "package", role: "service", pickOne: true, floorPlan: true, price: { kind: "tier", cents: [365_00, 390_00, 390_00, 440_00, 535_00] }, minutes: [50, 65, 65, 80, 95] },
-  { id: "walkthrough_bundle", name: "Highlight Walkthrough Bundle", desc: "Showcase Photography and a 1 to 2 minute Highlight Walkthrough Video edited to music.", group: "package", role: "service", pickOne: true, floorPlan: true, video: true, price: { kind: "tier", cents: [375_00, 375_00, 375_00, 375_00, 375_00, 375_00] }, minutes: 45 },
+  { id: "walkthrough_bundle", name: "Highlight Walkthrough Bundle", desc: "Showcase Photography and a 1 to 2 minute edited Highlight Walkthrough Video. Add an agent guided tour or advanced imaging in the next step.", group: "package", role: "service", pickOne: true, floorPlan: true, video: true, price: { kind: "tier", cents: [350_00, 350_00, 350_00, 350_00, 350_00, 350_00] }, minutes: 45 },
   { id: "aerial_bundle", name: "Complete Aerial Bundle", desc: "Showcase Photography, up to 16 drone aerial photos and a 1 to 2 minute cinematic drone highlights video.", group: "package", role: "service", pickOne: true, floorPlan: true, video: true, price: { kind: "tier", cents: [375_00, 375_00, 375_00, 375_00, 375_00, 375_00] }, minutes: 40 },
   { id: "grand", name: "Grand Showcase Bundle", desc: "Everything: Showcase Photography, up to 16 drone aerial photos, a 3D virtual tour hosted for up to 1 year, and a 1 to 2 minute Highlight Walkthrough Video.", group: "package", role: "service", pickOne: true, floorPlan: true, video: true, price: { kind: "tier", cents: [515_00, 540_00, 540_00, 590_00, 685_00] }, minutes: [90, 105, 105, 120, 135] },
   // On their own, no photography
@@ -332,7 +335,7 @@ export function priceBooking(input: PricingInput): PricedBooking {
   }
   if (!pkg) reasons.push("Pick the size of the home.");
   if (!hasOrder) reasons.push("Pick a package, or a service booked on its own.");
-  if (isOutsideArea(input.area)) reasons.push("More than 30 miles from Madison, Pierre will confirm any travel fee.");
+  if (isOutsideArea(input.area)) reasons.push("More than 25 miles from Madison or Sun Prairie, travel is $0.50 a mile round trip. Pierre will confirm it.");
   if (unknown.length) reasons.push(`Not on the price list: ${unknown.join(", ")}.`);
 
   const subtotalCents = lines.reduce((n, l) => n + (l.priced ? l.cents : 0), 0);
@@ -383,7 +386,7 @@ function fnv1a(s: string): string {
   }
   return (h >>> 0).toString(16).padStart(8, "0");
 }
-export const PRICE_TABLE = { version: PRICING_VERSION, customTier: CUSTOM_TIER, packages: PACKAGES, included: INCLUDED, floorPlanFees: FLOOR_PLAN_FEES, quotedClientTypes: QUOTED_CLIENT_TYPES, items: ITEMS };
+export const PRICE_TABLE = { version: PRICING_VERSION, customTier: CUSTOM_TIER, packages: PACKAGES, included: INCLUDED, floorPlanFees: FLOOR_PLAN_FEES, travelFreeMiles: TRAVEL_FREE_MILES, travelCentsPerMile: TRAVEL_CENTS_PER_MILE, quotedClientTypes: QUOTED_CLIENT_TYPES, items: ITEMS };
 export const PRICE_TABLE_JSON = canonical(PRICE_TABLE);
 export const PRICING_HASH = fnv1a(PRICE_TABLE_JSON);
 // ==== END SHARED PRICE TABLE ====
@@ -391,7 +394,7 @@ export const PRICING_HASH = fnv1a(PRICE_TABLE_JSON);
 // ---- Website only: the payload /api/booking sends the studio -----------------
 // Field names follow the studio's booking contract (the same names the shared
 // studio reads), so Pierre's studio takes it as is: the service area goes in
-// "island" and outside the 30 mile radius in "off_island"; "service_area" and
+// "island" and outside the 25 mile radius in "off_island"; "service_area" and
 // "outside_area" carry the same values under clearer names.
 // Priced here from the table above; the browser's total is never trusted.
 // Returns a short error for anything the form should have caught.

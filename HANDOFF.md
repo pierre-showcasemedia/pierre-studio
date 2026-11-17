@@ -41,12 +41,16 @@ studio and where the two meet.
 **Facts for this studio (his current site, Nov 17 2026)**
 
 - Showcase Media LLC, Pierre Stephenson, M.Photog., Cr., FAA certified drone
-  pilot. Studio at 3315 Ambassador Dr, Madison, WI 53718. Public contact
-  mediahero@showcasemedia.pro, (608) 345-2123; he also uses
-  pierre@showcasemedia.pro (his admin login, `ADMIN_EMAILS`).
+  pilot. Studio at 3315 Ambassador Dr, Madison, WI 53718. Public contact on
+  his site and price sheets: mediahero@showcasemedia.pro, (608) 345-2123.
+  The studio's reply-to (`supportEmail`) and his admin login (`ADMIN_EMAILS`)
+  are pierre@showcasemedia.pro.
 - **America/Chicago** (Central). Serves Greater Madison, Dane County,
-  Wisconsin and Northern Illinois. No travel fee within 30 miles of east
-  Madison; farther, Pierre confirms any travel fee.
+  Wisconsin and Northern Illinois. No travel fee within 25 miles of Madison
+  and Sun Prairie; farther, $0.50 a mile round trip (Pierre confirms it from
+  the address). HomeTeam4U's agreement says 30 miles.
+- Cancellation or reschedule with less than 24 hours notice: 50%, plus any
+  travel fees if he is already on the way (in the website's booking terms).
 - Payment: `payments: "manual"`. Every booking gets an invoice in the studio;
   Pierre invoices in Wave as today and presses **Mark paid** when it is paid,
   which unlocks the gallery.
@@ -54,13 +58,32 @@ studio and where the two meet.
   finished photos on the listing page. The studio never calls an editing
   service.
 - Turnaround: 24 hours, 48 hours guaranteed; walkthrough videos 48 hours.
-- Prices: his published price sheet, the same file in both repos
-  (`src/lib/booking-pricing.ts` here = the website's `src/lib/pricing.ts`,
-  `scm-v1-2026-11-17`). Sizes break at 1,200 / 2,500 / 3,000 / 5,000 / 7,500 /
-  10,000 sq ft; the free floor plan's large-property fee ($30 / $50 / $75) is
-  added as its own invoice line. His agent rate sheets (Stark Company
-  Realtors, Preferred Agent, HomeTeam4U) are not on the public form: invoice
-  those clients at their rates by editing the invoice in the studio.
+- Prices: his Nov 2026 price sheet PDF, plus Showcase Photography ($175) and
+  the drone and 3D tour prices on their own from his current site. The same
+  file in both repos (`src/lib/booking-pricing.ts` here = the website's
+  `src/lib/pricing.ts`, `scm-v2-2026-11-17`). Sizes break at 1,200 / 2,500 /
+  3,000 / 5,000 / 7,500 / 10,000 sq ft; the free floor plan's large-property
+  fee ($30 / $50 / $75) is added as its own invoice line.
+- **Agent rates are private** and live only here, in `src/lib/agent-rates.ts`
+  (never in the shared price file, which ships in the website's code):
+  - **Stark Preferred** (Stark Company Realtors): Basic Photos $150 (25
+    images, floor plan extra), Showcase Photography $169 (40 images), extra
+    images $4, aerial photos $69, aerial video $130, aerial bundle $195,
+    Matterport by scanned sq ft $125 / $150 / $200 / $300, Showcase
+    Walkthrough $175, Complete Walkthrough $225 / $255 / $280 / $310, agent
+    guided tour $69, advanced imaging $30 a clip, virtual staging $30 / $25,
+    virtual twilight $20 / $15, free floor plan to 3,000 sq ft then $30 / $50
+    / $75.
+  - **Preferred Agent**: the same without the Basic package (Preferred
+    Showcase Photography $169, aerial video $130, aerial bundle $195).
+  - **HomeTeam4U**: Showcase Photography price not set ("$150 to 165": ask
+    Pierre), extra images $3, Walkthrough Package $464 / $514 / $640 / $865
+    (to 1,200 / 3,000 / 6,000 / 7,999 sq ft), twilight $125, advanced imaging
+    $30, virtual staging $30 / $25, virtual twilight $20 / $15, travel free to
+    30 miles. Note on the sheet: "Prices do not have the $150 Stark covered
+    fee deducted" (ask Pierre).
+  The website books everyone at the public rates. For these agents Pierre
+  edits the invoice to their rate in the studio before sending it.
 - Shoot hours and days: not given yet. The calendar opens 9 AM to 5 PM,
   Monday to Saturday, until he says otherwise (`schedule` in
   `src/lib/business.ts`).
@@ -245,12 +268,9 @@ and Resend in one click each.
 
 - Claude GitHub App on the pierre-showcasemedia account, so the code can be pushed.
 - Payments through Wave: an open question for the REM Academy team.
-- His Nov 2026 PDF price sheets (sent by Dropbox) could not be opened from the
-  build machine: compare them with the published prices used here and change
-  anything that differs (both price files, bump `PRICING_VERSION`).
-- Agent rate sheets (Stark Company Realtors, Preferred Agent, HomeTeam4U): how
-  he wants them handled.
-- Cancellation policy and booking terms; shoot hours and days off.
-- Instagram, Facebook or YouTube links for the website; any other shooters
-  and how they are paid; anyone who must never get an automated message.
+- HomeTeam4U's Showcase Photography price, and what "the $150 Stark covered
+  fee" means for billing.
+- Shoot hours and days off; Instagram, Facebook or YouTube links; any other
+  shooters and how they are paid; anyone who must never get an automated
+  message; who edits his photos (set to him).
 - Mac or Windows (the card-ingest and Dropbox tools need a Windows pass if Windows).
