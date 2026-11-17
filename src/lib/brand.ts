@@ -19,7 +19,7 @@ export const brand = {
   // White mark on transparent, used for the on-page share watermark and
   // baked into the locked preview derivatives by scripts/make-derivatives.py.
   watermark: "/brand/watermark.png",
-  logoRatio: 1200 / 300,
+  logoRatio: 1200 / 400,
 };
 
 // "example.com": the marketing site's host, for "example.com ↗" links.

@@ -10,7 +10,7 @@
 // TEMPLATE = true. scripts/check-business.ts fails a buyer's studio that still
 // has a placeholder in it.
 
-export const TEMPLATE = true;
+export const TEMPLATE = false;
 
 export type PaymentMethod = "stripe" | "manual";
 export type EditingPath = "autohdr" | "manual";
@@ -29,8 +29,8 @@ export const business = {
   // How team emails (to an editor, a shooter) and client emails are signed.
   signOff: "Showcase Media",
   // Where the business is, for the footer and the shoot brief.
-  city: "Your City, ST",
-  region: "your area",
+  city: "Madison, WI",
+  region: "Greater Madison, Dane County and Northern Illinois",
 
   // ---- Where -------------------------------------------------------------------
   // The public website (the booking form posts here from /book).
@@ -42,14 +42,14 @@ export const business = {
   // The sender of every email (a Resend-verified domain; it has no mailbox).
   emailFrom: "Showcase Media <portal@showcasemedia.pro>",
   // Where client replies go, and the address shown when something fails.
-  supportEmail: "pierre@showcasemedia.pro",
+  supportEmail: "mediahero@showcasemedia.pro",
   // The one phone number clients ever see (the business line, never a
   // personal number). Empty: no phone is shown.
   phone: "(608) 345-2123",
 
   // ---- When -------------------------------------------------------------------------
   // Every calendar day, shoot time and due date is read in this zone.
-  // TO CONFIRM with Pierre: Central assumed from his 608 (Wisconsin) number.
+  // Madison, Wisconsin (his studio: east Madison).
   timeZone: "America/Chicago",
   // What clients read after a time ("9:00 AM local time").
   timeZoneLabel: "Central time",
@@ -65,18 +65,18 @@ export const business = {
   // "stripe": every booking gets a Stripe invoice; the webhook's invoice.paid
   // marks it paid and unlocks the gallery. "manual": no processor; an admin
   // marks the invoice paid (bank transfer, check) and that unlocks it.
-  // Pierre invoices with Wave, not Stripe (how to connect Wave: ask Jacob).
+  // Pierre invoices with Wave, not Stripe (connecting Wave is an open question for the REM Academy team).
   // Until then an admin marks each invoice paid, which unlocks the gallery.
   payments: "manual" as PaymentMethod,
   // "autohdr": raw uploads go to the AutoHDR editing service (AUTOHDR_* env
   // vars). "manual": the team edits outside the studio and uploads finished
   // frames as finals. Never named to clients either way.
-  editing: "autohdr" as EditingPath,
+  editing: "manual" as EditingPath,
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.
   payAtClose: false,
   // When the delivered photos are due, in what clients read.
-  turnaround: "24 to 48 hours",
+  turnaround: "within 24 hours (48 hours guaranteed)",
 
   // ---- Messages -------------------------------------------------------------------
   // Automated texts and emails stay off until the buyer says yes. The booking
@@ -93,7 +93,7 @@ export const business = {
 
   // ---- Weather on the calendar -------------------------------------------------------
   // The fallback point when an address doesn't geocode (the business's city).
-  weatherHome: { lat: 34.05, lon: -118.24 },
+  weatherHome: { lat: 43.1, lon: -89.31 },
 
   // ---- Shooter pay ----------------------------------------------------------------------
   // The Shooter pay report (/admin/reports#pay): every shoot a shooter was on

@@ -25,31 +25,45 @@ studio and where the two meet.
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
-**What is set up (status Nov 16 2026)**
+**What is set up (status Nov 17 2026)**
 
 | Account | Where | State |
 |---|---|---|
-| GitHub | `pierre-showcasemedia/pierre-site` and `pierre-showcasemedia/pierre-studio` | Invites accepted. Both repos are public and empty (Hammad: fine for now). **Pushes are refused until the Claude GitHub App is installed on the pierre-showcasemedia account** |
+| GitHub | `pierre-showcasemedia/pierre-site` and `pierre-showcasemedia/pierre-studio` | Invites accepted. Both repos public and empty (Hammad: fine for now). **Pushes are refused until the Claude GitHub App is installed on the pierre-showcasemedia account** |
 | Vercel | Team "Showcase Media LLC" | build@ accepted (Nov 16) |
 | Cloudflare | Pierre's account (R2 storage only; DNS stays at Porkbun) | build@ accepted; R2 switched on (Nov 16) |
 | Porkbun | Domain, DNS and email for showcasemedia.pro | Logins ready on Call 2 |
 | Resend | Team "showcasemedia" | build@ accepted (Nov 16) |
 | Formspree | Form "Booking requests" | ID `mjywydge` (not secret) |
-| Payments | Wave today | **Open: how to connect Wave (ask Jacob)**. The studio starts on manual payments |
+| Payments | Wave today | **Open: how to connect Wave (REM Academy team)**. The studio runs on manual payments |
 | Quo | His business number | Not invited on purpose (a paid seat) |
 
-**Facts for this studio (so far)**
+**Facts for this studio (his current site, Nov 17 2026)**
 
-- Showcase Media LLC, Pierre Stephenson, M. Photog., Cr. Contact
-  pierre@showcasemedia.pro, (608) 345-2123.
-- Time zone set to **America/Chicago** (Central), assumed from his 608
-  number: **to confirm**, with his city and the area he covers.
+- Showcase Media LLC, Pierre Stephenson, M.Photog., Cr., FAA certified drone
+  pilot. Studio at 3315 Ambassador Dr, Madison, WI 53718. Public contact
+  mediahero@showcasemedia.pro, (608) 345-2123; he also uses
+  pierre@showcasemedia.pro (his admin login, `ADMIN_EMAILS`).
+- **America/Chicago** (Central). Serves Greater Madison, Dane County,
+  Wisconsin and Northern Illinois. No travel fee within 30 miles of east
+  Madison; farther, Pierre confirms any travel fee.
 - Payment: `payments: "manual"`. Every booking gets an invoice in the studio;
-  an admin presses **Mark paid** when the Wave payment arrives, and that
-  unlocks the gallery.
-- Prices: none yet. They go in the website's `src/lib/pricing.ts` and the
-  same file here (`src/lib/booking-pricing.ts`); anything without a price
-  reads "Quoted".
+  Pierre invoices in Wave as today and presses **Mark paid** when it is paid,
+  which unlocks the gallery.
+- Editing: `editing: "manual"` (Showcase editing is his own): he uploads
+  finished photos on the listing page. The studio never calls an editing
+  service.
+- Turnaround: 24 hours, 48 hours guaranteed; walkthrough videos 48 hours.
+- Prices: his published price sheet, the same file in both repos
+  (`src/lib/booking-pricing.ts` here = the website's `src/lib/pricing.ts`,
+  `scm-v1-2026-11-17`). Sizes break at 1,200 / 2,500 / 3,000 / 5,000 / 7,500 /
+  10,000 sq ft; the free floor plan's large-property fee ($30 / $50 / $75) is
+  added as its own invoice line. His agent rate sheets (Stark Company
+  Realtors, Preferred Agent, HomeTeam4U) are not on the public form: invoice
+  those clients at their rates by editing the invoice in the studio.
+- Shoot hours and days: not given yet. The calendar opens 9 AM to 5 PM,
+  Monday to Saturday, until he says otherwise (`schedule` in
+  `src/lib/business.ts`).
 
 ---
 
@@ -154,9 +168,9 @@ Pierre invoices in Wave as today; when a client pays, he presses **Mark
 paid** on the invoice in the admin, and that unlocks the gallery. Downloads
 never unlock on anything else.
 
-Whether and how to connect Wave is a scope question for Jacob. If Pierre
+Whether and how to connect Wave is an open scope question for the REM Academy team. If Pierre
 moves to Stripe instead, set `payments: "stripe"` in `src/lib/business.ts`
-and add Stripe as in the Guthrie and JSP handoffs: `STRIPE_SECRET_KEY`,
+and add Stripe: `STRIPE_SECRET_KEY`,
 then a webhook to `https://portal.showcasemedia.pro/api/portal/stripe-webhook`
 with `invoice.paid`, `invoice.payment_failed`, `invoice.voided`,
 `invoice.marked_uncollectible`, `invoice.finalized`, `invoice.updated` and
@@ -177,13 +191,12 @@ If Pierre works with other shooters: their rate in `business.shooterPay`
 (`perShoot`, or `percentOfCollected` for a share of what each booking
 collects). Unknown so far.
 
-## 12. Editing (10 min)
+## 12. Editing
 
-The studio starts on `editing: "autohdr"` from the template. **To set from
-his answer:** if he edits himself or uses an editor, switch to
-`editing: "manual"` (finished photos go on the listing page). If he uses
-AutoHDR, he creates an API app in his own AutoHDR account and pastes
-`AUTOHDR_CLIENT_ID` and `AUTOHDR_CLIENT_SECRET`.
+The studio is on `editing: "manual"`: after a shoot Pierre edits as he does
+today, then drops the finished photos on the listing page (Listings, the
+listing, **Upload photos**). They land as Internal only; he checks them,
+makes them Client visible or presses Publish, then sends the delivery email.
 
 ## 13. Quo (optional, 10 min)
 
@@ -231,9 +244,13 @@ and Resend in one click each.
 ## Open items
 
 - Claude GitHub App on the pierre-showcasemedia account, so the code can be pushed.
-- His price list, logo files, best photos, city and service area (the website
-  waits on these; the studio's brand.ts and prices too).
-- Payments through Wave: ask Jacob.
-- Time zone (Central assumed), shoot hours and days, editing path, any other
-  shooters, anyone who must never get an automated message.
+- Payments through Wave: an open question for the REM Academy team.
+- His Nov 2026 PDF price sheets (sent by Dropbox) could not be opened from the
+  build machine: compare them with the published prices used here and change
+  anything that differs (both price files, bump `PRICING_VERSION`).
+- Agent rate sheets (Stark Company Realtors, Preferred Agent, HomeTeam4U): how
+  he wants them handled.
+- Cancellation policy and booking terms; shoot hours and days off.
+- Instagram, Facebook or YouTube links for the website; any other shooters
+  and how they are paid; anyone who must never get an automated message.
 - Mac or Windows (the card-ingest and Dropbox tools need a Windows pass if Windows).

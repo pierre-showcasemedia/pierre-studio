@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ===== Design tokens: Showcase Media (showcasemedia.pro) =====
+   Near black #181818 from his site and logo, a quiet slate accent, white grounds. */
+
 /* ===== Design tokens =====
    The brand's colors and fonts. A buyer's studio sets these from their
    website's tokens (colors in --color-*, fonts in src/app/layout.tsx). The
@@ -9,14 +12,14 @@
   --color-surface:      #FFFFFF;
   --color-fog:          #F3F4F6;
   --color-panel:        #E9EBEF;
-  --color-ink:          #0B0C0F;
-  --color-ink-soft:     #5F646E;
-  --color-ink-faint:    #8A8F98;
+  --color-ink:          #181818;
+  --color-ink-soft:     #3F444B;
+  --color-ink-faint:    #6E737B;
   --color-obsidian:     #000000;
-  --color-blue:         #0066D6; /* accent */
-  --color-blue-bright:  #0A84FF; /* accent, bright: focus */
-  --color-blue-deep:    #0052B0; /* accent, deep */
-  --color-blue-wash:    #E6F1FF; /* accent, tint */
+  --color-blue:         #3D4A57; /* accent */
+  --color-blue-bright:  #52637A; /* accent, bright: focus */
+  --color-blue-deep:    #2C3640; /* accent, deep */
+  --color-blue-wash:    #EDF0F3; /* accent, tint */
   --color-success:      #1A7F4B;
   --color-warning:      #9A6400;
   --color-live:         #D7342A;
@@ -693,3 +696,8 @@ html.ss-lock, html.ss-lock body { overflow: hidden; }
 @keyframes ss-pop { from { opacity: 0; transform: scale(.97) translateY(-4px); } to { opacity: 1; transform: none; } }
 @keyframes ss-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .ss-panel { animation: none !important; } }
+
+/* Showcase Media: headings are Instrument Sans, upright, as on his site.
+   There is no italic file here, so never fake one. */
+* { font-synthesis-style: none; }
+.h1, .h2, .h3, .adm-title, .adm-lcard__name, .sc-group, .sc-mile__theme, .vb-card__street { font-style: normal; font-weight: 600; letter-spacing: -.015em; }

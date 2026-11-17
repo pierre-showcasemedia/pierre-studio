@@ -7,12 +7,13 @@ import RevealObserver from "@/components/motion/RevealObserver";
 import { brand, siteUrl } from "@/lib/brand";
 import "./globals.css";
 
-// the design tokens type: Geist for UI and body, Newsreader italic for headings,
-// Cormorant Garamond italic for supporting names (property addresses on cards).
+// Showcase Media's type, as on Pierre's current site: Manrope for UI and body,
+// Instrument Sans for headings and names, Geist Mono for sizes and dates. All self-hosted: builds never depend on a Google
+// Fonts fetch.
 const sans = localFont({
-  src: "./fonts/geist.woff2",
+  src: "./fonts/manrope.woff2",
   variable: "--ff-sans",
-  weight: "100 900",
+  weight: "200 800",
   display: "swap",
 });
 
@@ -23,26 +24,18 @@ const mono = localFont({
   display: "swap",
 });
 
-// Serifs are self-hosted too (latin subsets of the variable fonts Google
-// serves). Builds must never depend on a Google Fonts fetch: that fetch
-// failed and sank two deployments on Oct 16 2026.
 const serif = localFont({
-  src: [
-    { path: "./fonts/cormorant-garamond.woff2", weight: "300 700", style: "normal" },
-    { path: "./fonts/cormorant-garamond-italic.woff2", weight: "300 700", style: "italic" },
-  ],
+  src: "./fonts/instrument-sans.woff2",
   variable: "--ff-serif",
+  weight: "400 700",
   display: "swap",
-  adjustFontFallback: "Times New Roman",
 });
 
 const heading = localFont({
-  src: "./fonts/newsreader-italic.woff2",
+  src: "./fonts/instrument-sans.woff2",
   variable: "--ff-serif-hero",
-  weight: "200 800",
-  style: "italic",
+  weight: "400 700",
   display: "swap",
-  adjustFontFallback: "Times New Roman",
 });
 
 export const metadata: Metadata = {
@@ -51,7 +44,7 @@ export const metadata: Metadata = {
     default: `Client Portal | ${brand.name}`,
     template: `%s | ${brand.name}`,
   },
-  description: `Your listing photography and film from ${brand.name}.`,
+  description: `Your photography, tours and video from ${brand.name}.`,
   // Private portal: never indexed.
   robots: { index: false, follow: false },
 };
