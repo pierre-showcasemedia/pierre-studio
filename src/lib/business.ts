@@ -57,9 +57,13 @@ export const business = {
   // the abbreviation in Slack lines ("PT").
   timeZoneShort: "Central",
   timeZoneAbbr: "CT",
-  // The booking calendar's open hours (admin scheduling and the client's
-  // reschedule picker). closedWeekdays: 0 = Sunday.
-  schedule: { dayStart: "09:00", dayEnd: "17:00", stepMinutes: 30, closedWeekdays: [0] as readonly number[] },
+  // The booking calendar's start times (admin scheduling and the client's
+  // reschedule picker): dayStart is the earliest start, dayEnd the LATEST
+  // start. closedWeekdays: 0 = Sunday, 6 = Saturday.
+  // Pierre (Nov 17 2026): Monday to Friday, starts from 9:30 AM to 4 PM, every
+  // time approved by him; earlier, later and weekends by special request (he
+  // books those by hand). Seasonal change: move dayEnd (later in summer).
+  schedule: { dayStart: "09:30", dayEnd: "16:00", stepMinutes: 30, closedWeekdays: [0, 6] as readonly number[] },
 
   // ---- How they work ------------------------------------------------------------
   // "stripe": every booking gets a Stripe invoice; the webhook's invoice.paid
@@ -71,6 +75,8 @@ export const business = {
   // "autohdr": raw uploads go to the AutoHDR editing service (AUTOHDR_* env
   // vars). "manual": the team edits outside the studio and uploads finished
   // frames as finals. Never named to clients either way.
+  // Pierre: Fotello today (AutoHDR soon), then he finishes the edit himself.
+  // Switch to "autohdr" once his AutoHDR API app is connected.
   editing: "manual" as EditingPath,
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.

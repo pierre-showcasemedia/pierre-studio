@@ -51,7 +51,7 @@ export const AGENT_RATE_SHEETS: readonly RateSheet[] = [
       { item: "Stark Aerial Bundle (aerial photos and video)", cents: 195_00 },
       ...SHARED_PREFERRED,
     ],
-    notes: SHARED_NOTES,
+    notes: [...SHARED_NOTES, "Billing: card on file; Pierre charges it in house before delivery, then marks the invoice paid."],
   },
   {
     id: "preferred_agent",
@@ -68,14 +68,17 @@ export const AGENT_RATE_SHEETS: readonly RateSheet[] = [
   {
     id: "hometeam4u",
     name: "HomeTeam4U",
-    who: "HomeTeam4U agents",
+    who: "HomeTeam4U agents (a Stark agency)",
+    // Pierre, Nov 17 2026: HomeTeam4U almost always books a Walkthrough
+    // Package, so the packages come first. They can skip the packages and
+    // order a la carte from the Stark Preferred list (HomeTeam4U is a Stark
+    // agency): see STARK_A_LA_CARTE below.
     lines: [
-      { item: "Showcase Photography, up to 40 photos, free floor plan up to 3,000 sq ft, 1 virtual twilight photo", cents: null, note: "sheet says $150 to 165: ask Pierre" },
-      { item: "Additional images", cents: 3_00, note: "each" },
       { item: "Walkthrough Package, up to 1,200 sq ft", cents: 464_00 },
       { item: "Walkthrough Package, 1,201 to 3,000 sq ft", cents: 514_00 },
       { item: "Walkthrough Package, 3,001 to 6,000 sq ft", cents: 640_00 },
       { item: "Walkthrough Package, 6,001 to 7,999 sq ft", cents: 865_00 },
+      { item: "Additional images (with a package)", cents: 3_00, note: "each" },
       { item: "Twilight photography (6 to 8 images)", cents: 125_00 },
       { item: "Advanced video imaging", cents: 30_00, note: "per clip" },
       { item: "Virtual staging, 1 to 3 photos", cents: 30_00, note: "each" },
@@ -85,9 +88,13 @@ export const AGENT_RATE_SHEETS: readonly RateSheet[] = [
     ],
     notes: [
       "Walkthrough Package: Showcase Photography up to 40, Zillow 3D tour with floor plan, 1 virtual twilight, drone photos and unedited drone clips, unedited walkthrough clips with or without the agent, 1 advanced AI imaging clip; additional images $3.",
+      "Without a package: order a la carte at the Stark Preferred rates.",
       "Travel: free within 30 miles (the HomeTeam4U agreement), then $0.50 a mile round trip.",
       "Cancelling or rescheduling with less than 24 hours notice: 50%, plus any travel fees if Pierre is already on the way.",
-      "The sheet says: \"Prices do not have the $150 Stark covered fee deducted.\" Ask Pierre what this means for billing.",
+      "Billing: card on file; Pierre charges it in house before delivery, then marks the invoice paid.",
     ],
   },
 ];
+
+// HomeTeam4U's a la carte list: the Stark Preferred sheet.
+export const STARK_A_LA_CARTE: RateSheet = AGENT_RATE_SHEETS.find((s) => s.id === "stark_preferred")!;

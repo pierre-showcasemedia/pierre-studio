@@ -83,7 +83,7 @@ async function main() {
     [/\bACRE\b|acrecalifornia|acreagency|acre-california|\bacre[_-](?!s)/, "ACRE"],
     [/Framed by JG|jacobguthrie/i, "Framed by JG"],
     [/\b(Jacob|Dillon|Mariella|Bryden)\b/, "an ACRE team member"],
-    [/Olesya|Thyne|Kellenberger|Village Properties/, "an ACRE client"],
+    [/Olesya(?! Juodsnukis)|Thyne|Kellenberger|Village Properties/, "an ACRE client"], // Olesya Juodsnukis is one of Pierre's own photographers
     [/\(805\) 308-7877|\+18053087877/, "the ACRE phone line"],
     [/jacobtguthrie|jordan\.wipf/i, "a personal email"],
   ];

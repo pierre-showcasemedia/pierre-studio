@@ -76,17 +76,35 @@ studio and where the two meet.
     / $75.
   - **Preferred Agent**: the same without the Basic package (Preferred
     Showcase Photography $169, aerial video $130, aerial bundle $195).
-  - **HomeTeam4U**: Showcase Photography price not set ("$150 to 165": ask
-    Pierre), extra images $3, Walkthrough Package $464 / $514 / $640 / $865
-    (to 1,200 / 3,000 / 6,000 / 7,999 sq ft), twilight $125, advanced imaging
-    $30, virtual staging $30 / $25, virtual twilight $20 / $15, travel free to
-    30 miles. Note on the sheet: "Prices do not have the $150 Stark covered
-    fee deducted" (ask Pierre).
+  - **HomeTeam4U** (a Stark agency): the Walkthrough Packages come first,
+    $464 / $514 / $640 / $865 (to 1,200 / 3,000 / 6,000 / 7,999 sq ft), extra
+    images $3, twilight $125, advanced imaging $30, virtual staging $30 / $25,
+    virtual twilight $20 / $15, travel free to 30 miles. Without a package
+    they order a la carte at the Stark Preferred rates.
   The website books everyone at the public rates. For these agents Pierre
   edits the invoice to their rate in the studio before sending it.
-- Shoot hours and days: not given yet. The calendar opens 9 AM to 5 PM,
-  Monday to Saturday, until he says otherwise (`schedule` in
-  `src/lib/business.ts`).
+- **Billing:** Stark and HomeTeam4U have a card on file; Pierre charges it in
+  house before delivery, then presses **Mark paid**. Everyone else: a Wave
+  invoice as today, then **Mark paid**.
+- **Shoot days and hours:** Monday to Friday, starts from 9:30 AM to 4 PM,
+  every time approved by Pierre. Earlier, later and weekends by special
+  request (he books those by hand). In the studio this is one setting,
+  `schedule` in `src/lib/business.ts`: `dayStart` is the earliest start and
+  `dayEnd` the latest start. **To shift with the seasons**, change `dayEnd`
+  (for example "17:00" in summer) and push: it is live in about a minute.
+  The website's booking form asks only for a date and a time of day, and
+  says Pierre confirms every time, so it needs no change.
+- **Editing:** Fotello today, AutoHDR soon, then Pierre finishes the edit
+  himself, so the studio is on `editing: "manual"`. When his AutoHDR API app
+  is ready: paste `AUTOHDR_CLIENT_ID` and `AUTOHDR_CLIENT_SECRET` in Vercel
+  and set `editing: "autohdr"`.
+- **Galleries today: Pic-Time** (showcasemediallc on pic-time.com). After
+  go-live new galleries are delivered from this studio; Pic-Time stays as it
+  is for his existing galleries (old galleries are not migrated).
+- **His computer:** Mac. **Never-message list:** none.
+- **Later options:** his animated logo (ShowcaseMediaAnimate01.mp4, sent Nov
+  17) is not used yet; and the website has a slot for the homepage hero
+  video he is making (see the website's `HANDOFF.md`).
 
 ---
 
@@ -210,16 +228,22 @@ with `invoice.paid`, `invoice.payment_failed`, `invoice.voided`,
 
 ## 11. Shooter pay
 
-If Pierre works with other shooters: their rate in `business.shooterPay`
-(`perShoot`, or `percentOfCollected` for a share of what each booking
-collects). Unknown so far.
+Two contract photographers shoot for Pierre: **Olesya Juodsnukis**
+(olesyajuodsnukis@gmail.com) and **Clinton Cunanan**
+(cunananclinton@gmail.com). He pays them by Venmo today and moves contractor
+payroll to his accountant in 2027. After go-live, add each one in the admin
+(Settings, Add someone) as a **Creative specialist**. Their pay rates were not
+given, so the Shooter pay report shows **Rate not set** for their shoots
+until Pierre gives a per-shoot rate (`business.shooterPay.perShoot`, or
+`percentOfCollected`). Never put in a made-up rate.
 
 ## 12. Editing
 
-The studio is on `editing: "manual"`: after a shoot Pierre edits as he does
-today, then drops the finished photos on the listing page (Listings, the
-listing, **Upload photos**). They land as Internal only; he checks them,
-makes them Client visible or presses Publish, then sends the delivery email.
+The studio is on `editing: "manual"` (Fotello, soon AutoHDR, then Pierre
+finishes the edit): he drops the finished photos on the listing page
+(Listings, the listing, **Upload photos**). They land as Internal only; he
+checks them, makes them Client visible or presses Publish, then sends the
+delivery email. AutoHDR can be connected later (see the facts above).
 
 ## 13. Quo (optional, 10 min)
 
@@ -268,9 +292,6 @@ and Resend in one click each.
 
 - Claude GitHub App on the pierre-showcasemedia account, so the code can be pushed.
 - Payments through Wave: an open question for the REM Academy team.
-- HomeTeam4U's Showcase Photography price, and what "the $150 Stark covered
-  fee" means for billing.
-- Shoot hours and days off; Instagram, Facebook or YouTube links; any other
-  shooters and how they are paid; anyone who must never get an automated
-  message; who edits his photos (set to him).
-- Mac or Windows (the card-ingest and Dropbox tools need a Windows pass if Windows).
+- After go-live: add Olesya Juodsnukis and Clinton Cunanan as Creative specialists; their pay
+  rates if he wants the Shooter pay report to total their pay.
+- Later: the homepage hero video (he is making it) and, optionally, his animated logo.

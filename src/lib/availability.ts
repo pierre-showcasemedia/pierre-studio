@@ -93,7 +93,8 @@ export async function availability(minutes: number, opts: { ignore?: { start: Da
     const closed = SCHEDULE.closedWeekdays.includes(new Date(`${date}T12:00:00Z`).getUTCDay());
     const slots: Slot[] = [];
     if (!closed)
-      for (let m = dayStart; m + minutes <= dayEnd; m += SCHEDULE.stepMinutes) {
+      // dayEnd is the latest START time (business.schedule.dayEnd), not the end of the day.
+      for (let m = dayStart; m <= dayEnd; m += SCHEDULE.stepMinutes) {
         const start = instant(date, m);
         const end = instant(date, m + minutes);
         slots.push({ start: hm(m), available: !busy.some((b) => b.start < end && b.end > start) });
