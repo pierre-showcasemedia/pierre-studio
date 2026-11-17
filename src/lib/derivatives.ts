@@ -8,7 +8,7 @@
 // 30% opacity and WM_WIDTH (default 30%) of the image width.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
+import sharp, { type Sharp } from "sharp";
 import { derivativeKey } from "./media-keys";
 import { siteUrl } from "./brand";
 import { getObjectBuffer, headObject, putObject } from "./r2";
@@ -55,7 +55,7 @@ async function markFor(width: number): Promise<Buffer> {
   return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
 }
 
-async function resized(src: sharp.Sharp, longEdge: number, quality: number): Promise<{ buffer: Buffer; width: number }> {
+async function resized(src: Sharp, longEdge: number, quality: number): Promise<{ buffer: Buffer; width: number }> {
   const img = src.clone().resize({ width: longEdge, height: longEdge, fit: "inside", withoutEnlargement: true });
   const { data, info } = await img.jpeg({ quality, mozjpeg: true }).toBuffer({ resolveWithObject: true });
   return { buffer: data, width: info.width };

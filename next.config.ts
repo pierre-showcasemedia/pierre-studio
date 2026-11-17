@@ -47,9 +47,8 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
-  // Page changes cross-fade through React's <ViewTransition> (root layout)
-  // instead of cutting, like the marketing site.
-  experimental: { viewTransition: true },
+  // Page changes cross-fade through React's <ViewTransition> (root layout);
+  // since Next 16.4 / React 19.3 that needs no config flag.
   // Nothing in the portal identifies its framework on purpose.
   poweredByHeader: false,
   // Team SOPs (/admin/sops) read their markdown from disk at request time

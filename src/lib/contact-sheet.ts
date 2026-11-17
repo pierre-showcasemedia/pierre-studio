@@ -2,7 +2,7 @@
 // (src/lib/revision-intake.ts): the model sees every photo at once with its
 // number in a black box at the top left, and answers with numbers. Built from
 // the small "thumb" derivatives in R2 (the original when a thumb is missing).
-import sharp from "sharp";
+import sharp, { type OverlayOptions } from "sharp";
 import { getObjectBuffer } from "./r2";
 import { derivativeKey } from "./media-keys";
 
@@ -41,7 +41,7 @@ export async function contactSheets(photos: { r2Key: string }[], concurrency = 1
   for (let start = 0; start < photos.length; start += SHEET_SIZE) {
     const chunk = thumbs.slice(start, start + SHEET_SIZE);
     const rows = Math.ceil(chunk.length / COLS);
-    const layers: sharp.OverlayOptions[] = [];
+    const layers: OverlayOptions[] = [];
     for (let k = 0; k < chunk.length; k++) {
       const x = (k % COLS) * CELL_W;
       const y = Math.floor(k / COLS) * CELL_H;
