@@ -42,12 +42,14 @@ async function login(email) {
 const get = (path, cookie) => fetch(`${BASE}${path}`, { redirect: "manual", headers: cookie ? { cookie } : {} });
 const strip = (h) => h.replace(/<script[\s\S]*?<\/script>/g, "");
 
-const STAFF_PAGES = ["/admin", "/admin/shoots", "/admin/shoots/demo-s2", "/admin/shoots/demo-s4", "/admin/shoots/demo-s3", "/admin/listings", "/admin/listings/demo-l1", "/admin/listings/demo-l4"];
-const ADMIN_PAGES = ["/admin/upload", "/admin/bookings", "/admin/bookings/demo-b1", "/admin/clients", "/admin/clients/demo-c1", "/admin/teams", "/admin/teams/coastal-living", "/admin/revisions", "/admin/downloads", "/admin/settings", "/admin/listings/new", "/admin/listings/demo-l1/delivery-email", "/admin/reports", "/admin/reports?from=2026-01-01&to=2026-12-31"];
+// The QA team works from Photo QC and Revisions, and opens single shoots and
+// listings from there (Oct 26 2026: the dashboard and the two lists are admin only).
+const STAFF_PAGES = ["/admin/photo-qc", "/admin/revisions", "/admin/shoots/demo-s2", "/admin/shoots/demo-s4", "/admin/shoots/demo-s3", "/admin/listings/demo-l1", "/admin/listings/demo-l4"];
+const ADMIN_PAGES = ["/admin", "/admin/shoots", "/admin/listings", "/admin/upload", "/admin/bookings", "/admin/bookings/demo-b1", "/admin/clients", "/admin/clients/demo-c1", "/admin/teams", "/admin/teams/coastal-living", "/admin/downloads", "/admin/settings", "/admin/listings/new", "/admin/listings/demo-l1/delivery-email", "/admin/reports", "/admin/reports?from=2026-01-01&to=2026-12-31"];
 // What a creative specialist may open: Upload a shoot and their own uploads
 // (demo-s1 and demo-s6 in the demo data).
 const CREATIVE_PAGES = ["/admin/upload", "/admin/shoots/demo-s1", "/admin/shoots/demo-s6"];
-const QA_DENIED = /\/admin\?denied=1$/;
+const QA_DENIED = /\/admin\/photo-qc\?denied=1$/;
 const CREATIVE_DENIED = /\/admin\/upload\?denied=1$/;
 
 const main = async () => {
@@ -67,7 +69,8 @@ const main = async () => {
     const staffPage = STAFF_PAGES.includes(p) || /^\/admin\/shoots\/demo-s[16]$/.test(p);
     const q = await get(p, qa.cookie);
     if (staffPage) ok(q.status === 200, `QA ${p} 200 (got ${q.status})`);
-    else ok(q.status === 307 && QA_DENIED.test(q.headers.get("location") || ""), `QA ${p} → /admin?denied=1 (got ${q.status} ${q.headers.get("location")})`);
+    else if (p === "/admin") ok(q.status === 307 && /\/admin\/photo-qc$/.test(q.headers.get("location") || ""), `QA /admin → /admin/photo-qc (got ${q.status} ${q.headers.get("location")})`);
+    else ok(q.status === 307 && QA_DENIED.test(q.headers.get("location") || ""), `QA ${p} → /admin/photo-qc?denied=1 (got ${q.status} ${q.headers.get("location")})`);
     // A 307 must not stream the page's data in its body (the old layout pitfall).
     if (!staffPage) { const body = await q.text(); ok(!/Unpaid|Invoice|avery@example\.com|jordan@example\.com/.test(body) && !MONEY.test(body), `QA ${p} redirect body carries no data`); }
     const c = await get(p, creative.cookie);
@@ -90,17 +93,19 @@ const main = async () => {
   ok(MONEY.test(await text("/admin/listings/demo-l1", admin.cookie)), "the money check does find the admin's invoice amount (the check works)");
   ok(!qaListing.includes("in_demo123"), "QA listing page carries no invoice id anywhere");
   for (const s of ["Client visible", "Internal only", "Upload photos", "When they land", "Download zips"]) ok(qaListingHtml.includes(s), `QA listing page shows "${s}"`);
-  const qaDash = await text("/admin", qa.cookie);
+  const qaDash = await text("/admin/photo-qc", qa.cookie);
   for (const s of ["Unpaid bookings", "Pay at close", "Requests to confirm", "Recent deliveries", "Upcoming shoots", "Failed side effects", "Delivered, not yet paid"]) ok(!strip(qaDash).includes(s), `QA dashboard has no "${s}"`);
   ok(!MONEY.test(qaDash), "QA dashboard carries no dollar amount");
-  ok(strip(qaDash).includes("The QA loop"), "QA dashboard shows the QA loop");
-  ok(strip(await text("/admin?denied=1", qa.cookie)).includes("That page is for admins"), "QA sees the denied note");
+  ok(/>Photo QC</.test(strip(qaDash)), "QA lands on the Photo QC board");
+  ok(strip(await text("/admin/photo-qc?denied=1", qa.cookie)).includes("That page is not part of Photo QC"), "QA sees the denied note");
   const qaNav = strip(qaDash);
-  for (const s of ["Bookings", "Clients", "Teams", "Revisions", "Downloads", "Settings", "Upload a shoot", "Reports"]) ok(!new RegExp(`>${s}<`).test(qaNav), `QA nav has no ${s}`);
-  ok(/>Shoots</.test(qaNav) && />Listings</.test(qaNav), "QA nav has Shoots and Listings");
+  for (const s of ["Dashboard", "Bookings", "Listings", "Clients", "Teams", "Downloads", "Settings", "Upload a shoot", "Reports"]) ok(!new RegExp(`>${s}<`).test(qaNav), `QA nav has no ${s}`);
+  ok(/>Photo QC</.test(qaNav) && />Revisions</.test(qaNav), "QA nav has Photo QC and Revisions");
   const qaShoot = strip(await text("/admin/shoots/demo-s4", qa.cookie));
   for (const s of ["Delivery email", "Credits"]) ok(!qaShoot.includes(s), `QA shoot page has no "${s}"`);
-  for (const s of ["Client visible", "Internal only", "Make visible", "Download internal", "Upload corrected photos"]) ok(qaShoot.includes(s), `QA shoot page shows "${s}"`);
+  // "Make client visible" only renders once a photo is opened, so it is not in this HTML;
+  // the setMediaVisibility action check below covers it.
+  for (const s of ["Client visible", "Internal only", "Download internal", "Upload corrected photos"]) ok(qaShoot.includes(s), `QA shoot page shows "${s}"`);
   ok(!strip(await text("/admin/shoots/demo-s3", qa.cookie)).includes("Retry step"), "QA failed shoot has no Retry step");
   ok(strip(await text("/admin/shoots/demo-s3", admin.cookie)).includes("Retry step"), "admin failed shoot keeps Retry step");
 
@@ -190,19 +195,20 @@ const main = async () => {
   if (MANIFEST) {
     const man = JSON.parse(readFileSync(MANIFEST, "utf8")).node;
     const ids = {};
-    for (const [id, v] of Object.entries(man)) { const w = Object.values(v.workers)[0]; ids[w.exportedName] = id; }
+    // Next 16.4 keeps exportedName on the entry; older versions kept it on each worker.
+    for (const [id, v] of Object.entries(man)) ids[v.exportedName ?? Object.values(v.workers)[0].exportedName] = id;
     const act = async (name, args, ck, page = "/admin/listings/demo-l1") => {
       const r = await fetch(`${BASE}${page}`, { method: "POST", redirect: "manual", headers: { "Next-Action": ids[name], "Content-Type": "text/plain;charset=UTF-8", Accept: "text/x-component", Origin: BASE, cookie: ck }, body: JSON.stringify(args) });
       const redirect = r.headers.get("x-action-redirect") || r.headers.get("location") || "";
       return { status: r.status, redirect, setCookie: (r.headers.getSetCookie?.() ?? []).join(" "), body: await r.text() };
     };
-    const qaDenied = (x) => x.redirect.includes("/admin?denied=1");
+    const qaDenied = (x) => x.redirect.includes("/admin/photo-qc?denied=1");
     const crDenied = (x) => x.redirect.includes("/admin/upload?denied=1");
     // An assert-style gate throws: the dev server answers 500, or 200 with the
     // error row in the payload (1:E{...}); both mean the action never ran.
     const threw = (x) => x.status >= 500 || /\n1:E\{/.test(x.body) || /"message":"admin only"/.test(x.body);
     const ADMIN_ONLY = [
-      ["setLock", ["demo-l1", false]], ["sendDeliveryEmail", ["demo-l1"]], ["retryShoot", ["demo-s3"]], ["setRevisionStatus", ["demo-r1", "done"]],
+      ["setLock", ["demo-l1", false]], ["sendDeliveryEmail", ["demo-l1"]], ["retryShoot", ["demo-s3"]],
       ["createClient", [{}]], ["createClientInline", [{ email: "x@example.com" }]], ["createListingInline", [{ clientId: "demo-c1", address: "1 Test St" }]],
       ["confirmTime", ["demo-b1", {}]], ["assignShooter", ["demo-b1", {}]], ["setBookingStatus", ["demo-b1", {}]], ["setInvoiceAmount", ["demo-inv", {}]], ["switchToCard", ["demo-inv"]], ["resendPayLink", ["demo-inv"]], ["markPaid", ["demo-inv", {}]], ["cancelBooking", ["demo-b1", {}]], ["runJob", ["demo-job"]],
       ["updateClient", ["demo-c1", {}]], ["deleteClient", ["demo-c1"]], ["sendClientSignInLink", ["demo-c1"]], ["createTeam", [{}]], ["updateTeam", ["coastal-living", {}]], ["deleteTeam", ["coastal-living"]], ["addTeamMember", ["coastal-living", {}]], ["removeTeamMember", ["coastal-living", "demo-c2"]],
@@ -239,7 +245,7 @@ const main = async () => {
     // Open to the QA team: the gate passes (demo mode then returns early). Closed to a creative specialist.
     const STAFF_OK = [
       ["setMediaVisibility", [{ listingId: "demo-l1", ids: ["x"], to: "internal" }]],
-      ["setCover", ["demo-l1", "listings/demo/photos/x.jpg"]], ["setFrameQc", ["demo-s2", ["demo-s2-m1"], "approved"]], ["approveAllFrames", ["demo-s2"]], ["publishShoot", ["demo-s2"]], ["runShootNow", ["demo-s1"]], ["rerunQc", ["demo-s2"]], ["approvePendingForListing", ["demo-l1"]],
+      ["setCover", ["demo-l1", "listings/demo/photos/x.jpg"]], ["setFrameQc", ["demo-s2", ["demo-s2-m1"], "approved"]], ["approveAllFrames", ["demo-s2"]], ["publishShootFrames", [{ shootId: "demo-s2", ids: ["demo-s2-m1"] }]], ["setRevisionStatus", ["demo-r1", "done"]], ["runShootNow", ["demo-s1"]], ["rerunQc", ["demo-s2"]], ["approvePendingForListing", ["demo-l1"]],
       ["rebuildBundles", ["demo-l1"]], ["updateMediaInline", ["x", {}]], ["reorderMedia", ["demo-l1", ["a", "b"]]], ["bulkMediaInline", ["demo-l1", {}]],
       ["makeFrameTwilight", ["demo-s2-m1"]],
     ];
@@ -252,8 +258,9 @@ const main = async () => {
       const c = await act(name, args, client.cookie);
       ok(c.redirect.includes("/portal/login"), `client action ${name} → login (got ${c.status} ${c.redirect})`);
     }
-    const pub = await act("publishShoot", ["demo-s2"], qa.cookie);
-    ok(pub.redirect.includes("/admin/shoots/demo-s2?published=demo"), `QA publish (demo) lands back on the shoot (${pub.redirect})`);
+    // Publish answers in place now (no redirect); in demo mode it saves nothing and says so.
+    const pub = await act("publishShootFrames", [{ shootId: "demo-s2", ids: ["demo-s2-m1"] }], qa.cookie);
+    ok(pub.status === 200 && !pub.redirect && /Demo mode/.test(pub.body), `QA publish (demo) answers in place (got ${pub.status} ${pub.redirect})`);
     const adm = await act("setLock", ["demo-l1", false], admin.cookie);
     ok(!qaDenied(adm) && adm.status < 500, `admin setLock passes (got ${adm.status} ${adm.redirect})`);
   } else {
