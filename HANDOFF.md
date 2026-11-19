@@ -25,11 +25,13 @@ studio and where the two meet.
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
-**What is set up (status Nov 17 2026)**
+**Call 2: Friday Nov 20 2026, 6:30 pm Central** (Saturday for Hammad).
+
+**What is set up (status Nov 19 2026)**
 
 | Account | Where | State |
 |---|---|---|
-| GitHub | `pierre-showcasemedia/pierre-site` and `pierre-showcasemedia/pierre-studio` | Invites accepted. Both repos public and empty (Hammad: fine for now). **Pushes are refused until the Claude GitHub App is installed on the pierre-showcasemedia account** |
+| GitHub | `pierre-showcasemedia/pierre-site` and `pierre-showcasemedia/pierre-studio` | Claude GitHub App installed on both (Nov 18). Both repos public (Hammad: fine for now) and pushed: studio `b997ffe`, website `a21b6ca` or newer |
 | Vercel | Team "Showcase Media LLC" | build@ accepted (Nov 16) |
 | Cloudflare | Pierre's account (R2 storage only; DNS stays at Porkbun) | build@ accepted; R2 switched on (Nov 16) |
 | Porkbun | Domain, DNS and email for showcasemedia.pro | Logins ready on Call 2 |
@@ -229,8 +231,8 @@ with `invoice.paid`, `invoice.payment_failed`, `invoice.voided`,
 ## 11. Shooter pay
 
 Two contract photographers shoot for Pierre: **Olesya Juodsnukis**
-(olesyajuodsnukis@gmail.com) and **Clinton Cunanan**
-(cunananclinton@gmail.com). He pays them by Venmo today and moves contractor
+and **Clinton Cunanan** (their emails are in Pierre's Nov 17 answers, not in
+this public repo). He pays them by Venmo today and moves contractor
 payroll to his accountant in 2027. After go-live, add each one in the admin
 (Settings, Add someone) as a **Creative specialist**. Their pay rates were not
 given, so the Shooter pay report shows **Rate not set** for their shoots
@@ -290,7 +292,6 @@ and Resend in one click each.
 
 ## Open items
 
-- Claude GitHub App on the pierre-showcasemedia account, so the code can be pushed.
 - Payments through Wave: an open question for the REM Academy team.
 - After go-live: add Olesya Juodsnukis and Clinton Cunanan as Creative specialists; their pay
   rates if he wants the Shooter pay report to total their pay.
