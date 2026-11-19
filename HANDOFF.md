@@ -290,6 +290,41 @@ Today showcasemedia.pro forwards to pierrestephenson.com, his Framer site.
 Afterwards Pierre can remove the build email from GitHub, Vercel, Cloudflare
 and Resend in one click each.
 
+## Go-live check Nov 19
+
+One line per request or promise, from every build@ thread with Pierre (Nov 13
+to Nov 18) and the build. Missing blocks the "you're ready" email.
+
+| # | Request or promise | Status |
+|---|---|---|
+| 1 | Website and back office in Pierre's own accounts (GitHub, Vercel, Cloudflare R2, Resend, Neon) | Built and verified (code); accounts switch on during Part 3 and the call |
+| 2 | Public prices from the Nov 2026 price sheet, "Quoted" where there is no price | Built and verified in code (`scm-v2-2026-11-17`, both repos byte-identical, 43 + 738 checks). Not re-read against the PDFs today: Dropbox is blocked from this machine |
+| 3 | Agent rates (Stark Preferred, Preferred Agent, HomeTeam4U) private, never on the site | Built and verified (only in `src/lib/agent-rates.ts`; none in the website code) |
+| 4 | HomeTeam4U: Walkthrough Packages first, a la carte at Stark rates | Built and verified |
+| 5 | Stark and HomeTeam4U card on file, charged in house before delivery | Built and verified (billing note on both rate cards; manual Mark paid) |
+| 6 | Payments stay in Wave, Mark paid unlocks the gallery | Built and verified (`payments: "manual"`). Connecting Wave: New scope (REM Academy team) |
+| 7 | Shoot days Mon to Fri, starts 9:30 AM to 4 PM, every time confirmed; weekends and other times by request | Built and verified (`schedule`, site and booking copy) |
+| 8 | Seasonal hours are one setting | Built and verified (`schedule.dayEnd`) |
+| 9 | Editing: Fotello then his own finish; AutoHDR later | Built and verified (`editing: "manual"`); AutoHDR: Agreed later (Pierre, when his API app is ready) |
+| 10 | Two contract photographers | Agreed later (us, after go-live: add as Creative specialists) |
+| 11 | Photographers' pay per shoot | Agreed later (Pierre, optional; report shows Rate not set until then) |
+| 12 | Never-message list | Built and verified (none) |
+| 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
+| 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
+| 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). **Missing:** no way for past clients to find their Pic-Time galleries from the new site |
+| 16 | Homepage hero video slot | Built and verified (slot ready); the video: Agreed later (Pierre) |
+| 17 | Animated logo | Agreed later (option, unused) |
+| 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
+| 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
+| 20 | Hosting on Vercel, nothing else to buy | Built but needs a setting from Pierre (Vercel Pro, Part 3) |
+| 21 | Formspree form `mjywydge` | Built but needs a setting (`NEXT_PUBLIC_FORMSPREE_ID`, Part 3) |
+| 22 | Bookings actually send | Built but needs a setting: `NEXT_PUBLIC_BOOKING_TEST_MODE=false`. **The Part 3 email did not list it**; runbook step 11 adds it on the call |
+| 23 | Part 3 switch-on steps (Vercel, Neon, secrets, R2, Resend, website settings) | Built but needs keys and settings from Pierre. Not reported yet |
+| 24 | Portal address, Resend domain, migrate and sign-in, test booking to a delivered gallery | Agreed later (on the call, runbook Parts B and C) |
+| 25 | Quo key emailed Nov 13 never used | Built and verified (not in the code or settings; a new key only if the webhook is wanted) |
+| 26 | Turnaround 24 hours, 48 guaranteed; cancellation terms | Built and verified |
+| 27 | Pierre's onboarding form answers | **Missing:** we can't see them (Nov 16 email), so they are not checked against the build |
+
 ## Open items
 
 - Payments through Wave: an open question for the REM Academy team.

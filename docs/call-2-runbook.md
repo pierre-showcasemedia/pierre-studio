@@ -61,10 +61,10 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 ## After the call
 
 - Pierre keeps the Framer site and pierrestephenson.com for a week.
-- Add Olesya and Clinton in the admin as **Creative specialists** [11]. Their
+- Add Olesya Juodsnukis and Clinton Cunanan in the admin as **Creative specialists** [11]. Their
   pay shows "Rate not set" until Pierre gives rates.
 - Optional later: the Quo webhook with a **new** key [13], the hero video, the animated logo.
-- Open for Jacob: whether and how to connect Wave. Until then payments stay
+- Open for the REM Academy team: whether and how to connect Wave. Until then payments stay
   manual (Wave invoice, then Mark paid).
 
 ## If something goes wrong
