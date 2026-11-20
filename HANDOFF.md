@@ -316,10 +316,10 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
-| 20 | Hosting on Vercel, nothing else to buy | Built but needs a setting from Pierre (Vercel Pro, Part 3) |
+| 20 | Hosting on Vercel, nothing else to buy | Done by Pierre (Part 3 Step 1, Nov 20); check on the call that both projects deployed and the team is on Pro |
 | 21 | Formspree form `mjywydge` | Built but needs a setting (`NEXT_PUBLIC_FORMSPREE_ID`, Part 3) |
 | 22 | Bookings actually send | Built but needs a setting: `NEXT_PUBLIC_BOOKING_TEST_MODE=false`. **The Part 3 email did not list it**; runbook step 11 adds it on the call |
-| 23 | Part 3 switch-on steps (Vercel, Neon, secrets, R2, Resend, website settings) | Built but needs keys and settings from Pierre. Not reported yet |
+| 23 | Part 3 switch-on steps (Vercel, Neon, secrets, R2, Resend, website settings) | Steps 1 (Vercel projects) and 2 (Neon) done by Pierre Nov 20. Steps 3 to 5 (secrets, studio settings with R2 and Resend, website settings) not reported yet |
 | 24 | Portal address, Resend domain, migrate and sign-in, test booking to a delivered gallery | Agreed later (on the call, runbook Parts B and C) |
 | 25 | Quo key emailed Nov 13 never used | Built and verified (not in the code or settings; a new key only if the webhook is wanted) |
 | 26 | Turnaround 24 hours, 48 guaranteed; cancellation terms | Built and verified |

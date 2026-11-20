@@ -22,12 +22,14 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 
 ## Part A: accounts and the studio (about 60 min)
 
+Pierre's progress on Part 3 (emails Nov 20): Step 1 (both Vercel projects) done 16:13 UTC; Step 2 (Neon) done 16:28 UTC. Steps 3 to 5 not reported yet. Before the call, read his latest emails and mark any more done.
+
 | # | Step | Done when |
 |---|---|---|
 | 1 | Porkbun: **export the DNS zone** (or screenshot every record) before anything else. | The file or screenshots are saved on his Mac. |
-| 2 | Vercel team on **Pro** [2]. | The plan page says Pro. |
-| 3 | Import `pierre-studio` (preset **Next.js**, check it says `nextjs`, Node 22) and `pierre-site` (Next.js). Deploy both [2]. | Two green deploys, both reachable on `.vercel.app`. |
-| 4 | Studio project, Storage: **Neon**, Production and Preview [3]. | `DATABASE_URL` is in the studio's env vars (and not in the website's). |
+| 2 | **Done by Pierre Nov 20 (Part 3 Step 1): check only.** Vercel team on **Pro** [2]. | The plan page says Pro. |
+| 3 | **Done by Pierre Nov 20 (Part 3 Step 1): check only.** Import `pierre-studio` (preset **Next.js**, check it says `nextjs`, Node 22) and `pierre-site` (Next.js). Deploy both [2]. | Two green deploys, both reachable on `.vercel.app`. |
+| 4 | **Done by Pierre Nov 20 (Part 3 Step 2): check only.** Studio project, Storage: **Neon**, Production and Preview [3]. | `DATABASE_URL` is in the studio's env vars (and not in the website's). |
 | 5 | Studio env vars: `AUTH_SECRET`, `MIGRATE_TOKEN`, `CRON_SECRET` (three fresh random values), `ADMIN_EMAILS` = pierre@showcasemedia.pro. Redeploy [4]. | Redeploy is green. |
 | 6 | Run the migrate route, then the health check [5]. | Migrate answers `ok: true`. Health shows the database connected. |
 | 7 | Cloudflare **R2**: bucket, CORS policy, a token for that bucket only. Pierre pastes `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`. Redeploy [6]. | Health shows storage connected. |
