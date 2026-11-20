@@ -311,8 +311,8 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 12 | Never-message list | Built and verified (none) |
 | 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
 | 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
-| 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). **Missing:** no way for past clients to find their Pic-Time galleries from the new site |
-| 16 | Homepage hero video slot | Built and verified (slot ready); the video: Agreed later (Pierre) |
+| 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). A "Past galleries" link to his Pic-Time page is built behind `site.pastGalleries.show` in the website, off by default (Nov 20). **Missing:** Pierre's yes or no (ask on the call) |
+| 16 | Homepage hero video slot | Built and verified (slot ready; `scripts/add-hero-video.mjs` in the website does the rest in one command). Pierre sent five versions Nov 20 by Dropbox; needs Hammad to put the chosen one in Drive, and Pierre's pick |
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |

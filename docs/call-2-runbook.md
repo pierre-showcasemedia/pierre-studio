@@ -15,7 +15,8 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 
 ## Before the call (build side)
 
-- [ ] Both repos' `main` pass every check (studio `48066d3`, website `5de45b1` or newer).
+- [ ] Both repos' `main` pass every check (pull first; use the latest commit on each).
+- [ ] Hero video: if Hammad has put Pierre's files in Drive, run `node scripts/add-hero-video.mjs` in pierre-site with the chosen version (original or Dark30 suggested) and push before the call. Otherwise show the versions on the call and add it after.
 - [ ] Read Pierre's latest emails for anything new (Part 3 progress, pay rates, hero video).
 - [ ] Have `openssl rand -hex 32` ready to run four times on Pierre's machine (or a password generator).
 
@@ -43,7 +44,7 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 
 | # | Step | Done when |
 |---|---|---|
-| 11 | One more random value: the studio's `BOOKING_INTAKE_SECRET` = the website's `STUDIO_INTAKE_SECRET`. Website: `STUDIO_URL` and `NEXT_PUBLIC_PORTAL_URL` = the portal address, `NEXT_PUBLIC_FORMSPREE_ID` = `mjywydge`, `NEXT_PUBLIC_BOOKING_TEST_MODE` = `false`. Redeploy both [10]. | Both deploys green. |
+| 11 | **`NEXT_PUBLIC_BOOKING_TEST_MODE=false` is the one setting the Part 3 email did not list: without it the booking form stays in test mode and sends nothing.** One more random value: the studio's `BOOKING_INTAKE_SECRET` = the website's `STUDIO_INTAKE_SECRET`. Website: `STUDIO_URL` and `NEXT_PUBLIC_PORTAL_URL` = the portal address, `NEXT_PUBLIC_FORMSPREE_ID` = `mjywydge`, `NEXT_PUBLIC_BOOKING_TEST_MODE` = `false`. Redeploy both [10]. | Both deploys green. |
 | 12 | Test booking from the website's `.vercel.app` /book, using his second email: a package and an add-on [14]. | It shows on Bookings within a minute, at the website's price. |
 | 13 | Confirm time, upload 10 to 20 test photos, make them Client visible, preview and **send the delivery email by hand** [14]. | The client email arrives; the gallery is watermarked. |
 | 14 | Press **Mark paid** on the invoice [9]. | Downloads open. |
@@ -57,6 +58,12 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 | 17 | Porkbun: turn off the forwarding to pierrestephenson.com, then add the root and `www` records exactly as Vercel shows. Nothing else changes [15]. | Vercel shows both valid; showcasemedia.pro opens the new site. |
 | 18 | **Email check:** send pierre@ and mediahero@ a test from another account. | Both arrive. If not, compare against the zone export from step 1 at once. |
 | 19 | One more booking from the live site, then delete it. | Same as steps 12 and 15. |
+
+## Decisions to ask Pierre on the call
+
+- **Hero video:** which version (original, Dark30, 40, 50 or 60). The page already darkens the hero, so the original or Dark30 is suggested.
+- **Past galleries:** a link to his Pic-Time page next to Client Login? Yes: set `pastGalleries.show` to `true` in the website's `src/config/site.ts` and push.
+- **Part 3:** which steps he already did, so we skip them.
 
 ## After the call
 
