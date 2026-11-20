@@ -312,7 +312,7 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
 | 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
 | 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). A "Past galleries" link to his Pic-Time page is built behind `site.pastGalleries.show` in the website, off by default (Nov 20). **Missing:** Pierre's yes or no (ask on the call) |
-| 16 | Homepage hero video slot | Built and verified (slot ready; `scripts/add-hero-video.mjs` in the website does the rest in one command). Pierre sent five versions Nov 20 by Dropbox; needs Hammad to put the chosen one in Drive, and Pierre's pick |
+| 16 | Homepage hero video slot | Built and verified (slot ready; `scripts/add-hero-video.mjs` in the website does the rest in one command). Pierre sent five versions Nov 20 by Dropbox. **Missing:** the files here (Dropbox downloads go to a random `*.dl.dropboxusercontent.com` host the network refuses; Hammad puts the original and Dark30 in Drive, or allows that wildcard in Settings), then Pierre's pick on the call |
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
@@ -324,6 +324,7 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 25 | Quo key emailed Nov 13 never used | Built and verified (not in the code or settings; a new key only if the webhook is wanted) |
 | 26 | Turnaround 24 hours, 48 guaranteed; cancellation terms | Built and verified |
 | 27 | Pierre's onboarding form answers | **Missing:** we can't see them (Nov 16 email), so they are not checked against the build |
+| 28 | Call 2 meeting link and calendar invite (Fri Nov 20, 6:30 pm Central) | **Missing:** no meeting link or invite in build@. Pierre mentioned an "appointment change email" on Nov 18, so a booking email reached him from outside build@; confirm he has the link |
 
 ## Open items
 
