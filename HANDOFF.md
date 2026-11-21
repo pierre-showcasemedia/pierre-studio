@@ -25,7 +25,7 @@ studio and where the two meet.
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
-**Call 2: being rescheduled** (set for Friday Nov 20, 6:30 pm Central; probably missed). Proposed: Saturday Nov 21, 11:00 am or Monday Nov 23, 6:30 pm Central, to be confirmed.
+**Call 2: Sunday Nov 22, time to be set** (Friday Nov 20 was missed). Pierre asked for Sunday morning Central.
 
 **What is set up (status Nov 19 2026)**
 
@@ -324,7 +324,8 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 25 | Quo key emailed Nov 13 never used | Built and verified (not in the code or settings; a new key only if the webhook is wanted) |
 | 26 | Turnaround 24 hours, 48 guaranteed; cancellation terms | Built and verified |
 | 27 | Pierre's onboarding form answers | **Missing:** we can't see them (Nov 16 email), so they are not checked against the build |
-| 28 | Call 2 meeting link and calendar invite (Fri Nov 20, 6:30 pm Central) | **Missing:** no meeting link or invite in build@. Pierre mentioned an "appointment change email" on Nov 18, so a booking email reached him from outside build@; confirm he has the link |
+| 28 | Call 2 time, meeting link and calendar invite (now Sunday Nov 22) | **Missing:** Hammad picks the time (Pierre asked for Sunday morning Central, Nov 21 18:56 UTC); the confirmation must carry the meeting link and a calendar invite. Friday's invite did reach him (he waited in the Google Meet) |
+| 29 | Pierre can edit the site's content himself | Agreed (Hammad, Nov 21): bring the questions to the call; show him `src/config/site.ts`, `src/data/projects.json` and the README's plain-English commands |
 
 ## Open items
 
