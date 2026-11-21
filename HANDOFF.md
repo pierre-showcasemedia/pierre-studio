@@ -25,7 +25,7 @@ studio and where the two meet.
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
-**Call 2: Friday Nov 20 2026, 6:30 pm Central** (Saturday for Hammad).
+**Call 2: being rescheduled** (set for Friday Nov 20, 6:30 pm Central; probably missed). Proposed: Saturday Nov 21, 11:00 am or Monday Nov 23, 6:30 pm Central, to be confirmed.
 
 **What is set up (status Nov 19 2026)**
 

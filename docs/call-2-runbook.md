@@ -1,6 +1,6 @@
 # Call 2 runbook: Showcase Media goes live
 
-**Friday Nov 20 2026, 6:30 pm Central** (Saturday for Hammad). About 2.5 hours.
+**Call 2: being rescheduled.** It was set for Friday Nov 20, 6:30 pm Central, and probably did not happen (Pierre waited in the Google Meet; no reply in build@). Proposed: Saturday Nov 21 at 11:00 am or Monday Nov 23 at 6:30 pm Central, to be confirmed. About 2.5 hours.
 Pierre drives his own screen; we guide. The detail behind each step is in
 `HANDOFF.md` (the section number is in brackets).
 
