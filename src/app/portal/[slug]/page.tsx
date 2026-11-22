@@ -54,6 +54,10 @@ export default async function PortalListingPage({ params, searchParams }: { para
     if (r.changed) data = (await listingForEmail(email, slug)) ?? data;
   }
   const { listing, media } = data;
+  // Delivered on Pic-Time (Nov 22 2026): the gallery button leads there; the
+  // studio grid shows only if photos were also published here.
+  const outside = listing.picTimeUrl?.trim() || null;
+  const studioMedia = media.length > 0;
   const locked = listing.downloadLocked;
   const invoice = listing.invoice;
   const payLabel = invoice
@@ -147,20 +151,34 @@ export default async function PortalListingPage({ params, searchParams }: { para
                     {payLabel}
                   </Link>
                 )}
-                <span className={`g-status${locked ? " g-status--locked" : ""}`}>
-                  {locked ? "Downloads unlock after payment" : "Paid, downloads unlocked"}
-                </span>
+                {(studioMedia || !outside) && (
+                  <span className={`g-status${locked ? " g-status--locked" : ""}`}>
+                    {locked ? "Downloads unlock after payment" : "Paid, downloads unlocked"}
+                  </span>
+                )}
               </div>
             </Rise>
 
-            {locked && (
+            {outside && (
+              <Rise className="g-sec">
+                <div className="kicker" style={{ marginBottom: 12 }}>Your gallery</div>
+                <p className="muted" style={{ margin: "0 0 18px", fontSize: 14.5, lineHeight: 1.65, maxWidth: "62ch" }}>
+                  Your photos and videos for {street} are ready to view and download in your gallery.
+                </p>
+                <a href={outside} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ textDecoration: "none" }}>
+                  Open your gallery ↗
+                </a>
+              </Rise>
+            )}
+
+            {locked && studioMedia && (
               <p className="muted" style={{ marginTop: 20, fontSize: 14.5, lineHeight: 1.65, maxWidth: "62ch" }}>
                 Preview your full gallery below. Watermarks disappear and full-resolution downloads unlock
                 automatically the moment payment is received.
               </p>
             )}
 
-            <PortalGallery
+            {(studioMedia || !outside) && <PortalGallery
               photos={gallery.photos}
               videos={gallery.videos}
               locked={locked}
@@ -174,7 +192,7 @@ export default async function PortalListingPage({ params, searchParams }: { para
               dropbox={dropbox}
               revisionDraft={isPartnerEmail(email) ? null : hasDb() ? await revisionDraftFor(listing.id, email) : EMPTY_DRAFT}
               videoNotes={isPartnerEmail(email) ? null : await videoNotesFor(listing.id, email)}
-            />
+            />}
 
             {/* External tours and links, below all media */}
             {(listing.links?.length ?? 0) > 0 && (

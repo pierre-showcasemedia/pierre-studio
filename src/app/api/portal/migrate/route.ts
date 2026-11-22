@@ -441,6 +441,8 @@ const DDL = [
   `ALTER TABLE "revision_requests" ADD COLUMN IF NOT EXISTS "media_kind" text DEFAULT 'photo' NOT NULL`,
   `ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "video_notes" text`,
   `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "dropbox_video_link" text`,
+  // Nov 22 2026: the listing's Pic-Time gallery link (src/lib/pictime.ts).
+  `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "pictime_url" text`,
   `CREATE TABLE IF NOT EXISTS "video_comments" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "listing_id" uuid NOT NULL REFERENCES "listings"("id"),

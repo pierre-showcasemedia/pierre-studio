@@ -136,7 +136,7 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={covers[l.id]} alt={l.address} loading={i < 6 ? "eager" : "lazy"} decoding="async" />
                     ) : (
-                      <div className="ph-card__empty">Gallery coming soon</div>
+                      <div className="ph-card__empty">{l.picTimeUrl && l.deliveryEmailAt ? "Your gallery is ready" : "Gallery coming soon"}</div>
                     )}
                     <span className="ph-card__status">
                       <StatusBubble s={shootStatus(l)} onImage />

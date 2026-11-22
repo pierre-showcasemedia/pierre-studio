@@ -101,6 +101,9 @@ export const listings = pgTable("listings", {
   // Oct 26 2026: a view link to the listing's Dropbox Video folder (made by
   // the dropbox.folder job when the app may share), for the Video card.
   dropboxVideoLink: text("dropbox_video_link"),
+  // Nov 22 2026: the listing's Pic-Time gallery (src/lib/pictime.ts). Set,
+  // the portal and the delivery email send the client there.
+  picTimeUrl: text("pictime_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

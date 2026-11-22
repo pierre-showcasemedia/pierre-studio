@@ -254,6 +254,25 @@ finishes the edit): he drops the finished photos on the listing page
 checks them, makes them Client visible or presses Publish, then sends the
 delivery email. AutoHDR can be connected later (see the facts above).
 
+## 12b. Pic-Time galleries (Nov 22 2026)
+
+Pierre keeps delivering on Pic-Time for the year he has paid. Each listing has
+a **Pic-Time gallery** field (Listings, the listing, its settings).
+
+- Paste the gallery's link there (an `https://...pic-time.com/...` address;
+  anything else is refused) and save.
+- The client's portal page then shows **Open your gallery**, which goes to
+  Pic-Time. The studio's own photo grid shows only if photos were also
+  published in the studio.
+- **Send delivery email** works without any studio photos once the link is
+  set. Its main button goes to the gallery, and any unpaid invoice still has
+  its Pay button.
+- Downloads and payment rules inside Pic-Time are set in Pic-Time as today;
+  Mark paid in the studio settles the invoice.
+- Client-facing wording never names Pic-Time.
+- The column (`pictime_url`) comes with the migrate route; run it after the
+  deploy, as for any schema change. `scripts/check-pictime.ts` checks it all.
+
 ## 13. Quo (optional, 10 min)
 
 The studio only reads Quo; it never texts. Optional: the Quo webhook

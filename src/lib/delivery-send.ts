@@ -34,8 +34,10 @@ export async function buildDeliveryEmail(listingId: string, overrides: DeliveryO
   });
   if (!l0) return { ok: false, error: "Listing not found." };
   const l = { ...l0, media: clientVisibleMedia(l0.media, l0.shoots) };
-  if (!l.media.length) {
-    return { ok: false, error: "This listing has no published media yet. Publish a shoot before sending the delivery email." };
+  // A Pic-Time gallery link stands in for studio photos (Nov 22 2026).
+  const galleryUrl = l.picTimeUrl?.trim() || null;
+  if (!l.media.length && !galleryUrl) {
+    return { ok: false, error: "This listing has no published media yet. Publish a shoot, or add the Pic-Time gallery link in the listing's settings, before sending the delivery email." };
   }
   const base = siteUrl();
   const money = (i: { amountCents: number | null; amountDue: number | null }) => {
@@ -54,13 +56,15 @@ export async function buildDeliveryEmail(listingId: string, overrides: DeliveryO
   const defaults = {
     subject: deliveryEmailSubject(l.address),
     headline: "Your gallery is ready.",
-    body: defaultDeliveryBody(l.address, l.downloadLocked),
+    body: defaultDeliveryBody(l.address, l.downloadLocked, Boolean(galleryUrl)),
   };
   const html = deliveryEmailHtml({
     address: l.address,
-    coverUrl: `${emailAssetBase()}/api/portal/cover/${l.id}`,
+    coverUrl: l.media.length ? `${emailAssetBase()}/api/portal/cover/${l.id}` : null,
     portalUrl: `${base}/portal/login`,
-    shareUrl: l.shareToken ? `${base}/share/${l.shareToken}` : null,
+    galleryUrl,
+    // The view-only share page shows studio photos only, so it goes with them.
+    shareUrl: l.shareToken && l.media.length ? `${base}/share/${l.shareToken}` : null,
     invoiceUrl: open && payUrl ? payUrl : null,
     invoiceAmount: open ? money(open) : null,
     invoices,

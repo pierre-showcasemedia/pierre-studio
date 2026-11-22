@@ -76,6 +76,7 @@ export type PortalListing = {
   clientName?: string | null;
   shareToken?: string | null;
   links?: { label: string; url: string }[];
+  picTimeUrl?: string | null; // the gallery on Pic-Time, when the photos are delivered there
   createdAt?: string | null; // booked date
   deliveryEmailAt?: string | null;
   approvedAt?: string | null;
@@ -246,6 +247,7 @@ export async function listingsForEmail(email: string): Promise<PortalListing[]> 
     mediaCount: l.media.length,
     invoice: partner ? null : pickPortalInvoice(l.invoices),
     coverKey: visibleCoverKey(l.coverKey, l.media),
+    picTimeUrl: l.picTimeUrl ?? null,
     createdAt: l.createdAt.toISOString().slice(0, 10),
     deliveryEmailAt: l.deliveryEmailAt?.toISOString().slice(0, 10) ?? null,
     approvedAt: l.approvedAt?.toISOString().slice(0, 10) ?? null,
@@ -282,6 +284,7 @@ export async function listingForEmail(email: string, slug: string, opts: { invoi
       clientName: l.client.name ?? l.client.email,
       shareToken: l.shareToken,
       links: (() => { try { return l.links ? JSON.parse(l.links) : []; } catch { return []; } })(),
+      picTimeUrl: l.picTimeUrl ?? null,
       createdAt: l.createdAt.toISOString().slice(0, 10),
       deliveryEmailAt: l.deliveryEmailAt?.toISOString().slice(0, 10) ?? null,
       approvedAt: l.approvedAt?.toISOString().slice(0, 10) ?? null,

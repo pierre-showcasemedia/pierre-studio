@@ -24,6 +24,7 @@ import { drainJobs } from "@/lib/jobs";
 import { MERGE_DRAIN_KINDS, mergeListing } from "@/lib/merge-listing";
 import { sendSignInLink } from "@/lib/login-link";
 import { applyVisibility } from "@/lib/visibility-core";
+import { parsePicTimeUrl } from "@/lib/pictime";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -274,6 +275,8 @@ export async function updateListing(id: string, formData: FormData) {
     const shootDate = shootDateRaw ? new Date(`${shootDateRaw}T12:00:00`) : null;
     if (shootDateRaw && Number.isNaN(shootDate!.getTime())) fail("That shoot date does not look right.");
     const links = parseLinks(field(formData, "links"));
+    const pic = parsePicTimeUrl(field(formData, "picTimeUrl"));
+    if (!pic.ok) fail(pic.error);
     const patch = {
       address,
       slug,
@@ -285,6 +288,7 @@ export async function updateListing(id: string, formData: FormData) {
       nda: formData.get("nda") === "on",
       notes: field(formData, "notes") || null,
       links: links.length ? JSON.stringify(links) : null,
+      picTimeUrl: pic.ok ? pic.url : null,
     };
     const same = (k: keyof typeof patch) => {
       const a = cur![k];

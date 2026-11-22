@@ -15,8 +15,12 @@ export function shootStatus(l: {
   deliveryEmailAt?: string | null;
   // v1.1, admin views only: the listing's active shoot, if any.
   pipeline?: "processing" | "review" | null;
+  // Nov 22 2026: delivered on Pic-Time. With the link set and the delivery
+  // email sent, the listing is Delivered even with no photos in the studio.
+  picTimeUrl?: string | null;
 }): ShootStatus {
   if (l.approvedAt) return "Completed";
+  if (l.mediaCount === 0 && l.picTimeUrl && l.deliveryEmailAt) return "Delivered";
   if (l.mediaCount === 0 && l.pipeline === "processing") return "In the edit";
   if (l.mediaCount === 0 && l.pipeline === "review") return "In review";
   if (l.mediaCount === 0) return "Awaiting Shoot";

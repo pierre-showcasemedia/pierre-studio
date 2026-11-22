@@ -21,8 +21,11 @@ const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 
 export type DeliveryEmailInput = {
   address: string; // "100 Example Lane, Springfield, CA"
-  coverUrl: string; // long-lived public cover image URL
+  coverUrl: string | null; // long-lived public cover image URL; null = no studio photos (a gallery elsewhere)
   portalUrl: string; // login/portal entry
+  // The client's gallery when it lives elsewhere (a Pic-Time link): the main
+  // button goes there, and the payment block makes no promise about unlocking.
+  galleryUrl?: string | null;
   shareUrl: string | null; // public preview link, if a token exists
   invoiceUrl: string | null; // open invoice, if unpaid
   invoiceAmount: string | null; // "$1,250", if unpaid
@@ -41,8 +44,9 @@ export type DeliveryEmailInput = {
 };
 
 // The default body paragraph as plain text, shown in the admin's editable field.
-export function defaultDeliveryBody(address: string, locked: boolean): string {
+export function defaultDeliveryBody(address: string, locked: boolean, external = false): string {
   const street = address.split(",")[0];
+  if (external) return `Everything from the ${street} shoot is ready to view and download in your gallery. Your invoice and anything else for this listing are in your client portal. If you have any questions, just reply to this email.`;
   return `Everything from the ${street} shoot is ready in your client portal. ${locked ? "Downloads unlock as soon as payment is received. " : ""}Sign in with your email to view and download everything. If you have any questions, just reply to this email.`;
 }
 
@@ -85,12 +89,12 @@ export function deliveryEmailHtml(x: DeliveryEmailInput): string {
 
   const ctaRow = `
         <tr><td align="center" style="padding:4px 44px 30px;">
-          ${pill(x.portalUrl, "View your gallery", true)}${invoiceList.length === 1 ? pill(invoiceList[0].url, x.locked ? `Pay invoice${invoiceList[0].amount ? ` · ${esc(invoiceList[0].amount)}` : ""}` : "View invoice", false) : ""}
+          ${pill(x.galleryUrl ? esc(x.galleryUrl) : x.portalUrl, "View your gallery", true)}${invoiceList.length === 1 ? pill(invoiceList[0].url, x.locked ? `Pay invoice${invoiceList[0].amount ? ` · ${esc(invoiceList[0].amount)}` : ""}` : "View invoice", false) : ""}
         </td></tr>`;
 
   // "Payment by check is arranged with the business (a total of $1,250)." One line per invoice.
   const otherLines = others
-    .map((o) => `<p style="margin:${invoiceList.length ? "12px 0 0" : "0"};font-family:${SANS};font-size:13.5px;line-height:1.65;color:${INK};">Payment ${esc(o.how)} is arranged with ${brand.shortName}${o.amount ? ` (a total of ${esc(o.amount)})` : ""}. ${x.locked ? "Watermarks come off and full-resolution downloads unlock as soon as we receive it." : "Nothing is charged by card."}</p>`)
+    .map((o) => `<p style="margin:${invoiceList.length ? "12px 0 0" : "0"};font-family:${SANS};font-size:13.5px;line-height:1.65;color:${INK};">Payment ${esc(o.how)} is arranged with ${brand.shortName}${o.amount ? ` (a total of ${esc(o.amount)})` : ""}. ${x.locked && !x.galleryUrl ? "Watermarks come off and full-resolution downloads unlock as soon as we receive it." : "Nothing is charged by card."}</p>`)
     .join("");
   const otherBlock = others.length
     ? `
@@ -111,7 +115,7 @@ export function deliveryEmailHtml(x: DeliveryEmailInput): string {
             <tr><td style="padding:20px 24px;">
               <p style="margin:0 0 6px;font-family:${SANS};font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:${FAINT};">${many ? "Invoices" : "Payment"}</p>
               <p style="margin:0${many ? " 0 12px" : ""};font-family:${SANS};font-size:13.5px;line-height:1.65;color:${INK};">
-                ${many ? "Each invoice is linked below." : x.locked ? "Watermarks come off and full-resolution downloads unlock the moment payment is received." : "Your invoice is linked above for your records."}
+                ${many ? "Each invoice is linked below." : x.galleryUrl ? "Your invoice is linked above." : x.locked ? "Watermarks come off and full-resolution downloads unlock the moment payment is received." : "Your invoice is linked above for your records."}
               </p>
               ${many ? invoiceList.map((inv) => `<a href="${inv.url}" style="display:inline-block;margin:0 8px 8px 0;font-family:${SANS};font-size:13px;color:${INK};border:1px solid ${INK};border-radius:999px;padding:10px 20px;text-decoration:none;">${x.locked ? "Pay invoice" : "View invoice"}${inv.amount ? ` · ${esc(inv.amount)}` : ""}</a>`).join("") : ""}${otherLines}
             </td></tr>
@@ -160,12 +164,12 @@ export function deliveryEmailHtml(x: DeliveryEmailInput): string {
         <tr><td style="background:${PAPER};border:1px solid ${LINE};border-radius:18px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 
-            <!-- Cover -->
-            <tr><td style="padding:10px 10px 0;">
-              <a href="${x.portalUrl}" style="text-decoration:none;">
+            <!-- Cover (none when the photos live in an outside gallery and none are in the studio) -->
+            ${x.coverUrl ? `<tr><td style="padding:10px 10px 0;">
+              <a href="${x.galleryUrl ? esc(x.galleryUrl) : x.portalUrl}" style="text-decoration:none;">
                 <img src="${x.coverUrl}" width="580" alt="${esc(street)}" style="display:block;width:100%;height:auto;border:0;border-radius:12px;background:${FOG};"/>
               </a>
-            </td></tr>
+            </td></tr>` : `<tr><td style="padding:10px 0 0;"></td></tr>`}
 
             <!-- Headline -->
             <tr><td align="center" style="padding:34px 44px 6px;">
@@ -180,7 +184,7 @@ export function deliveryEmailHtml(x: DeliveryEmailInput): string {
             <tr><td style="padding:0 44px 26px;">
               <p style="margin:0;font-family:${SANS};font-size:15px;line-height:1.75;color:${INK};">
                 ${hello}<br/><br/>
-                ${esc(x.bodyText ?? defaultDeliveryBody(x.address, x.locked)).replace(/\n/g, "<br/>")}
+                ${esc(x.bodyText ?? defaultDeliveryBody(x.address, x.locked, Boolean(x.galleryUrl))).replace(/\n/g, "<br/>")}
               </p>
             </td></tr>
 

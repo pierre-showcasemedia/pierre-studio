@@ -103,7 +103,7 @@ export default async function AdminListingDetail({
   const editor = hasDb();
   const [clients, extra, rows, replacedOriginals, finals] = await Promise.all([
     admin ? adminClients() : Promise.resolve([]),
-    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, dropboxFolder: true, deliveryEmailAt: true } }) : Promise.resolve(null),
+    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, picTimeUrl: true, dropboxFolder: true, deliveryEmailAt: true } }) : Promise.resolve(null),
     adminMediaRows(id),
     adminReplacedOriginals({ listingId: id }),
     editor && admin ? finalsStatus(id).catch(() => null) : Promise.resolve(null),
@@ -314,6 +314,17 @@ export default async function AdminListingDetail({
                 <label className="flex items-center" style={{ gap: 10, fontSize: 14, minHeight: 44 }}>
                   <input type="checkbox" name="nda" defaultChecked={listing.nda} style={{ width: 18, height: 18 }} /> NDA listing (hidden from partners)
                 </label>
+              </div>
+            </div>
+          </div>
+          <div className="lset__row">
+            <div>
+              <label htmlFor="edit-pictime" className="lset__label">Pic-Time gallery</label>
+              <p className="lset__hint">The link to this listing&apos;s Pic-Time gallery. When it&apos;s set, the client portal and the delivery email send the client there, and the delivery email can go before any photos are uploaded here.</p>
+            </div>
+            <div className="lset__fields">
+              <div className="field">
+                <input id="edit-pictime" name="picTimeUrl" type="url" inputMode="url" defaultValue={extra?.picTimeUrl ?? ""} placeholder="https://showcasemediallc.pic-time.com/..." autoComplete="off" />
               </div>
             </div>
           </div>
