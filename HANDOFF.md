@@ -312,7 +312,7 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
 | 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
 | 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). A "Past galleries" link to his Pic-Time page is built behind `site.pastGalleries.show` in the website, off by default (Nov 20). **Missing:** Pierre's yes or no (ask on the call) |
-| 16 | Homepage hero video slot | Built and verified (slot ready; `scripts/add-hero-video.mjs` in the website does the rest in one command). Pierre sent five versions Nov 20 by Dropbox. **Missing:** the files here (Dropbox downloads go to a random `*.dl.dropboxusercontent.com` host the network refuses; Hammad puts the original and Dark30 in Drive, or allows that wildcard in Settings), then Pierre's pick on the call |
+| 16 | Homepage hero video | Built and verified: Pierre's Dark30 V2 (sent Nov 22) is in, 1280 wide, 8.8 MB, muted and looped (website `d559df6`). Swap for a 40% version if he sends one |
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
