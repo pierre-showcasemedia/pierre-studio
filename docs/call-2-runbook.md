@@ -1,6 +1,6 @@
 # Call 2 runbook: Showcase Media goes live
 
-**Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC), confirmed by Pierre** (16:31 UTC). Friday Nov 20 was missed. About 2.5 hours.
+**Call 2 happened Nov 22 (15 min).** Pierre reviews the site before anything goes live: Parts B (portal and email DNS) and D (domain switch) wait for his approval, on a later call. Part A runs through the prompt Hammad sent him for his own Claude. See HANDOFF.md, Call 2 outcome.
 Pierre drives his own screen; we guide. The detail behind each step is in
 `HANDOFF.md` (the section number is in brackets).
 

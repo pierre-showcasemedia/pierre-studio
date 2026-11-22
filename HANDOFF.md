@@ -27,6 +27,13 @@ studio and where the two meet.
 
 **Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC), confirmed by Pierre** (Friday Nov 20 was missed).
 
+**Call 2 outcome (Nov 22, 15 min):**
+- **Nothing client-facing goes live until Pierre approves.** He reviews the new site on its `.vercel.app` address first; the domain switch (step 15) and the portal address wait for his OK.
+- **Galleries stay on Pic-Time** for the year he has paid (from July). How Pic-Time fits the new site is open: the simplest is pointing Client Login at his Pic-Time page.
+- **Switch-on without the domain:** Hammad sent Pierre a prompt for his own Claude covering Part 3 Steps 3 to 5, the CORS rule, migrate and health, and a private review of the site. It sets the website's `STUDIO_URL` and `NEXT_PUBLIC_PORTAL_URL` to the studio's `.vercel.app` address **temporarily**. When `portal.showcasemedia.pro` is set up, change both back and redeploy.
+- **Sign-in waits for the Resend DNS records**, done with Hammad.
+- **Open for Hammad:** an email to Pierre with two website options (A or B); remove the extra Vercel seat (build@, $20 a month) before handover; a studio gallery example from a real listing once the studio is switched on.
+
 **What is set up (status Nov 19 2026)**
 
 | Account | Where | State |
