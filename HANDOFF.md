@@ -368,8 +368,8 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 12 | Never-message list | Built and verified (none) |
 | 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
 | 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
-| 15 | Pic-Time stays for past galleries; new galleries from the studio | Built (nothing migrates). A "Past galleries" link to his Pic-Time page is built behind `site.pastGalleries.show` in the website, off by default (Nov 20). **Missing:** Pierre's yes or no (ask on the call) |
-| 16 | Homepage hero video | Built and verified: Pierre's Dark30 V2 (sent Nov 22) is in, 1280 wide, 8.8 MB, muted and looped (website `d559df6`). Swap for a 40% version if he sends one |
+| 15 | Pic-Time for galleries (for the year he has paid) | Built and verified (Nov 22): each listing's Pic-Time link drives the portal and the delivery email (section 12b, `scripts/check-pictime.ts`); past galleries link built, off |
+| 16 | Homepage hero video, clean landing | Built and verified: Pierre's Dark30 V2 (Nov 22) with only two buttons over it (Nov 23). A 40% version: Agreed later (Pierre, if he sends one) |
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
@@ -377,12 +377,17 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 21 | Formspree form `mjywydge` | Built but needs a setting (`NEXT_PUBLIC_FORMSPREE_ID`, Part 3) |
 | 22 | Bookings actually send | Built but needs a setting: `NEXT_PUBLIC_BOOKING_TEST_MODE=false`. **The Part 3 email did not list it**; runbook step 11 adds it on the call |
 | 23 | Part 3 switch-on steps (Vercel, Neon, secrets, R2, Resend, website settings) | Steps 1 (Vercel projects) and 2 (Neon) done by Pierre Nov 20. Steps 3 to 5 (secrets, studio settings with R2 and Resend, website settings) not reported yet |
-| 24 | Portal address, Resend domain, migrate and sign-in, test booking to a delivered gallery | Agreed later (on the call, runbook Parts B and C) |
+| 24 | Portal address, Resend domain, migrate and sign-in, test booking | Agreed later: after Pierre approves the preview site (review call Nov 23); Hammad sends the final switch-on instructions then |
 | 25 | Quo key emailed Nov 13 never used | Built and verified (not in the code or settings; a new key only if the webhook is wanted) |
 | 26 | Turnaround 24 hours, 48 guaranteed; cancellation terms | Built and verified |
 | 27 | Pierre's onboarding form answers | **Missing:** we can't see them (Nov 16 email), so they are not checked against the build |
-| 28 | Call 2 time, meeting link and calendar invite (now Sunday Nov 22) | **Missing:** Hammad sends the time (Pierre asked for Sunday morning Central, Nov 21 18:56 UTC). Hammad offered 2:00 pm Central on Nov 22 (16:31 UTC), without a meeting link; send the Meet link and a calendar invite once Pierre confirms. Friday's invite did reach him (he waited in the Google Meet) |
+| 28 | Calls: meeting link and calendar invite | Done: Call 2 (Nov 22) and the review call (Nov 23) both happened on Google Meet. Each new call still needs a link and an invite |
 | 29 | Pierre can edit the site's content himself | Agreed (Hammad, Nov 21): bring the questions to the call; show him `src/config/site.ts`, `src/data/projects.json` and the README's plain-English commands |
+| 30 | Review call changes (Nov 23): floor plan add-on, booking form, landing, About, Portfolio, copy | Built and verified (website `d7de14a`, studio `4fbb16b`; prices `scm-v3`; booking form walked through in a browser) |
+| 31 | Pierre's content for the review: brokerage logos, floor plan examples, tour links, portrait examples, new videos, staging examples, wording for the four boxes and pages | **Missing:** from Pierre |
+| 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | **Missing:** new scope, agreed on the call; needs the REM Academy team's OK before building (Google Maps also needs a key in Pierre's account) |
+| 33 | Pierre approves the preview site, then go live on showcasemedia.pro | **Missing:** Pierre's review and OK; domain switch on a call after that |
+| 34 | Extra Vercel seat (build@, $20 a month) | **Missing:** Hammad removes it before handover |
 
 ## Open items
 
