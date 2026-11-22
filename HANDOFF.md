@@ -25,7 +25,7 @@ studio and where the two meet.
   record (MX, SPF, autodiscover) and nothing adds a receiving MX on the root.
   The domain switches happen on Call 2 with Pierre watching.
 
-**Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC)**, offered Nov 22 16:31 UTC, waiting for Pierre to confirm (Friday Nov 20 was missed).
+**Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC), confirmed by Pierre** (Friday Nov 20 was missed).
 
 **What is set up (status Nov 19 2026)**
 

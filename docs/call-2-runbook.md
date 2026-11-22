@@ -1,6 +1,6 @@
 # Call 2 runbook: Showcase Media goes live
 
-**Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC)**, offered by Hammad at 16:31 UTC; waiting for Pierre to confirm. Friday Nov 20 was missed. About 2.5 hours.
+**Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC), confirmed by Pierre** (16:31 UTC). Friday Nov 20 was missed. About 2.5 hours.
 Pierre drives his own screen; we guide. The detail behind each step is in
 `HANDOFF.md` (the section number is in brackets).
 
@@ -16,7 +16,7 @@ Pierre drives his own screen; we guide. The detail behind each step is in
 ## Before the call (build side)
 
 - [ ] **Meet link and calendar invite sent to Pierre?** The 2:00 pm offer had no link. Send both before the call.
-- [ ] Pierre confirmed the time?
+- [x] Pierre confirmed 2:00 pm (Nov 22 16:31 UTC).
 - [ ] Both repos' `main` pass every check (pull first; use the latest commit on each).
 - [ ] Hero video: if Hammad has put Pierre's files in Drive, run `node scripts/add-hero-video.mjs` in pierre-site with the chosen version (original or Dark30 suggested) and push before the call. Otherwise show the versions on the call and add it after.
 - [ ] Read Pierre's latest emails for anything new (Part 3 progress, pay rates, hero video).
