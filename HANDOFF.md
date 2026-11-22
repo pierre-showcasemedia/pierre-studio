@@ -27,9 +27,37 @@ studio and where the two meet.
 
 **Call 2: Sunday Nov 22, 2:00 pm Central (20:00 UTC), confirmed by Pierre** (Friday Nov 20 was missed).
 
+**Review call (Nov 23, 54 min): Pierre's review of the preview site.** Done Nov 23:
+the larger floor plan is an optional add-on by scanned size (prices `scm-v3`,
+both repos); "free floor plan*" carries the 3,000 sq ft scanned condition
+everywhere; booking form: brokerage required for agents, "How big is the
+property?", acreage notes and a plat or lot map link, drone photos with the
+Highlight Walkthrough Bundle, twilight next to virtual twilight, "How do we get
+in?" and "Vacant or occupied?" (both required), "Notes and special requests",
+no aerial infospots, his "Good to know" list (videos 48 to 72 hours, sales tax,
+MLS); clean landing (his video and two buttons); "Ready in 24 hours" no longer
+pushed; About is about the business with Pierre as founder, smaller portrait;
+"Work" is "Portfolio", one mixed gallery; copyright "Created by Showcase Media.
+All Rights Reserved."; travel "within 25 miles of our location on the east side
+of Madison, near Sun Prairie"; service cards open their section on /services.
+
+Still open from that call:
+- **From Pierre:** the brokerage logos (for "Trusted by"), floor plan examples,
+  Matterport and Zillow tour links, business portrait examples, new videos and
+  virtual staging examples, his wording for the four boxes under the video and
+  the page copy, a 40% hero version if he wants it, portraits and bios of his
+  photographers (later).
+- **New features promised on the call (check scope with the REM Academy team first):** a
+  Pricing page behind a name-and-email form (leads list); its own page per
+  service (seven or more) with pricing and examples; Google Maps address
+  autofill and distance (needs a Google Maps key in Pierre's account); plat map
+  file upload (the link works today).
+- **Hammad:** remove the extra Vercel seat before handover; send Pierre the
+  final switch-on instructions once he approves the site.
+
 **Call 2 outcome (Nov 22, 15 min):**
 - **Nothing client-facing goes live until Pierre approves.** He reviews the new site on its `.vercel.app` address first; the domain switch (step 15) and the portal address wait for his OK.
-- **Galleries stay on Pic-Time** for the year he has paid (from July). How Pic-Time fits the new site is open: the simplest is pointing Client Login at his Pic-Time page.
+- **Galleries stay on Pic-Time** for the year he has paid (from July). Built Nov 22: each listing's Pic-Time link drives the portal and the delivery email (section 12b).
 - **Switch-on without the domain:** Hammad sent Pierre a prompt for his own Claude covering Part 3 Steps 3 to 5, the CORS rule, migrate and health, and a private review of the site. It sets the website's `STUDIO_URL` and `NEXT_PUBLIC_PORTAL_URL` to the studio's `.vercel.app` address **temporarily**. When `portal.showcasemedia.pro` is set up, change both back and redeploy.
 - **Sign-in waits for the Resend DNS records**, done with Hammad.
 - **Open for Hammad:** an email to Pierre with two website options (A or B); remove the extra Vercel seat (build@, $20 a month) before handover; a studio gallery example from a real listing once the studio is switched on.
@@ -70,9 +98,12 @@ studio and where the two meet.
 - Prices: his Nov 2026 price sheet PDF, plus Showcase Photography ($175) and
   the drone and 3D tour prices on their own from his current site. The same
   file in both repos (`src/lib/booking-pricing.ts` here = the website's
-  `src/lib/pricing.ts`, `scm-v2-2026-11-17`). Sizes break at 1,200 / 2,500 /
-  3,000 / 5,000 / 7,500 / 10,000 sq ft; the free floor plan's large-property
-  fee ($30 / $50 / $75) is added as its own invoice line.
+  `src/lib/pricing.ts`, `scm-v3-2026-11-23`). Sizes break at 1,200 / 2,500 /
+  3,000 / 5,000 / 7,500 / 10,000 sq ft. The free floor plan covers up to
+  3,000 sq ft of TOTAL scanned space, so (Nov 23) the larger floor plan is an
+  optional add-on the client picks by scanned size ($30 / $50 / $75), never
+  charged from the finished size; Pierre adds it to the invoice after the scan
+  when a client didn't.
 - **Agent rates are private** and live only here, in `src/lib/agent-rates.ts`
   (never in the shared price file, which ships in the website's code):
   - **Stark Preferred** (Stark Company Realtors): Basic Photos $150 (25
@@ -324,7 +355,7 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | # | Request or promise | Status |
 |---|---|---|
 | 1 | Website and back office in Pierre's own accounts (GitHub, Vercel, Cloudflare R2, Resend, Neon) | Built and verified (code); accounts switch on during Part 3 and the call |
-| 2 | Public prices from the Nov 2026 price sheet, "Quoted" where there is no price | Built and verified in code (`scm-v2-2026-11-17`, both repos byte-identical, 43 + 738 checks). Not re-read against the PDFs today: Dropbox is blocked from this machine |
+| 2 | Public prices from the Nov 2026 price sheet, "Quoted" where there is no price | Built and verified in code (`scm-v3-2026-11-23`, both repos byte-identical, 43 + 738 checks). Not re-read against the PDFs today: Dropbox is blocked from this machine |
 | 3 | Agent rates (Stark Preferred, Preferred Agent, HomeTeam4U) private, never on the site | Built and verified (only in `src/lib/agent-rates.ts`; none in the website code) |
 | 4 | HomeTeam4U: Walkthrough Packages first, a la carte at Stark rates | Built and verified |
 | 5 | Stark and HomeTeam4U card on file, charged in house before delivery | Built and verified (billing note on both rate cards; manual Mark paid) |
