@@ -350,7 +350,9 @@ and Resend in one click each.
 ## Go-live check Nov 19
 
 One line per request or promise, from every build@ thread with Pierre (Nov 13
-to Nov 18) and the build. Missing blocks the "you're ready" email.
+to Nov 23) and the build. Missing blocks the "you're ready" email. Last re-run
+Nov 23 (evening): the portrait, the hero video re-encode and the Dropbox
+folders.
 
 | # | Request or promise | Status |
 |---|---|---|
@@ -369,7 +371,7 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 13 | High-resolution black and white logos in both | Built and verified (2400 px wide, both repos) |
 | 14 | Instagram, Facebook, YouTube links | Built and verified (on the site) |
 | 15 | Pic-Time for galleries (for the year he has paid) | Built and verified (Nov 22): each listing's Pic-Time link drives the portal and the delivery email (section 12b, `scripts/check-pictime.ts`); past galleries link built, off |
-| 16 | Homepage hero video, clean landing | Built and verified: Pierre's Dark30 V2 (Nov 22) with only two buttons over it (Nov 23). A 40% version: Agreed later (Pierre, if he sends one) |
+| 16 | Homepage hero video, clean landing, logo as sharp as his original | Built and verified: Pierre's Dark30 V2 with only two buttons over it (Nov 23). Re-encoded Nov 23 after he found the logo soft (website `ac2ab69`): AV1 and H.264 at 1920 wide, a 1280 file for phones; logo-area SSIM 0.92 to 0.97 against his original, was 0.79 to 0.88. Files are 20 to 52 MB (was 8.8). A 40% version: Agreed later (Pierre, if he sends one) |
 | 17 | Animated logo | Agreed later (option, unused) |
 | 18 | Video collection with his YouTube films | Built and verified (`/work/video`; thumbnails fixed Nov 18) |
 | 19 | Domain and email stay at Porkbun; forwarding stays on until the new site is ready | Built and verified (runbook Part D is last; no email record changes) |
@@ -384,7 +386,10 @@ to Nov 18) and the build. Missing blocks the "you're ready" email.
 | 28 | Calls: meeting link and calendar invite | Done: Call 2 (Nov 22) and the review call (Nov 23) both happened on Google Meet. Each new call still needs a link and an invite |
 | 29 | Pierre can edit the site's content himself | Agreed (Hammad, Nov 21): bring the questions to the call; show him `src/config/site.ts`, `src/data/projects.json` and the README's plain-English commands |
 | 30 | Review call changes (Nov 23): floor plan add-on, booking form, landing, About, Portfolio, copy | Built and verified (website `d7de14a`, studio `4fbb16b`; prices `scm-v3`; booking form walked through in a browser) |
-| 31 | Pierre's content for the review: brokerage logos, floor plan examples, tour links, portrait examples, new videos, staging examples, wording for the four boxes and pages | **Missing:** from Pierre |
+| 31 | Pierre's content for the review: floor plan examples, tour links, new videos, staging examples, wording for the four boxes and pages | **Missing:** from Pierre |
+| 35 | Brokerage logos ("Trusted by") and a business portraits section | **Missing:** Pierre sent both as Dropbox folder links (Nov 22). Folders can't be downloaded from the build machine; Hammad puts the files in Drive (or allows the Dropbox download hosts in the environment's network settings), then we build both |
+| 36 | New business portrait on Home and About (Nov 22) | Built and verified (website `99d090e`, `pierre-2026.jpg`) |
+| 37 | Tell Pierre the portrait and the sharper hero are done, with the file-size trade-off | **Missing:** a reply to his Nov 23 email, drafted only with Hammad's OK |
 | 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | **Missing:** new scope, agreed on the call; needs the REM Academy team's OK before building (Google Maps also needs a key in Pierre's account) |
 | 33 | Pierre approves the preview site, then go live on showcasemedia.pro | **Missing:** Pierre's review and OK; domain switch on a call after that |
 | 34 | Extra Vercel seat (build@, $20 a month) | **Missing:** Hammad removes it before handover |
