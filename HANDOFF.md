@@ -430,8 +430,8 @@ and Resend in one click each.
 
 One line per request or promise, from every build@ thread with Pierre (Nov 13
 to Nov 23) and the build. Missing blocks the "you're ready" email. Last re-run
-Nov 24 (night): the `new-scope` branches, the studio template's features and
-build and the test-run guard.
+Nov 24 (night): the `new-scope` branches, the studio template's features
+and the test-run guard.
 
 | # | Request or promise | Status |
 |---|---|---|
