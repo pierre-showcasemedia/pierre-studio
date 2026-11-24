@@ -430,13 +430,13 @@ and Resend in one click each.
 
 One line per request or promise, from every build@ thread with Pierre (Nov 13
 to Nov 23) and the build. Missing blocks the "you're ready" email. Last re-run
-Nov 23 (evening): the portrait, the hero video re-encode and the Dropbox
-folders.
+Nov 24 (night): the `new-scope` branches, the studio template's features and
+build and the test-run guard.
 
 | # | Request or promise | Status |
 |---|---|---|
 | 1 | Website and back office in Pierre's own accounts (GitHub, Vercel, Cloudflare R2, Resend, Neon) | Built and verified (code); accounts switch on during Part 3 and the call |
-| 2 | Public prices from the Nov 2026 price sheet, "Quoted" where there is no price | Built and verified in code (`scm-v3-2026-11-23`, both repos byte-identical, 43 + 738 checks). Not re-read against the PDFs today: Dropbox is blocked from this machine |
+| 2 | Public prices from the Nov 2026 price sheet, "Quoted" where there is no price | Built and verified in code: `main` has `scm-v3-2026-11-23` and `new-scope` has `scm-v4-2026-11-24` (same prices, empty travel bands, new optional fields). Both repos are byte-identical on each branch (site 49 checks, studio 739). Not re-read against the PDFs: Dropbox is blocked from this machine |
 | 3 | Agent rates (Stark Preferred, Preferred Agent, HomeTeam4U) private, never on the site | Built and verified (only in `src/lib/agent-rates.ts`; none in the website code) |
 | 4 | HomeTeam4U: Walkthrough Packages first, a la carte at Stark rates | Built and verified |
 | 5 | Stark and HomeTeam4U card on file, charged in house before delivery | Built and verified (billing note on both rate cards; manual Mark paid) |
@@ -468,10 +468,12 @@ folders.
 | 31 | Pierre's content for the review: floor plan examples, tour links, new videos, staging examples, wording for the four boxes and pages | **Missing:** from Pierre |
 | 35 | Brokerage logos ("Trusted by") and a business portraits section | **Missing:** Pierre sent both as Dropbox folder links (Nov 22). Folders can't be downloaded from the build machine; Hammad puts the files in Drive (or allows the Dropbox download hosts in the environment's network settings), then we build both |
 | 36 | New business portrait on Home and About (Nov 22) | Built and verified (website `99d090e`, `pierre-2026.jpg`) |
-| 37 | Tell Pierre the portrait and the sharper hero are done, with the file-size trade-off | **Missing:** a reply to his Nov 23 email, drafted only with Hammad's OK |
-| 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | **Missing:** new scope, agreed on the call; needs the REM Academy team's OK before building (Google Maps also needs a key in Pierre's account) |
+| 37 | Tell Pierre the portrait and the sharper hero are done, with the file-size trade-off | **Missing:** per the master chat, the review email reached Pierre Nov 24 at 10:20 UTC without the preview link. A follow-up with the link is waiting for Hammad's OK |
+| 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | Built and verified on `new-scope` in both repos (Hammad's go-ahead Nov 24), not on `main`. **Missing:** 3 of the 4 website commits are not on GitHub yet (368b4f5, a2bcf25, df5db85; Hammad to OK the push). Then Hammad OKs merging to `main`, and a Google Maps key in Pierre's account (address suggestions stay off without it) |
 | 33 | Pierre approves the preview site, then go live on showcasemedia.pro | **Missing:** Pierre's review and OK; domain switch on a call after that |
 | 34 | Extra Vercel seat (build@, $20 a month) | **Missing:** Hammad removes it before handover |
+| 38 | Studio template features: Google Drive, client discount, travel fields, shoot reminder, Book again, property page, upsell prompts, headshot and logo | Built and verified on studio `new-scope` (313c17b; 38 check scripts, 528 role checks) and the website's Book again. Every switch is off (HANDOFF section 12a). Turning one on: Agreed later (Pierre) |
+| 39 | Test runs can never reach Pierre's real Formspree, studio or Google key | Built and verified (website `368b4f5`, `npm run test:server`, 28 checks); on GitHub with row 32's push |
 
 ## Open items
 
