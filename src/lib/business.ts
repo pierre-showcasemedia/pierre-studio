@@ -90,6 +90,13 @@ export const business = {
   // its own negative invoice line. Off: no fields, every client pays the price
   // table. Pierre's agent rate sheets stay in src/lib/agent-rates.ts either way.
   clientDiscount: false,
+  // Book again (studio template): a button on the portal home opening the
+  // website's /book with ?again=<signed token> and the item ids of the client's
+  // latest booking (src/lib/book-again-token.ts). Nothing personal is in the
+  // link; the website's server trades the token at /api/studio/book-again
+  // (intake secret) for the name, email, phone, company and client type. Off:
+  // no button and the route is a 404. The website side is built (branch new-scope).
+  bookAgain: false,
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.
   payAtClose: false,

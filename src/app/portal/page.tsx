@@ -9,7 +9,7 @@ import { exitViewAs } from "./view-as-actions";
 import { isStaffAllowed } from "@/lib/admin-allow";
 import { isPartnerEmail } from "@/lib/partner";
 import { listingsForEmail, isDemo } from "@/lib/portal-data";
-import { bookingsForListings, type PortalBooking } from "@/lib/portal-bookings";
+import { bookAgainUrl, bookingsForListings, type PortalBooking } from "@/lib/portal-bookings";
 import RescheduleButton from "@/components/portal/RescheduleButton";
 import { shootStatus, STATUS_COLORS } from "@/lib/listing-status";
 import { fmtDay } from "@/lib/booking-time";
@@ -18,6 +18,7 @@ import { hasR2, signedViewUrl } from "@/lib/r2";
 import { DEMO_PHOTOS } from "@/lib/demo-photos";
 import "@/styles/portal-home.css";
 import { brand } from "@/lib/brand";
+import { business } from "@/lib/business";
 
 export const metadata: Metadata = { title: "Client Portal", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -59,6 +60,7 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
   const { tab } = await searchParams;
   const activeTab = tab === "bookings" && !partner ? "bookings" : "galleries";
   const listings = await listingsForEmail(email);
+  const againUrl = partner || !business.bookAgain ? null : await bookAgainUrl(email, brand.marketingUrl);
   const bookings = activeTab === "bookings" ? await bookingsForListings(listings.map((l) => l.id)) : new Map<string, PortalBooking>();
 
   // Covers: the 1600px preview (the card is at most ~430px wide, so this is
@@ -90,6 +92,11 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
               <p className="muted ph-rise" style={{ marginTop: 10, fontSize: 14.5, animationDelay: "160ms" }}>{email}</p>
             </div>
             <div className="ph-head__actions ph-rise" style={{ animationDelay: "200ms" }}>
+              {againUrl && (
+                <a href={againUrl} className="btn btn-primary">
+                  Book again
+                </a>
+              )}
               {!impersonating && canAdmin && (
                 <Link href="/admin" className="chip">
                   Admin →

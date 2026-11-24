@@ -46,6 +46,10 @@ async function main() {
     ok(reminderDay(null, new Date(), tz).phrase === "coming up", "no date: coming up");
   }
 
+  // ---- Book again (off) ------------------------------------------------------------------
+  ok(business.bookAgain === false, "bookAgain: off by default");
+  ok(/partner \|\| !business\.bookAgain \? null/.test(read("src/app/portal/page.tsx")), "Book again shows only with the switch on, never to partners");
+
   // ---- File store and client discount -------------------------------------------------
   ok(business.fileStore === "dropbox", "fileStore: Dropbox, so no Google Drive anywhere");
   ok(business.clientDiscount === false, "clientDiscount: off by default");
