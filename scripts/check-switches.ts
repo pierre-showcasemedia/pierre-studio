@@ -25,6 +25,27 @@ const read = (p: string) => readFileSync(p, "utf8");
 async function main() {
   const { business } = await import("../src/lib/business");
 
+  // ---- The reminder before the shoot (off) ---------------------------------------------
+  {
+    ok(business.reminderEmail === false && business.reminderLeadHours === 24, "reminderEmail: off by default (24 hours ahead when on)");
+    const { scheduleReminders, sendReminderEmail } = await import("../src/lib/booking-time-email");
+    ok((await scheduleReminders()) === 0, "reminder off: nothing is queued");
+    let skipped = false;
+    try {
+      await sendReminderEmail({ bookingId: "b1", idempotencyKey: "k", payload: null });
+    } catch (e) {
+      skipped = e instanceof Error && /switched off/.test(e.message);
+    }
+    ok(skipped, "reminder off: a queued reminder job skips without sending");
+    const { reminderDay } = await import("../src/lib/reminder-day");
+    const tz = "America/Chicago";
+    ok(reminderDay("2026-12-01", new Date("2026-11-30T20:00:00Z"), tz).phrase === "tomorrow", "the day before: tomorrow");
+    ok(reminderDay("2026-12-01", new Date("2026-12-01T05:30:00Z"), tz).phrase === "tomorrow", "late evening Central the night before is still tomorrow (UTC is already the 1st)");
+    ok(reminderDay("2026-12-04", new Date("2026-11-30T20:00:00Z"), tz).phrase === "on Friday", "a few days out: the weekday");
+    ok(reminderDay("2026-12-10", new Date("2026-11-30T20:00:00Z"), tz).phrase === "on Thursday, December 10", "a week or more: weekday and date");
+    ok(reminderDay(null, new Date(), tz).phrase === "coming up", "no date: coming up");
+  }
+
   // ---- File store and client discount -------------------------------------------------
   ok(business.fileStore === "dropbox", "fileStore: Dropbox, so no Google Drive anywhere");
   ok(business.clientDiscount === false, "clientDiscount: off by default");

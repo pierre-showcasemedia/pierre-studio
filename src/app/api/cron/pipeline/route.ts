@@ -18,6 +18,7 @@ import { DRIVE_KINDS, scheduleDriveFinalSweep } from "@/lib/drive-mirror";
 import { scheduleRawSweep } from "@/lib/r2-raw-cleanup";
 import { currentEnv, enqueueJobs } from "@/lib/jobs-core";
 import { scheduleShootBriefs } from "@/lib/shoot-brief";
+import { scheduleReminders } from "@/lib/booking-time-email";
 import { scheduleWeatherRefresh, syncFromCalendar } from "@/lib/google-calendar";
 import { hasEmailIntake, pollHello, recordPoll } from "@/lib/email-intake";
 import { hasDb } from "@/db";
@@ -147,6 +148,12 @@ export async function GET(request: Request) {
         await scheduleShootBriefs();
       } catch (e) {
         console.error("[cron/shoot-brief]", e);
+      }
+      // The client's reminder before the shoot, off unless business.reminderEmail (src/lib/booking-time-email.ts).
+      try {
+        await scheduleReminders();
+      } catch (e) {
+        console.error("[cron/reminder]", e);
       }
       // The forecast on each upcoming booking's calendar event, every 3 hours (src/lib/weather.ts).
       try {

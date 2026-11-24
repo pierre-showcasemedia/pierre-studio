@@ -26,7 +26,7 @@ import { BUNDLE_KINDS, BUNDLE_LEASE_MS } from "./bundle-jobs";
 import { isTimeConfirmed } from "./booking-status";
 import { sendShooterInvite } from "./shooter-invite";
 import { sendShootBrief } from "./shoot-brief";
-import { sendRescheduledEmail, sendTimeConfirmedEmail } from "./booking-time-email";
+import { sendReminderEmail, sendRescheduledEmail, sendTimeConfirmedEmail } from "./booking-time-email";
 import { cancelBookingEvent, cancelVisitEvent, hasCalendarSync, refreshBookingWeather, refreshHandMadeWeather, refreshVisitWeather, upsertBookingEvent, upsertVisitEvent } from "./google-calendar";
 import { runRevisionIntake } from "./revision-intake";
 import { createCheckoutForInvoice } from "./titus";
@@ -219,6 +219,11 @@ async function dispatch(job: JobRow): Promise<void> {
       // shooter (they are the event's guest), so this email never goes too.
       if (hasCalendarSync()) throw new SkipJobError("Google Calendar sends the shooter's invite");
       await sendShooterInvite(job);
+      return;
+    }
+    case "email.reminder": {
+      // Before the shoot (src/lib/booking-time-email.ts); off unless business.reminderEmail.
+      await sendReminderEmail(job);
       return;
     }
     case "email.shoot_brief": {

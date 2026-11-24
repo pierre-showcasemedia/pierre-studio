@@ -82,6 +82,7 @@ const CHANNEL: Partial<Record<ActivityAction, Channel>> = {
   "booking.edited": "bookings",
   "email.time_confirmed_sent": "bookings",
   "email.rescheduled_sent": "bookings",
+  "email.reminder_sent": "bookings",
   // Oct 21 2026: the Dropbox raw mirror. One line when a shoot's last file
   // lands, one when the connection changes; never a line per file.
   "shoot.dropbox_synced": "hub",

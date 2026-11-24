@@ -774,6 +774,9 @@ export const JOB_KINDS = [
   "drive.mirror",
   "drive.final_sweep",
   "drive.final",
+  // Nov 18 2026: the client's reminder before the shoot, with the home prep
+  // checklist (src/lib/booking-time-email.ts). Off unless business.reminderEmail.
+  "email.reminder",
 ] as const;
 export type JobKind = (typeof JOB_KINDS)[number];
 export const JOB_STATUSES = ["queued", "running", "done", "dead"] as const;

@@ -126,6 +126,7 @@ export type ActivityAction =
   | "invoice.refund_by_hand"
   | "email.time_confirmed_sent"
   | "email.rescheduled_sent"
+  | "email.reminder_sent"
   // Oct 21 2026: the Dropbox raw mirror (src/lib/dropbox-mirror.ts)
   | "dropbox.connected"
   // Nov 18 2026: the Google Drive mirror (src/lib/drive-mirror.ts)
@@ -350,6 +351,7 @@ export function describeActivity(a: { action: string; actorEmail: string | null;
     case "invoice.addon_created": return `${who} added an invoice for the added items${m.items ? ` (${String(m.items)})` : ""}${m.needsQuote ? "; it waits for an amount" : "; the pay link goes out next"}`;
     case "invoice.refund_by_hand": return `${who} removed items from a paid booking${m.items ? ` (${String(m.items)})` : ""}; refund the difference by hand`;
     case "email.time_confirmed_sent": return `${m.variant === "reconfirmed" ? "New time confirmation" : m.variant === "moved" ? "Shoot moved email" : "Time confirmation"} sent${m.to ? ` to ${String(m.to)}` : ""}`;
+    case "email.reminder_sent": return `Reminder before the shoot sent${m.to ? ` to ${String(m.to)}` : ""}`;
     case "email.rescheduled_sent": return `Reschedule email sent${m.to ? ` to ${String(m.to)}` : ""}`;
     // The Dropbox raw mirror (Oct 21 2026). Never a token; the account's name and email only.
     case "dropbox.connected": return `${who} connected Dropbox${m.email ? ` (${String(m.email)})` : ""}`;

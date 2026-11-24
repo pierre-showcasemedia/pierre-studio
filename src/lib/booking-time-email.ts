@@ -21,15 +21,17 @@
 // nothing (SkipJobError). Demo mode never reaches here: the drainer returns
 // before any handler without a database.
 import { Resend } from "resend";
-import { and, eq, gt, ne } from "drizzle-orm";
+import { and, eq, gt, lte, ne } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { logActivity } from "./activity";
 import { bookingEmailHtml, bookingEmailSubject, bookingEmailText, preshootChecklistUrl, shootEvent, shootIcs, type BookingEmailInput, type BookingEmailMode } from "./booking-email";
 import { itemById } from "./studio-pricing";
 import { isTimeConfirmed } from "./booking-status";
-import { fmtDay, fmtWhen } from "./booking-time";
+import { BUSINESS_TZ, fmtDay, fmtWhen } from "./booking-time";
+import { reminderDay } from "./reminder-day";
+import { business, mayAutoMessage } from "./business";
 import { emailFrom, siteUrl, supportEmail } from "./brand";
-import { currentEnv, jobKey, NotConfiguredError, SkipJobError, type JobSpec } from "./jobs-core";
+import { currentEnv, enqueueJobs, jobKey, NotConfiguredError, SkipJobError, type JobSpec } from "./jobs-core";
 
 export type TimeEmailVariant = "confirmed" | "reconfirmed" | "moved";
 
@@ -62,7 +64,10 @@ export type BuiltTimeEmail = { to: string; subject: string; html: string; text: 
 
 // Everything the email says, from the booking row. Pure apart from the
 // checklist env var, so the test route and the check script can render it.
-export function buildTimeEmail(b: BookingForEmail, mode: BookingEmailMode): BuiltTimeEmail {
+// Nov 24 2026: the reminder names the shoot's day (today, tomorrow, the
+// weekday) from `now`, the moment it is built and sent, in the business's
+// time zone.
+export function buildTimeEmail(b: BookingForEmail, mode: BookingEmailMode, opts: { now?: Date } = {}): BuiltTimeEmail {
   const address = b.listing?.address ?? String(b.property?.street ?? "");
   const street = address.split(",")[0].trim() || "your property";
   const rest = address.split(",").slice(1).join(",").trim();
@@ -88,8 +93,9 @@ export function buildTimeEmail(b: BookingForEmail, mode: BookingEmailMode): Buil
     address: address.trim() || null,
     event,
     checklistUrl: preshootChecklistUrl(),
+    reminderDay: mode === "reminder" ? reminderDay(b.desiredDate, opts.now ?? new Date(), BUSINESS_TZ) : null,
   };
-  return { to: b.client?.email ?? "", subject: bookingEmailSubject(street, false, mode), html: bookingEmailHtml(input), text: bookingEmailText(input), ics: event ? shootIcs(event) : null, sequence, mode };
+  return { to: b.client?.email ?? "", subject: bookingEmailSubject(street, false, mode, null, input.reminderDay), html: bookingEmailHtml(input), text: bookingEmailText(input), ics: event ? shootIcs(event) : null, sequence, mode };
 }
 
 type TimeJob = { id: string; kind: string; bookingId: string | null; idempotencyKey: string; createdAt: Date; payload: { version?: number; variant?: string } | null };
@@ -165,5 +171,54 @@ export async function sendRescheduledEmail(job: TimeJob): Promise<{ to: string; 
   const built = buildTimeEmail(b, "rescheduled");
   const id = await send(built, job.idempotencyKey);
   await logActivity({ action: "email.rescheduled_sent", listingId: b.listingId, clientId: b.clientId, meta: { bookingId: b.id, to: built.to, version: job.payload?.version ?? null, resendId: id } });
+  return { to: built.to, id };
+}
+
+// ---- The reminder before the shoot (studio template, Nov 18 2026) ----------
+// Off unless business.reminderEmail. The minute cron calls scheduleReminders(),
+// which queues one email.reminder per Confirmed booking starting within the
+// lead time (business.reminderLeadHours, default 24), keyed to that start, so a
+// moved shoot gets a fresh reminder and the old job sees the start moved and
+// skips. A booking made less than 3 hours ahead gets no reminder. The email
+// names the shoot's real day from when it is sent (src/lib/reminder-day.ts).
+const MIN_LEAD_MS = 3 * 60 * 60_000;
+const reminderKey = (bookingId: string, startsAt: Date) => `email.reminder:${bookingId}:${startsAt.getTime()}`;
+
+export async function scheduleReminders(now: Date = new Date()): Promise<number> {
+  if (!business.reminderEmail) return 0;
+  const lead = Math.max(1, business.reminderLeadHours) * 60 * 60_000;
+  const rows = await db()
+    .select({ id: schema.bookings.id, listingId: schema.bookings.listingId, startsAt: schema.bookings.startsAt })
+    .from(schema.bookings)
+    .where(and(
+      eq(schema.bookings.env, currentEnv()),
+      eq(schema.bookings.status, "confirmed"),
+      gt(schema.bookings.startsAt, new Date(now.getTime() + MIN_LEAD_MS)),
+      lte(schema.bookings.startsAt, new Date(now.getTime() + lead)),
+    ));
+  return enqueueJobs(rows.filter((r) => r.startsAt).map((r) => ({
+    kind: "email.reminder" as const,
+    idempotencyKey: reminderKey(r.id, r.startsAt!),
+    bookingId: r.id,
+    listingId: r.listingId,
+    payload: { note: r.startsAt!.toISOString() },
+  })));
+}
+
+// The email.reminder handler: re-reads the booking and skips anything that changed.
+export async function sendReminderEmail(job: { bookingId: string | null; idempotencyKey: string; payload: { note?: string } | null }): Promise<{ to: string; id: string | null }> {
+  if (!business.reminderEmail) throw new SkipJobError("reminder emails are switched off (business.reminderEmail)");
+  if (!(process.env.RESEND_API_KEY || "").trim()) throw new NotConfiguredError("email sending (RESEND_API_KEY)");
+  if (!job.bookingId) throw new SkipJobError("the job names no booking");
+  const b = await loadBooking(job.bookingId);
+  if (b.status !== "confirmed") throw new SkipJobError(`the booking is ${b.status}`);
+  if (!b.startsAt || (job.payload?.note && b.startsAt.toISOString() !== job.payload.note)) throw new SkipJobError("the shoot moved; a newer reminder covers it");
+  if (b.startsAt.getTime() <= Date.now()) throw new SkipJobError("the shoot has started");
+  if (!b.client?.email) throw new SkipJobError("the booking has no client email");
+  if (!mayAutoMessage(b.client.email)) throw new SkipJobError("the client is on the never-message list");
+  if (!b.desiredDate || !b.startTime) throw new SkipJobError("the booking has no confirmed date and time");
+  const built = buildTimeEmail(b, "reminder");
+  const id = await send(built, job.idempotencyKey);
+  await logActivity({ action: "email.reminder_sent", listingId: b.listingId, clientId: b.clientId, meta: { bookingId: b.id, to: built.to, resendId: id } });
   return { to: built.to, id };
 }

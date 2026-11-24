@@ -101,6 +101,11 @@ export const business = {
   // email (the client's own confirmation) and the magic sign-in link are the
   // only emails that go without a person pressing send.
   autoTexts: false,
+  // The client's reminder email before the shoot (studio template), with the home
+  // prep checklist when PRESHOOT_CHECKLIST_URL is set. Off until Pierre says yes.
+  // Never goes to anyone on neverMessage. Names the real day (today, tomorrow, Friday).
+  reminderEmail: false,
+  reminderLeadHours: 24,
   // People who never get an automated message of any kind (lowercase emails).
   neverMessage: [] as readonly string[],
 

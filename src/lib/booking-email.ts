@@ -30,6 +30,7 @@ import { signPayToken } from "./portal-auth";
 import { hasStripe } from "./stripe-invoice";
 import type { BookingPaymentDetail } from "@/db/schema";
 import { business } from "./business";
+import { TOMORROW, type ReminderDay } from "./reminder-day";
 
 const PAGE = "#EEECE8"; // light warm grey behind the card
 const PAPER = "#FFFFFF";
@@ -67,8 +68,8 @@ export type BookingEmailPayment =
 // Oct 27 2026: visit / visit_again: a second shoot's own invoice (src/lib/
 // visit-invoice.ts): "Your invoice for the return trip at <street>", the
 // visit's time, its lines and the pay button; nothing else about the booking.
-export type BookingEmailMode = "new" | "updated" | "link" | "link_again" | "added" | "added_again" | "visit" | "visit_again" | "rescheduled" | "time_confirmed" | "new_time_confirmed" | "time_moved";
-export const TIME_EMAIL_MODES: BookingEmailMode[] = ["rescheduled", "time_confirmed", "new_time_confirmed", "time_moved"];
+export type BookingEmailMode = "new" | "updated" | "link" | "link_again" | "added" | "added_again" | "visit" | "visit_again" | "rescheduled" | "time_confirmed" | "new_time_confirmed" | "time_moved" | "reminder";
+export const TIME_EMAIL_MODES: BookingEmailMode[] = ["rescheduled", "time_confirmed", "new_time_confirmed", "time_moved", "reminder"];
 const isTimeMode = (m: BookingEmailMode) => TIME_EMAIL_MODES.includes(m);
 const isVisitMode = (m: BookingEmailMode) => m === "visit" || m === "visit_again";
 // An invoice that is not the booking's own (an add-on, a second shoot): "due
@@ -113,11 +114,13 @@ export type BookingEmailInput = {
   // visit / visit_again: the second shoot's kind ("Return trip"); its lines
   // ride in `added` and read "Items".
   visitLabel?: string | null;
+  // reminder: the shoot's day from when the email is built (src/lib/reminder-day.ts); "tomorrow" when unset.
+  reminderDay?: ReminderDay | null;
 };
 
 const modeOf = (x: Pick<BookingEmailInput, "updated" | "mode">): BookingEmailMode => x.mode ?? (x.updated ? "updated" : "new");
 
-export function bookingEmailSubject(street: string, updated: boolean, mode?: BookingEmailMode, visitLabel?: string | null): string {
+export function bookingEmailSubject(street: string, updated: boolean, mode?: BookingEmailMode, visitLabel?: string | null, reminderDay?: ReminderDay | null): string {
   switch (mode ?? (updated ? "updated" : "new")) {
     case "visit":
       return `Your invoice for the ${(visitLabel || "second shoot").toLowerCase()} at ${street}`;
@@ -141,6 +144,8 @@ export function bookingEmailSubject(street: string, updated: boolean, mode?: Boo
       return `Your new time is confirmed: ${street}`;
     case "time_moved":
       return `Your shoot has moved: ${street}`;
+    case "reminder":
+      return `Your shoot is ${(reminderDay ?? TOMORROW).phrase}: ${street}`;
     default:
       return `You're all set: ${street}`;
   }
@@ -303,6 +308,8 @@ function copyFor(mode: BookingEmailMode, x: BookingEmailInput): Copy {
       return { eyebrow: "New time confirmed", headlineHtml: `Your new time is ${em("confirmed.")}`, headlineText: "Your new time is confirmed.", intro: "Thanks for letting us know. Here is the updated plan:" };
     case "time_moved":
       return { eyebrow: "Shoot moved", headlineHtml: `Your shoot has ${em("moved.")}`, headlineText: "Your shoot has moved.", intro: "Your shoot has a new time, confirmed on our side. Here is the updated plan:" };
+    case "reminder":
+      return { eyebrow: (x.reminderDay ?? TOMORROW).eyebrow, headlineHtml: `Your shoot is ${em(`${(x.reminderDay ?? TOMORROW).phrase}.`)}`, headlineText: `Your shoot is ${(x.reminderDay ?? TOMORROW).phrase}.`, intro: x.checklistUrl ? "A quick reminder before we arrive. The home prep checklist below helps the house look its best. Here are the details:" : "A quick reminder before we arrive. Here are the details:" };
     default:
       return {
         eyebrow: "Shoot confirmed",
@@ -410,7 +417,7 @@ export function bookingEmailHtml(x: BookingEmailInput): string {
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <meta name="color-scheme" content="light"/>
   <meta name="supported-color-schemes" content="light"/>
-  <title>${esc(bookingEmailSubject(x.street, x.updated, mode, x.visitLabel))}</title>
+  <title>${esc(bookingEmailSubject(x.street, x.updated, mode, x.visitLabel, x.reminderDay))}</title>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap');

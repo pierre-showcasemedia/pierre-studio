@@ -21,6 +21,7 @@ import { currentEnv } from "@/lib/jobs-core";
 import { parsePaymentDetail } from "@/lib/pay-other";
 import { hasMigrateToken } from "@/lib/operator-token";
 import { BUSINESS_TZ } from "@/lib/business";
+import { reminderDay } from "@/lib/reminder-day";
 
 export const dynamic = "force-dynamic";
 
@@ -79,8 +80,9 @@ export async function POST(request: Request) {
     address,
     event,
     checklistUrl: preshootChecklistUrl(),
+    reminderDay: mode === "reminder" ? reminderDay(desiredDate, new Date(), BUSINESS_TZ) : null,
   };
-  const subject = `Test: ${bookingEmailSubject(street, input.updated, mode, input.visitLabel)}`;
+  const subject = `Test: ${bookingEmailSubject(street, input.updated, mode, input.visitLabel, input.reminderDay)}`;
   const resend = new Resend(key);
   const r = await resend.emails.send({
     from: emailFrom(),

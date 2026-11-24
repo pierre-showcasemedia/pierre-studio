@@ -225,6 +225,13 @@ async function main() {
   const tc = buildTimeEmail(booking, "time_confirmed");
   ok(tc.subject === "Your shoot time is confirmed: 1420 Alder Drive" && tc.ics !== null && /Your shoot time is confirmed\./.test(tc.text), "time confirmed email");
   const mv = buildTimeEmail(booking, "time_moved");
+  // Nov 24 2026: the reminder names the day from when it is built (the shoot is Oct 28).
+  const rm = buildTimeEmail(booking, "reminder", { now: new Date("2026-10-27T18:00:00Z") });
+  ok(rm.subject.startsWith("Your shoot is tomorrow"), "reminder subject");
+  const rmFar = buildTimeEmail(booking, "reminder", { now: new Date("2026-10-24T18:00:00Z") });
+  ok(rmFar.subject.startsWith("Your shoot is on Wednesday"), "a reminder four days out names the weekday, not tomorrow");
+  const rmToday = buildTimeEmail(booking, "reminder", { now: new Date("2026-10-28T13:00:00Z") });
+  ok(rmToday.subject.startsWith("Your shoot is today"), "a same-day reminder says today");
   ok(mv.subject === "Your shoot has moved: 1420 Alder Drive" && mv.ics !== null && /Your shoot has moved\./.test(mv.text) && /Confirmed\./.test(mv.html), "shoot moved email");
   const addedInput = { clientFirstName: "Taylor", street: "1420 Alder Drive", rest: "Springfield, CA 90000", when: "Wednesday, October 28 at 10:00 AM", launch: null, services: [], addons: [], added: ["Twilight photos"], payment: { kind: "card" as const, totalLabel: "$300", payUrl: "https://portal.example.com/portal/login" }, portalUrl: "https://portal.example.com/portal/login", updated: false, mode: "added" as const, address: "1420 Alder Drive, Springfield, CA 90000", event: null, checklistUrl: null };
   const addedHtml = bookingEmailHtml(addedInput);
@@ -235,10 +242,10 @@ async function main() {
   // with its head and tags removed): no em dashes, no exclamation marks, no
   // vendor words, signs off the business.
   const words = (html: string) => html.replace(/<head>[\s\S]*?<\/head>/i, "").replace(/<!doctype html>/i, "").replace(/<[^>]+>/g, " ");
-  for (const [name, html, text] of [["rescheduled", re.html, re.text], ["new_time_confirmed", nt.html, nt.text], ["time_confirmed", tc.html, tc.text], ["time_moved", mv.html, mv.text], ["added", addedHtml, bookingEmailText(addedInput)]] as const) {
+  for (const [name, html, text] of [["rescheduled", re.html, re.text], ["new_time_confirmed", nt.html, nt.text], ["time_confirmed", tc.html, tc.text], ["time_moved", mv.html, mv.text], ["reminder", rm.html, rm.text], ["added", addedHtml, bookingEmailText(addedInput)]] as const) {
     for (const body of [words(html), text]) ok(!/[—!]/.test(body) && !/AutoHDR|Resend|Lightroom|\bAI\b/.test(body) && body.includes(brand.name), `${name}: copy rules`);
   }
-  ok(TIME_EMAIL_MODES.length === 4, "four time modes");
+  ok(TIME_EMAIL_MODES.length === 5, "five time modes (with the reminder before the shoot)");
   console.log("4. emails: ok");
 
   const out = process.env.OUT_DIR;
