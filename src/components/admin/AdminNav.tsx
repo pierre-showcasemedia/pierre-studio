@@ -52,6 +52,7 @@ export const ADMIN_NAV: readonly Group[] = [
     items: [
       { href: "/admin/clients", label: "Clients", icon: "people" },
       { href: "/admin/teams", label: "Teams", icon: "team" },
+      { href: "/admin/leads", label: "Leads", icon: "people" },
     ],
   },
   {

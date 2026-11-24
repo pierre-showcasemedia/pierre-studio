@@ -25,6 +25,9 @@ import { localYmd } from "@/lib/local-date";
 import { clientFileFor, EMPTY_CLIENT_FILE } from "@/lib/client-file";
 import { hasDb } from "@/db";
 import { TZ_SHORT } from "@/lib/business";
+import { bookingAttachments } from "@/lib/intake-files";
+import { visitLabel } from "@/lib/leads";
+import type { LeadVisit } from "@/db/schema";
 
 // Server actions on this page drain the booking's jobs in after(); give them room.
 export const maxDuration = 60;
@@ -352,8 +355,15 @@ export default async function AdminBookingPage({ params, searchParams }: { param
           {b.customRequest && <div style={{ gridColumn: "1 / -1" }}><dt>Custom request</dt><dd style={{ whiteSpace: "pre-wrap" }}>{b.customRequest}</dd></div>}
           {b.accessNotes && <div style={{ gridColumn: "1 / -1" }}><dt>Access</dt><dd style={{ whiteSpace: "pre-wrap" }}>{b.accessNotes}</dd></div>}
           {b.clientNotes && <div style={{ gridColumn: "1 / -1" }}><dt>Additional details</dt><dd style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{b.clientNotes}</dd></div>}
+          {bookingAttachments(b.raw, b.id).map((f) => (
+            <div key={f.key} style={{ gridColumn: "1 / -1" }}>
+              <dt>{f.kind === "plat" ? "Plat or lot map file" : "File from the client"}</dt>
+              <dd><a href={`/api/studio/intake-file?booking=${encodeURIComponent(b.id)}&key=${encodeURIComponent(f.key)}`} target="_blank" rel="noreferrer" style={{ textDecoration: "underline", textUnderlineOffset: 3 }}>{f.name}</a></dd>
+            </div>
+          ))}
           <div><dt>Signed</dt><dd className={b.signedName ? "" : "muted"}>{b.signedName ?? "Not signed"}{b.signedAt ? <span className="muted"> · {fmtLa(b.signedAt)}</span> : null}</dd></div>
           <div><dt>Source</dt><dd className="muted">{b.source}{b.env ? ` · ${b.env}` : ""}</dd></div>
+          {b.raw?.payload?.visit && typeof b.raw.payload.visit === "object" ? <div><dt>Came from</dt><dd className="muted">{visitLabel(b.raw.payload.visit as LeadVisit)}</dd></div> : null}
           {b.raw?.estimatedTotalLabel && <div><dt>Website total</dt><dd className="adm-mono">{b.raw.estimatedTotalLabel}</dd></div>}
           {submissionIds.length > 0 && <div style={{ gridColumn: "1 / -1" }}><dt>Submission{submissionIds.length === 1 ? "" : "s"}</dt><dd className="adm-mono faint" style={{ fontSize: 11, wordBreak: "break-all" }}>{submissionIds.join(" · ")}</dd></div>}
           {b.raw?.summary && <div style={{ gridColumn: "1 / -1" }}><dt>Website summary</dt><dd className="muted" style={{ whiteSpace: "pre-wrap", fontSize: 12.5 }}>{b.raw.summary}</dd></div>}

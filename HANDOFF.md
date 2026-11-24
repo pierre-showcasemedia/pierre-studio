@@ -213,6 +213,13 @@ curl "https://<studio project>.vercel.app/api/studio/health" -H "x-migrate-token
    ]
    ```
 
+   **Plat map upload (branch `new-scope`, Nov 24 2026):** the booking form
+   sends a plat map straight from the visitor's browser to this bucket, so
+   once that ships, add the website's addresses to `AllowedOrigins` too:
+   `https://www.showcasemedia.pro`, `https://showcasemedia.pro` and the
+   website's `.vercel.app` address while it is in preview. Until then the
+   upload says it couldn't finish and the plat map link box still works.
+
 3. R2, Manage API tokens, **Create API token**: Object Read and Write, this
    bucket only. Pierre pastes `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
    `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` into the studio project.
@@ -284,6 +291,28 @@ finishes the edit): he drops the finished photos on the listing page
 (Listings, the listing, **Upload photos**). They land as Internal only; he
 checks them, makes them Client visible or presses Publish, then sends the
 delivery email. AutoHDR can be connected later (see the facts above).
+
+## 12a. Leads and client files from the website (branch `new-scope`, Nov 24 2026)
+
+Built on the `new-scope` branch at Hammad's go-ahead (Nov 24), not on `main`.
+
+- **Leads.** The website's new `/pricing` page opens the price list after a
+  name and email. The website posts each one to `POST /api/studio/leads`
+  (the same `x-intake-secret` as bookings) and to Formspree. They show under
+  **Admin, People, Leads** with where the visit came from, and read Booked
+  once that email has a booking. Nothing is emailed or texted to a lead.
+  Needs the migrate route run once (it adds the `leads` table).
+- **Plat map files.** The booking form can attach a plat or lot map (PDF or
+  photo, up to 25 MB). The website asks `POST /api/studio/intake-upload`
+  for a 10-minute upload address under `intake/<submission id>/`, the
+  browser uploads it to R2, and the booking stores the key in its payload.
+  The booking page shows "Plat or lot map file", which an admin opens
+  through `/api/studio/intake-file` (only that booking's own files). Needs
+  the R2 CORS addition in section 6.
+- **Visit sources.** Leads and bookings carry where the visit started (UTM
+  tags, the referring site, the first page). The booking page shows it as
+  "Came from".
+- Checks: `scripts/check-leads-intake.ts`.
 
 ## 12b. Pic-Time galleries (Nov 22 2026)
 

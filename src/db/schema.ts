@@ -862,6 +862,27 @@ export const inboundMessages = pgTable("inbound_messages", {
   index("inbound_messages_status_idx").on(t.status),
 ]);
 
+// Website visitors who opened the price list with a name and email (Nov 24
+// 2026, src/lib/leads.ts). id = the form's submission id. visit: where they
+// came from (UTM tags, the referring site, the first page). Never contacted
+// automatically: Pierre follows up himself.
+export type LeadVisit = Partial<Record<"utm_source" | "utm_medium" | "utm_campaign" | "utm_term" | "utm_content" | "referrer" | "landing", string>>;
+export const leads = pgTable("leads", {
+  id: uuid("id").primaryKey(),
+  kind: text("kind").default("pricing").notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  clientType: text("client_type"),
+  brokerage: text("brokerage"),
+  visit: jsonb("visit").$type<LeadVisit>(),
+  env: text("env"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+  index("leads_email_idx").on(t.email),
+  index("leads_created_idx").on(t.createdAt),
+]);
+
 export const paymentEvents = pgTable("payment_events", {
   id: uuid("id").defaultRandom().primaryKey(),
   provider: text("provider", { enum: INVOICE_PROVIDERS }).notNull(),

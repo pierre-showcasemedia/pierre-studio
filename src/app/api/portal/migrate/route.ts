@@ -566,6 +566,23 @@ const DDL = [
   // The website's selection with quantities and the client type (studio-universal).
   `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "items" jsonb`,
   `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "client_type" text`,
+  // Nov 24 2026: people who opened the website's price list with their name
+  // and email (src/lib/leads.ts). id = the form's submission id, so a retry
+  // is the same lead.
+  `CREATE TABLE IF NOT EXISTS "leads" (
+    "id" uuid PRIMARY KEY,
+    "kind" text DEFAULT 'pricing' NOT NULL,
+    "name" text NOT NULL,
+    "email" text NOT NULL,
+    "phone" text,
+    "client_type" text,
+    "brokerage" text,
+    "visit" jsonb,
+    "env" text,
+    "created_at" timestamp DEFAULT now() NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS "leads_email_idx" ON "leads" ("email")`,
+  `CREATE INDEX IF NOT EXISTS "leads_created_idx" ON "leads" ("created_at")`,
 ];
 
 export async function POST(request: Request) {

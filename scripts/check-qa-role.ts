@@ -289,7 +289,8 @@ async function main() {
   // Reports (Oct 21 2026): the CSV downloads carry money; admins only.
   // Dropbox connect and callback (Oct 21 2026): an admin session (the
   // callback also checks the signed state); the operator check stays token.
-  const ADMIN_ROUTES = [/^src\/app\/api\/studio\/reports\//, /^src\/app\/api\/studio\/dropbox\/(connect|callback)\//];
+  // Nov 24 2026: intake-file opens a file a client attached to a booking (admins only).
+  const ADMIN_ROUTES = [/^src\/app\/api\/studio\/reports\//, /^src\/app\/api\/studio\/dropbox\/(connect|callback)\//, /^src\/app\/api\/studio\/intake-file\//];
   for (const f of walk(path.join(ROOT, "src/app/api/studio"), (p) => p.endsWith("route.ts"))) {
     const name = rel(f);
     const want: Gate = STAFF_ROUTES.some((re) => re.test(name)) ? "staff" : UPLOADER_ROUTES.some((re) => re.test(name)) ? "uploader" : ADMIN_ROUTES.some((re) => re.test(name)) ? "admin" : "token";
