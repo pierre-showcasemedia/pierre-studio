@@ -33,6 +33,11 @@ export const clients = pgTable("clients", {
   // Used only with business.clientDiscount on.
   discountPercent: integer("discount_percent").default(0).notNull(),
   pricingNote: text("pricing_note"),
+  // Studio template #16 (Nov 23 2026): the agent's headshot and brokerage logo,
+  // R2 keys under clients/<id>/profile/ (src/lib/profile-images.ts), on their
+  // property pages. Used only with business.profileImages on.
+  headshotKey: text("headshot_key"),
+  logoKey: text("logo_key"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -110,6 +115,10 @@ export const listings = pgTable("listings", {
   // Nov 18 2026: the same folder in Google Drive (src/lib/drive-mirror.ts):
   // the id of Listings/<address>, made on the first copy and kept for good.
   driveFolderId: text("drive_folder_id"),
+  // Nov 18 2026: the public property page (/property/<shareToken>) and its views.
+  pageViews: integer("page_views").default(0).notNull(),
+  viewSources: jsonb("view_sources").$type<Record<string, number>>().default({}).notNull(), // { facebook: 12, zillow: 3, ... }
+  lastViewedAt: timestamp("last_viewed_at"),
   // Nov 22 2026: the listing's Pic-Time gallery (src/lib/pictime.ts). Set,
   // the portal and the delivery email send the client there.
   picTimeUrl: text("pictime_url"),
@@ -774,8 +783,8 @@ export const JOB_KINDS = [
   "drive.mirror",
   "drive.final_sweep",
   "drive.final",
-  // Nov 18 2026: the client's reminder before the shoot, with the home prep
-  // checklist (src/lib/booking-time-email.ts). Off unless business.reminderEmail.
+  // Nov 18 2026: the client's reminder before the shoot, with the home
+  // prep checklist (src/lib/booking-time-email.ts). Off unless business.reminderEmail.
   "email.reminder",
 ] as const;
 export type JobKind = (typeof JOB_KINDS)[number];
@@ -995,6 +1004,16 @@ export const rateLimits = pgTable("rate_limits", {
   windowStart: timestamp("window_start").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (t) => [index("rate_limits_window_idx").on(t.windowStart)]);
+
+// Nov 24 2026: one row per visitor per listing per day, so property page
+// views count once a day (src/lib/property-page.ts). The key is
+// "<listing id>:<day>:<keyed hash>", never the address or the user agent;
+// pruned after two days.
+export const propertyViewDays = pgTable("property_view_days", {
+  key: text("key").primaryKey(),
+  day: date("day").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [index("property_view_days_day_idx").on(t.day)]);
 
 export const clientsRelations = relations(clients, ({ many }) => ({ listings: many(listings) }));
 export const listingsRelations = relations(listings, ({ one, many }) => ({

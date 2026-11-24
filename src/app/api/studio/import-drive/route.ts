@@ -13,14 +13,18 @@ import { logActivity } from "@/lib/activity";
 import { hasR2, safeFilename, streamToR2 } from "@/lib/r2";
 import { contentTypeFor } from "@/lib/autohdr-constants";
 import { driveApiWithToken, DriveError, FOLDER_MIME } from "@/lib/google-drive";
+import { onDrive } from "@/lib/file-store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 const MAX_PER_CALL = 5;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
   const admin = await requireUploaderApi();
   if (admin instanceof Response) return admin;
+  // Nov 24 2026: only a business on Google Drive (business.fileStore) imports from it.
+  if (!onDrive()) return Response.json({ ok: false, error: "not found" }, { status: 404 });
   if (!hasDb()) return Response.json({ ok: false, demo: true, error: "Demo mode: no database." }, { status: 503 });
   if (!hasR2()) return Response.json({ ok: false, error: "Storage is not connected (R2 env vars missing)." }, { status: 503 });
   const b = await request.json().catch(() => ({}));
@@ -31,6 +35,9 @@ export async function POST(request: Request) {
   if (!listingId || !token || !files.length) return Response.json({ ok: false, error: "listingId, token and files are required." }, { status: 400 });
 
   const d = db();
+  // Nov 24 2026: the listing must exist before a shoot is made for it.
+  const listing = UUID_RE.test(listingId) ? await d.query.listings.findFirst({ where: eq(schema.listings.id, listingId), columns: { id: true } }) : null;
+  if (!listing) return Response.json({ ok: false, error: "Listing not found." }, { status: 404 });
   let shootId = typeof b.shootId === "string" && b.shootId ? b.shootId : null;
   if (shootId) {
     const s = await d.query.shoots.findFirst({ where: eq(schema.shoots.id, shootId), columns: { id: true, status: true, listingId: true } });

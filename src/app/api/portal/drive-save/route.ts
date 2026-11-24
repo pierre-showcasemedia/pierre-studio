@@ -27,6 +27,7 @@ import { driveApiWithToken, DriveError, isDriveNotFound } from "@/lib/google-dri
 import { DRIVE_CHUNK_BYTES } from "@/lib/drive-mirror";
 import { contentTypeFor } from "@/lib/autohdr-constants";
 import { brand } from "@/lib/brand";
+import { onDrive } from "@/lib/file-store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -34,6 +35,8 @@ export const maxDuration = 300;
 const folderNameFor = (address: string) => `${address.split(",")[0].replace(/[\\/]+/g, "-").trim() || "Listing"} · ${brand.shortName}`.slice(0, 120);
 
 export async function POST(request: Request) {
+  // Nov 24 2026: only a business on Google Drive (business.fileStore) has Save to Google Drive.
+  if (!onDrive()) return Response.json({ ok: false, error: "not found" }, { status: 404 });
   const email = await sessionEmail();
   const demo = !hasDb();
   if (!email || (!demo && !hasR2())) return Response.json({ ok: false }, { status: 401 });

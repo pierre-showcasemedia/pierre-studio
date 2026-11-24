@@ -592,6 +592,21 @@ const DDL = [
   `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "seller_email" text`,
   `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "time_shift_ok" boolean NOT NULL DEFAULT false`,
   `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "texts_opt_in" boolean NOT NULL DEFAULT false`,
+  // Studio template #16 (merged Nov 24): the agent's headshot and brokerage logo (src/lib/profile-images.ts), off unless business.profileImages.
+  `ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "headshot_key" text`,
+  `ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "logo_key" text`,
+  // Studio template (merged Nov 24): property page views (src/lib/property-page.ts), off unless business.propertyPage.
+  `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "page_views" integer DEFAULT 0 NOT NULL`,
+  `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "last_viewed_at" timestamp`,
+  `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "view_sources" jsonb NOT NULL DEFAULT '{}'::jsonb`,
+  // Property page views count once per visitor per day. key = "<listing id>:<day>:<keyed hash>";
+  // no address or user agent is stored; rows older than yesterday are pruned.
+  `CREATE TABLE IF NOT EXISTS "property_view_days" (
+    "key" text PRIMARY KEY NOT NULL,
+    "day" date NOT NULL,
+    "created_at" timestamp DEFAULT now() NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS "property_view_days_day_idx" ON "property_view_days"("day")`,
   `CREATE TABLE IF NOT EXISTS "leads" (
     "id" uuid PRIMARY KEY,
     "kind" text DEFAULT 'pricing' NOT NULL,

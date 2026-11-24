@@ -105,6 +105,37 @@ async function main() {
     ok(!/sellerEmail[\s\S]{0,80}(send|resend|emails\.)/i.test(read("src/lib/booking-intake.ts")), "the seller's email is stored, never emailed");
   }
 
+  // ---- The property page: off by default, visit sources, beds and baths ---------------
+  {
+    ok(business.propertyPage === false, "propertyPage: off by default");
+    const { propertyPage, viewSource, sourcesLine, bedsBaths } = await import("../src/lib/property-page");
+    ok((await propertyPage("any-token")) === null, "off: /property/<token> finds nothing (a 404)");
+    ok(/business\.propertyPage && listing\.shareToken && !prop\.nda/.test(readFileSync("src/app/portal/[slug]/page.tsx", "utf8")), "off: no Property page chip in the portal");
+    ok(viewSource("fb_post", "https://www.zillow.com/x") === "facebook" && viewSource("IG", null) === "instagram" && viewSource("newsletter", null) === "email" && viewSource("sms", null) === "text" && viewSource("flyer", null) === "other", "a utm_source or src tag wins over the referrer");
+    ok(viewSource(null, "https://mail.google.com/mail/u/0") === "email" && viewSource(null, "https://www.google.com/search?q=x") === "google" && viewSource(null, "https://outlook.live.com/") === "email", "webmail is email, checked before Google");
+    ok(viewSource(null, "https://l.facebook.com/l.php") === "facebook" && viewSource(null, "https://www.realtor.com/x") === "realtor" && viewSource(null, "https://example.org/") === "other" && viewSource(null, null) === "direct" && viewSource(null, "not a url") === "direct", "referrers: Facebook, Realtor.com, other sites, direct");
+    ok(sourcesLine({ direct: 5, facebook: 12, zillow: 3 }) === "Facebook 12 · Direct 5 · Zillow 3" && sourcesLine({}) === null, "the chip's line: biggest first");
+    ok(bedsBaths(3, 2.5) !== null && bedsBaths(null, null) === null, "beds and baths read as one line, or nothing");
+  }
+
+  // ---- Headshot and brokerage logo ------------------------------------------------------
+  {
+    ok(business.profileImages === false, "profileImages: off by default");
+    const { POST } = await import("../src/app/api/portal/profile-image/route");
+    ok((await POST(new Request("http://x/api/portal/profile-image", { method: "POST" }))).status === 404, "off: the upload route is a 404");
+    const portal = readFileSync("src/app/portal/page.tsx", "utf8");
+    ok(/tab === "account" && business\.profileImages \? "account"/.test(portal) && /key !== "account" \|\| business\.profileImages/.test(portal), "off: no Account tab in the portal");
+    ok(/business\.profileImages \? await Promise\.all/.test(readFileSync("src/lib/property-page.ts", "utf8")), "off: the agent card shows no images");
+  }
+
+  // ---- Upsell prompts: off by default, nothing emailed ----------------------------------
+  {
+    ok(business.upsell.enabled === false && business.upsell.itemIds.length === 0, "upsell: off by default, no items picked");
+    const { upsellListings, upsellFor } = await import("../src/lib/upsell");
+    ok((await upsellListings()).length === 0 && (await upsellFor("any")) === null, "off: no dashboard list, no portal note");
+    ok(!/\b(send|resend|sms|twilio)/i.test(read("src/lib/upsell.ts").replace(/\/\/.*$/gm, "")), "upsell never emails or texts");
+  }
+
   console.log(failures ? `\n${failures} FAILED, ${passes} passed` : `All ${passes} checks passed`);
   process.exit(failures ? 1 : 0);
 }

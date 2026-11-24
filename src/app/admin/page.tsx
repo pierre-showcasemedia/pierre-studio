@@ -10,6 +10,7 @@ import { requireTeam } from "@/lib/admin";
 import { redirect } from "next/navigation";
 import { BookingRow } from "./bookings/_components/BookingRow";
 import { TZ_SHORT } from "@/lib/business";
+import { upsellListings } from "@/lib/upsell";
 
 export default async function AdminDashboard() {
   // The gate, here and not only in the layout: Next renders layout and page
@@ -25,6 +26,7 @@ export default async function AdminDashboard() {
   if (staff.role !== "admin") redirect("/admin/photo-qc");
   const { attention, upcoming, recentDeliveries, activity, openRevisions, reviewShoots } = await adminDashboard();
   const parked = hasDb() && pipelineParked() && attention.processing > 0;
+  const upsells = await upsellListings().catch(() => []);
 
   const tiles = [
     { n: attention.processing, l: "Shoots in editing", href: "/admin/shoots?status=active", go: "Watch progress" },
@@ -177,6 +179,27 @@ export default async function AdminDashboard() {
                       <td><Link href={`/admin/listings/${r.listingId}`} style={{ fontWeight: 500 }}>{r.address.split(",")[0]}</Link><div className="muted" style={{ fontSize: 12.5 }}>{r.clientName ?? r.clientEmail}</div></td>
                       <td className="muted" style={{ maxWidth: 420 }}>{r.notes.length > 110 ? `${r.notes.slice(0, 110)}…` : r.notes}</td>
                       <td style={{ textAlign: "right" }}><ShootPillLike status={r.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {upsells.length > 0 && (
+        <div className="adm-section">
+          <SectionHead title="Still on the market: suggest something new" />
+          <div className="adm-table-wrap">
+            <div className="adm-table-scroll">
+              <table className="adm-table adm-table--stack">
+                <tbody>
+                  {upsells.slice(0, 8).map((u) => (
+                    <tr key={u.listingId}>
+                      <td className="adm-mono" style={{ whiteSpace: "nowrap" }}>{u.days} days</td>
+                      <td><Link href={`/admin/listings/${u.listingId}`} style={{ fontWeight: 500 }}>{u.address.split(",")[0]}</Link><div className="muted" style={{ fontSize: 12.5 }}>{u.clientName ?? u.clientEmail}</div></td>
+                      <td className="muted">{u.items.map((i) => i.name).join(", ")}</td>
                     </tr>
                   ))}
                 </tbody>

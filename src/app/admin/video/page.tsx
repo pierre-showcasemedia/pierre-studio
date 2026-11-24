@@ -2,6 +2,7 @@
 // video as a card in five stages, for admins and video editors. A video
 // editor lands here and sees nothing else in the admin.
 import { fileStoreName } from "@/lib/file-store";
+import { videoBoardLede } from "@/lib/file-store-copy";
 import { desc } from "drizzle-orm";
 import { db, hasDb, schema } from "@/db";
 import { requireVideo } from "@/lib/admin";
@@ -35,7 +36,7 @@ export default async function AdminVideo({ searchParams }: { searchParams: Promi
       <PageHead
         eyebrow="Video"
         title="Video."
-        lede={`Every shoot with video, from booking to delivered. Cards move on their own: In editing when the footage is in ${fileStoreName()}, In review when a cut is uploaded, Sent to client with the delivery email, Complete 3 days later unless a revision is open. Drag one (or use its menu) to move it by hand, or open it for the music, pace and notes, the raw footage in ${fileStoreName()}, and what this client has asked for before. ${open} open${revisions ? `, ${revisions} with a revision` : ""}.`}
+        lede={videoBoardLede(fileStoreName(), open, revisions)}
       />
       {sp.denied && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>That page is not part of the Video board, so you are back here.</p>}
       {sp.saved === "removed" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Card removed.</p>}

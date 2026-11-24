@@ -106,7 +106,7 @@ export default async function AdminListingDetail({
   const editor = hasDb();
   const [clients, extra, rows, replacedOriginals, finals] = await Promise.all([
     admin ? adminClients() : Promise.resolve([]),
-    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, picTimeUrl: true, dropboxFolder: true, driveFolderId: true, deliveryEmailAt: true } }) : Promise.resolve(null),
+    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, picTimeUrl: true, dropboxFolder: true, driveFolderId: true, deliveryEmailAt: true, pageViews: true, lastViewedAt: true } }) : Promise.resolve(null),
     adminMediaRows(id),
     adminReplacedOriginals({ listingId: id }),
     editor && admin ? (onDrive() ? driveFinalsStatus(id) : finalsStatus(id)).catch(() => null) : Promise.resolve(null),
@@ -174,6 +174,7 @@ export default async function AdminListingDetail({
         </p>
       )}
       {admin && listing.deliveryEmailAt && <p className="faint" style={{ marginTop: 12, fontSize: 12.5 }}>Delivery email last sent {fmtWhen(listing.deliveryEmailAt)} to {listing.clientEmail}</p>}
+      {admin && extra && (extra.pageViews ?? 0) > 0 && <p className="faint" style={{ marginTop: 8, fontSize: 12.5 }}>Property page: {extra.pageViews} {extra.pageViews === 1 ? "view" : "views"}{extra.lastViewedAt ? `, last ${fmtWhen(extra.lastViewedAt.toISOString())}` : ""}</p>}
       {listing.approvedAt && <p style={{ marginTop: 8, fontSize: 13.5, color: "var(--color-success)" }}>Approved by the client on {fmtDay(listing.approvedAt)}. Project completed.</p>}
       {pendingLoose > 0 && (
         <form action={approvePendingForListing.bind(null, listing.id)} className="adm-banner adm-banner--warn" style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>

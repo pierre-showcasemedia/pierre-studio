@@ -58,6 +58,7 @@ import { dirOf, dropEntries, skipName, storedName, walkEntries, type Picked } fr
 import "@/styles/upload.css";
 import { brand } from "@/lib/brand";
 import { googleDriveToken, loadGoogleIdentity } from "@/components/gallery/DriveModal";
+import { wizardClipCost, wizardClipsLanded, wizardPhotoText, type FileStoreName } from "@/lib/file-store-copy";
 
 type Model = { id: number; name: string; description: string | null; variant: "indoor" | "outdoor" | "indoor/outdoor"; type: string; credits: number | null };
 
@@ -88,7 +89,7 @@ type Props = {
   // Nov 18 2026: Import from Google Drive (the Picker), and which service the
   // copies go to, for the words on this page (business.fileStore).
   drivePicker?: { clientId: string; apiKey: string; appId: string } | null;
-  storeName?: string;
+  storeName?: FileStoreName;
   editingConnected: boolean;
   // business.editing "manual": photos are edited outside the studio, so the
   // photo box keeps raws (and their Dropbox copy) and never says "editing".
@@ -1063,7 +1064,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
               <input type="file" multiple accept={RAW_ACCEPT} style={{ display: "none" }} onChange={(e) => { if (e.target.files) addFiles(e.target.files, "photo"); e.target.value = ""; }} aria-label={editedOutside ? "Raw photos (kept, not edited)" : "Photos (sent for editing)"} />
               <div className="upl-box__kicker">Photos</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>{editedOutside ? "Raw photos (kept, not edited)" : "Photos (sent for editing)"}</div>
-              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>{editedOutside ? `Optional: raws kept on the shoot and copied to ${storeName}, never sent to editing. Finished photos go on the listing page.` : "Raws and JPGs from Files, your camera roll or an SD card reader, or drop the whole raw folder. These go to editing, and a copy goes to Dropbox (a dropped folder keeps its name there). Tap again to add more."}</div>
+              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>{wizardPhotoText(storeName, editedOutside)}</div>
               <span className="btn btn-ghost" style={{ marginTop: 14, pointerEvents: "none" }}>Browse photos</span>
             </label>
             <label
@@ -1107,7 +1108,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
           {wrongBox.video > 0 && <p className="muted" style={{ fontSize: 13 }}>{wrongBox.video} video clip{wrongBox.video === 1 ? "" : "s"} skipped from the photo box: add {wrongBox.video === 1 ? "it" : "them"} in the Video box instead.</p>}
           {wrongBox.photos > 0 && <p className="muted" style={{ fontSize: 13 }}>{wrongBox.photos} photo{wrongBox.photos === 1 ? "" : "s"} skipped from the video box: add {wrongBox.photos === 1 ? "it" : "them"} in the Photos box instead.</p>}
           {sameName.length > 0 && <p className="adm-banner adm-banner--warn">{sameName.length === 1 ? `${sameName[0]} was left out:` : `${sameName.length} files were left out (${sameName.slice(0, 3).join(", ")}${sameName.length > 3 ? ", …" : ""}):`} another file in this shoot already has that name. Rename {sameName.length === 1 ? "it" : "them"} and add {sameName.length === 1 ? "it" : "them"} again.</p>}
-          {tooBig.length > 0 && <p className="adm-banner adm-banner--warn">{tooBig.length === 1 ? `${tooBig[0]} is over 5 GB.` : `${tooBig.length} clips are over 5 GB.`} One upload tops out at 5 GB: split the clip, or add it to the listing&rsquo;s Dropbox folder by hand.</p>}
+          {tooBig.length > 0 && <p className="adm-banner adm-banner--warn">{tooBig.length === 1 ? `${tooBig[0]} is over 5 GB.` : `${tooBig.length} clips are over 5 GB.`} One upload tops out at 5 GB: split the clip, or add it to the listing&rsquo;s {storeName} folder by hand.</p>}
           {photoCount > MAX_FILES_WARNING && <p className="adm-banner adm-banner--warn">{photoCount} photos is a very large shoot. Editing can hit its ceiling above about 400 files; consider two shoots.</p>}
           {totalBytes > TWO_GB && cellularish && !uploading && <p className="adm-banner adm-banner--warn">That is {fmtBytes(totalBytes)}. On cellular this takes a while and uses your data plan. Wi-Fi is better if you have it.</p>}
 
@@ -1210,7 +1211,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
 
             {!videoOnly && (
               <div className="adm-card adm-card--fog" style={{ marginTop: 8, fontSize: 13.5, lineHeight: 1.6 }}>
-                <strong>Estimate:</strong> about {credits.photos} finished frames × {mainModel?.credits ?? 3} credits{options.twilight.enabled ? ` + ${Math.min(options.twilight.count, credits.photos)} twilight × 5` : ""} = <strong className="adm-mono">{credits.total} credits</strong>. Credits are at the editing account&apos;s rates. Raws are counted in brackets of three; the shoot page shows the real number once editing starts.{videoCount ? ` The ${videoCount} clip${videoCount === 1 ? "" : "s"} cost nothing: ${videoCount === 1 ? "it goes" : "they go"} to Dropbox only.` : ""}
+                <strong>Estimate:</strong> about {credits.photos} finished frames × {mainModel?.credits ?? 3} credits{options.twilight.enabled ? ` + ${Math.min(options.twilight.count, credits.photos)} twilight × 5` : ""} = <strong className="adm-mono">{credits.total} credits</strong>. Credits are at the editing account&apos;s rates. Raws are counted in brackets of three; the shoot page shows the real number once editing starts.{videoCount ? wizardClipCost(storeName, videoCount) : ""}
               </div>
             )}
             </div>
@@ -1234,7 +1235,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
             gaveUp ? (
               <p className="adm-banner adm-banner--warn" role="status">{files.length - doneCount} file{files.length - doneCount === 1 ? "" : "s"} did not upload after several tries, so this has not gone to editing yet. Check the connection and press Retry failed, or submit without them; it still submits on its own once everything is in.</p>
             ) : (
-              <p className="adm-banner adm-banner--ok" role="status">Saved. The moment the last file lands ({doneCount} of {files.length} so far), this {videoOnly ? "finishes" : "goes to editing"} on its own{videoCount ? ", and the video team hears once the clips are in Dropbox" : ""}. Nothing else to click. Keep this page open until then, since the files upload from this computer. Changes to the options still count until it submits.</p>
+              <p className="adm-banner adm-banner--ok" role="status">Saved. The moment the last file lands ({doneCount} of {files.length} so far), this {videoOnly ? "finishes" : "goes to editing"} on its own{videoCount ? wizardClipsLanded(storeName) : ""}. Nothing else to click. Keep this page open until then, since the files upload from this computer. Changes to the options still count until it submits.</p>
             )
           )}
         </div>

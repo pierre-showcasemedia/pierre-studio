@@ -16,6 +16,10 @@ import { isPaidAnotherWay } from "@/lib/pay-other";
 import PortalGallery from "@/components/PortalGallery";
 import { GROUP_AREAS, type GroupBundles } from "@/components/gallery/types";
 import ShareButton from "@/components/ShareButton";
+import { propertyViews } from "@/lib/property-page";
+import { upsellFor, upsellNoteFor } from "@/lib/upsell";
+import { bookAgainUrl } from "@/lib/portal-bookings";
+import { brand } from "@/lib/brand";
 import GalleryHero from "@/components/gallery/GalleryHero";
 import Rise from "@/components/gallery/Rise";
 import { galleryMedia } from "@/components/gallery/server-media";
@@ -61,6 +65,9 @@ export default async function PortalListingPage({ params, searchParams }: { para
   const outside = listing.picTimeUrl?.trim() || null;
   const studioMedia = media.length > 0;
   const locked = listing.downloadLocked;
+  const prop = await propertyViews(listing.id);
+  const upsell = upsellNoteFor(email) ? await upsellFor(listing.id).catch(() => null) : null;
+  const upsellUrl = upsell ? await bookAgainUrl(email, brand.marketingUrl, { address: listing.address, items: upsell.items.map((i) => i.id) }) : null;
   const invoice = listing.invoice;
   const payLabel = invoice
     ? isPayable(invoice.status)
@@ -153,6 +160,11 @@ export default async function PortalListingPage({ params, searchParams }: { para
               <Link href="/portal" className="muted" style={{ fontSize: 13 }}>← All listings</Link>
               <div className="g-topbar__right">
                 {listing.shareToken && <ShareButton token={listing.shareToken} />}
+                {business.propertyPage && listing.shareToken && !prop.nda && (
+                  <a href={`/property/${listing.shareToken}`} className="chip" target="_blank" rel="noopener noreferrer" title={prop.sources ? `Where visitors came from: ${prop.sources}` : "Your listing's property page to share with buyers"}>
+                    Property page · {prop.views === 1 ? "1 view" : `${prop.views} views`}
+                  </a>
+                )}
                 {payLabel && (
                   <Link href={`/portal/${listing.slug}/pay`} className="chip" style={{ textDecoration: "none" }}>
                     {payLabel}
@@ -183,6 +195,15 @@ export default async function PortalListingPage({ params, searchParams }: { para
                 Preview your full gallery below. Watermarks disappear and full-resolution downloads unlock
                 automatically the moment payment is received.
               </p>
+            )}
+
+            {upsell && upsellUrl && (
+              <div style={{ marginTop: 20, border: "1px solid var(--color-line, #e6e8ec)", borderRadius: 14, padding: "18px 22px", display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", justifyContent: "space-between" }}>
+                <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, maxWidth: "60ch" }}>
+                  Still on the market after {upsell.days} days? Give buyers something new to look at: {upsell.items.map((i) => i.name.toLowerCase()).join(", ")}.
+                </p>
+                <a href={upsellUrl} className="btn btn-primary">See the options</a>
+              </div>
             )}
 
             {(studioMedia || !outside) && <PortalGallery

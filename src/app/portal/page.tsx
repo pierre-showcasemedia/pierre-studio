@@ -19,6 +19,7 @@ import { DEMO_PHOTOS } from "@/lib/demo-photos";
 import "@/styles/portal-home.css";
 import { brand } from "@/lib/brand";
 import { business } from "@/lib/business";
+import { profileImagesFor, type ProfileImages } from "@/lib/profile-images-data";
 
 export const metadata: Metadata = { title: "Client Portal", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -50,15 +51,66 @@ function whenLine(b: PortalBooking | undefined, shootDate: string | null): strin
   return "To be scheduled";
 }
 
-export default async function PortalPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+// The agent's headshot and brokerage logo, shown on their property pages
+// (studio template, off unless business.profileImages). Plain form posts to
+// /api/portal/profile-image (checked and resized there).
+function AccountTab({ profile, saved, error }: { profile: ProfileImages; saved?: string; error?: string }) {
+  const slots = [
+    { kind: "headshot", title: "Headshot", help: "A clear photo of you. It shows in a circle on your property pages.", url: profile.headshotUrl, round: true },
+    { kind: "logo", title: "Brokerage logo", help: "Your brokerage or team logo. A PNG with a clear background looks best.", url: profile.logoUrl, round: false },
+  ] as const;
+  return (
+    <div style={{ marginBottom: 32 }}>
+      <h2 className="h3" style={{ marginBottom: 6 }}>Your property page card</h2>
+      <p className="muted" style={{ margin: "0 0 20px", fontSize: 14.5, lineHeight: 1.6 }}>Add a headshot and your brokerage logo. They show next to your name and contact details on every property page {brand.shortName} makes for you. JPG, PNG or WebP, up to 4 MB.</p>
+      {saved && <p style={{ margin: "0 0 16px", fontSize: 14 }} role="status">{saved}</p>}
+      {error && <p style={{ margin: "0 0 16px", fontSize: 14, color: "var(--color-bad, #b42318)" }} role="alert">{error}</p>}
+      {!profile.found ? (
+        <p className="muted" style={{ fontSize: 14.5 }}>Your account is still being set up. Please contact {brand.shortName} and we will sort it out.</p>
+      ) : (
+        <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+          {slots.map((s) => (
+            <div key={s.kind} style={{ border: "1px solid var(--color-line, #e6e8ec)", borderRadius: 14, padding: "18px 20px", display: "grid", gap: 12, alignContent: "start" }}>
+              <div className="kicker">{s.title}</div>
+              <div style={{ height: 96, display: "flex", alignItems: "center" }}>
+                {s.url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.url} alt={s.title} style={s.round ? { width: 96, height: 96, borderRadius: "50%", objectFit: "cover" } : { maxWidth: 200, maxHeight: 80, objectFit: "contain" }} />
+                ) : (
+                  <span className="muted" style={{ fontSize: 14 }}>Not added yet</span>
+                )}
+              </div>
+              <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55 }}>{s.help}</p>
+              <form action="/api/portal/profile-image" method="post" encType="multipart/form-data" style={{ display: "grid", gap: 10 }}>
+                <input type="hidden" name="kind" value={s.kind} />
+                <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required aria-label={`Choose a ${s.title.toLowerCase()}`} style={{ fontSize: 13.5 }} />
+                <button type="submit" className="btn btn-primary" style={{ justifySelf: "start" }}>{s.url ? "Replace" : "Upload"}</button>
+              </form>
+              {s.url && (
+                <form action="/api/portal/profile-image" method="post" encType="multipart/form-data">
+                  <input type="hidden" name="kind" value={s.kind} />
+                  <input type="hidden" name="op" value="remove" />
+                  <button type="submit" className="btn btn-ghost">Remove</button>
+                </form>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default async function PortalPage({ searchParams }: { searchParams: Promise<{ tab?: string; saved?: string; error?: string }> }) {
   const email = await sessionEmail();
   if (!email) redirect("/portal/login");
   const impersonating = await viewingAs();
   const partner = isPartnerEmail(email);
   // Admins and the QA team get the way back to /admin (view as stays admin only).
   const canAdmin = await isStaffAllowed(email);
-  const { tab } = await searchParams;
-  const activeTab = tab === "bookings" && !partner ? "bookings" : "galleries";
+  const { tab, saved, error } = await searchParams;
+  const activeTab = partner ? "galleries" : tab === "bookings" ? "bookings" : tab === "account" && business.profileImages ? "account" : "galleries";
+  const profile = activeTab === "account" ? await profileImagesFor(email) : null;
   const listings = await listingsForEmail(email);
   const againUrl = partner || !business.bookAgain ? null : await bookAgainUrl(email, brand.marketingUrl);
   const bookings = activeTab === "bookings" ? await bookingsForListings(listings.map((l) => l.id)) : new Map<string, PortalBooking>();
@@ -114,8 +166,9 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
                 [
                   ["galleries", "Galleries", "/portal"],
                   ["bookings", "Bookings", "/portal?tab=bookings"],
+                  ["account", "Account", "/portal?tab=account"],
                 ] as const
-              ).map(([key, label, href]) => (
+              ).filter(([key]) => key !== "account" || business.profileImages).map(([key, label, href]) => (
                 <Link key={key} href={href} scroll={false} className={`ph-tab${activeTab === key ? " is-active" : ""}`} aria-current={activeTab === key ? "page" : undefined}>
                   {/* The dark pill glides to the new tab (view transition). */}
                   {activeTab === key && <span aria-hidden className="ph-tab__ink" />}
@@ -127,7 +180,9 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
         </section>
 
         <section className="wrap ph-body">
-          {listings.length === 0 && (
+          {activeTab === "account" && profile && <AccountTab profile={profile} saved={saved} error={error} />}
+
+          {listings.length === 0 && activeTab !== "account" && (
             <p className="muted" style={{ fontSize: 15.5, marginTop: 8 }}>
               Nothing here yet. Your shoots will appear here as soon as they are booked.
             </p>

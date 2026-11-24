@@ -97,6 +97,24 @@ export const business = {
   // (intake secret) for the name, email, phone, company and client type. Off:
   // no button and the route is a 404. The website side is built (branch new-scope).
   bookAgain: false,
+  // ---- The property page (studio template, off) --------------------------------
+  // A public page per listing (/property/<share token>): the share gallery laid
+  // out as a listing page with the agent's card, beds and baths, the listing's
+  // links and a view count by source (utm_source or src tag, else the
+  // referrer) on the portal's "Property page" chip. A view counts once per
+  // visitor per day. Never for NDA listings, never a download. Off: the route
+  // is a 404 and the chip is hidden.
+  propertyPage: false,
+  // The client's headshot and brokerage logo: an Account tab in the portal
+  // (images only, 4 MB, sniffed and re-encoded server side, stored in R2 under
+  // clients/<id>/profile/), shown on the property page's agent card. Off: no
+  // Account tab, the upload route is a 404 and the card shows no images.
+  profileImages: false,
+  // Upsell prompts: between fromDays and toDays on the market the admin
+  // dashboard lists the listing and the portal suggests the add-ons in itemIds
+  // it has not had yet (ids from the price table). Client logins only, never
+  // partners. Nothing is ever sent. Off until Pierre says yes and picks the add-ons.
+  upsell: { enabled: false, fromDays: 45, toDays: 60, itemIds: [] as readonly string[] },
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.
   payAtClose: false,

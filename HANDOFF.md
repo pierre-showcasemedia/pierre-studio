@@ -327,7 +327,42 @@ and Picker key (names in `.env.example`) and the migrate route run once (it
 adds the `drive_*` columns, which stay empty while on Dropbox). Two wording
 gaps from the template were fixed in the merge (the Video board lede). Checks:
 `scripts/check-drive-mirror.ts`, plus the Drive lines in `check-qa-role.ts`
-and `check-video-editing.ts`.
+and `check-video-editing.ts`. The Nov 24 fix also makes Save to Google Drive
+and Import from Google Drive 404 unless the business is on Drive, checks the
+listing before an import makes a shoot, and words the upload page and Video
+board for whichever store is on (`src/lib/file-store-copy.ts`,
+`scripts/check-file-store-gate.ts`).
+
+### Switches from the template (branch `new-scope`, Nov 24 2026, all off)
+
+Each sits in `src/lib/business.ts` and ships **off**. Nothing here emails or
+texts anyone until Pierre turns it on. `scripts/check-switches.ts` checks every
+one is off.
+
+- **`clientDiscount`.** Per-client discount set on the client's page, applied
+  at intake and kept when an admin edits a booking. Separate from the agent
+  rates in `src/lib/agent-rates.ts`. Check: `check-client-pricing.ts`.
+- **Travel.** The intake now carries the miles and the travel line; the
+  website's `TRAVEL` bands stay empty, so the flat per-mile rule is unchanged.
+- **`reminderEmail` / `reminderLeadHours`.** A reminder with the home prep
+  checklist the day before the shoot (24 hours by default). Check:
+  `check-booking-edit.ts`, `check-reminder-and-views.ts`.
+- **`bookAgain`.** A Book again button on the portal home (never for partner
+  logins) that opens the website's booking form filled in. The website reads it
+  through `/api/book-again`. Check: `check-book-again.ts`.
+- **`propertyPage`.** A public page per listing at `/property/<share token>`
+  (never for NDA listings) with daily view counts and where visits came from,
+  shown on the admin listing page. Needs the migrate route (adds
+  `page_views`, `view_sources`, `last_viewed_at` and `property_view_days`).
+  Check: `check-reminder-and-views.ts`.
+- **`profileImages`.** An Account tab in the portal for the agent's headshot
+  and brokerage logo, used on the property page. Needs the migrate route (adds
+  `headshot_key`, `logo_key`). Checks: `check-profile-images.ts`,
+  `check-profile-origin.ts`.
+- **`upsell`.** Between 45 and 60 days on the market, the dashboard lists the
+  listing and the agent's portal shows "See the options" with add-ons from
+  `upsell.itemIds` (empty until Pierre picks them). Never for partner logins or
+  NDA listings. Checks: `check-upsell.ts`, `check-upsell-partner.ts`.
 
 ## 12b. Pic-Time galleries (Nov 22 2026)
 
