@@ -92,8 +92,8 @@ export const business = {
   clientDiscount: false,
   // Book again (studio template): a button on the portal home opening the
   // website's /book with ?again=<signed token> and the item ids of the client's
-  // latest booking (src/lib/book-again-token.ts). Nothing personal is in the
-  // link; the website's server trades the token at /api/studio/book-again
+  // latest booking (src/lib/book-again-token.ts). The link carries the token,
+  // the address and item ids only, nothing personal; the website's server trades the token at /api/studio/book-again
   // (intake secret) for the name, email, phone, company and client type. Off:
   // no button and the route is a 404. The website side is built (branch new-scope).
   bookAgain: false,

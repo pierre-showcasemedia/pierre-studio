@@ -6,7 +6,7 @@ import { and, eq, inArray, isNull, ne, or } from "drizzle-orm";
 import { db, hasDb, schema } from "@/db";
 import { currentEnv } from "@/lib/jobs-core";
 import { fmtTime12 } from "@/lib/booking-time";
-import { BUSINESS_TZ } from "@/lib/business";
+import { BUSINESS_TZ, business } from "@/lib/business";
 import { bookAgainPrefill, signBookAgainToken, verifyBookAgainToken, type BookAgainPrefill } from "@/lib/book-again-token";
 import { authSecret } from "@/lib/session-token";
 
@@ -79,7 +79,7 @@ export async function bookAgainUrl(email: string, marketingUrl: string, opts: { 
         orderBy: (b, { desc }) => [desc(b.createdAt)],
         columns: { serviceIds: true, addonIds: true },
       });
-  const q = new URLSearchParams({ again: signBookAgainToken(client.id, authSecret()) });
+  const q = new URLSearchParams(business.bookAgain ? { again: signBookAgainToken(client.id, authSecret()) } : {});
   if (opts.address) q.set("address", opts.address);
   const items = opts.items ?? [...(last?.serviceIds ?? []), ...(last?.addonIds ?? [])];
   if (items.length) q.set("items", items.join(","));
