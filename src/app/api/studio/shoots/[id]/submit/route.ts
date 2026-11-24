@@ -27,6 +27,8 @@ import { advanceShoot } from "@/lib/pipeline";
 import { TWILIGHT_MAX, TWILIGHT_MIN } from "@/lib/autohdr-constants";
 import { dropboxMirrorEnabled } from "@/lib/dropbox";
 import { enqueueDropboxFolder, enqueueMirrorForShoot, MIRROR_KINDS, queueVideoEditingLine } from "@/lib/dropbox-mirror";
+import { DRIVE_KINDS, enqueueDriveMirrorForShoot } from "@/lib/drive-mirror";
+import { driveMirrorEnabled } from "@/lib/google-drive";
 import { attachFootage } from "@/lib/video-board";
 import { drainJobs } from "@/lib/jobs";
 
@@ -86,7 +88,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     },
     nda,
     notes: typeof o.notes === "string" ? o.notes.trim().slice(0, 2000) : undefined,
-    source: o.source === "dropbox" || o.source === "mixed" ? o.source : "device",
+    source: o.source === "dropbox" || o.source === "google_drive" || o.source === "mixed" ? o.source : "device",
     files: landed.kinds,
   };
 
@@ -121,6 +123,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       console.error("[submit] mirror enqueue failed", id, e);
     }
   }
+  // The Google Drive mirror, the same way (src/lib/drive-mirror.ts).
+  let driveJobs = 0;
+  if (driveMirrorEnabled()) {
+    try {
+      driveJobs = await enqueueDriveMirrorForShoot({ shootId: id, listingId: shoot.listingId });
+    } catch (e) {
+      console.error("[submit] drive enqueue failed", id, e);
+    }
+  }
   // Raw video: the listing's Video card knows the footage is in.
   if (landed.kinds.video > 0) {
     try {
@@ -135,9 +146,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     action: "shoot.submitted",
     shootId: id,
     listingId: shoot.listingId,
-    meta: { fileCount: landed.fileCount, photos: landed.kinds.photos, video: landed.kinds.video, videoOnly, model: options.modelName ?? options.indoorModelId, twilight: options.twilight.enabled ? options.twilight.count : 0, nda, parked, mirror: mirrorJobs, ...(dropped.length ? { dropped } : {}) },
+    meta: { fileCount: landed.fileCount, photos: landed.kinds.photos, video: landed.kinds.video, videoOnly, model: options.modelName ?? options.indoorModelId, twilight: options.twilight.enabled ? options.twilight.count : 0, nda, parked, mirror: mirrorJobs, drive: driveJobs, ...(dropped.length ? { dropped } : {}) },
   });
-  await hubShootUploaded({ shootId: id, listing: { address: shoot.listing.address, nda }, fileCount: landed.fileCount, videoCount: landed.kinds.video, by: admin, parked, mirror: mirrorJobs > 0 });
+  await hubShootUploaded({ shootId: id, listing: { address: shoot.listing.address, nda }, fileCount: landed.fileCount, videoCount: landed.kinds.video, by: admin, parked, mirror: mirrorJobs > 0 || driveJobs > 0, mirrorTo: mirrorJobs > 0 && driveJobs > 0 ? "Dropbox and Google Drive" : driveJobs > 0 ? "Google Drive" : "Dropbox" });
 
   // Editing starts now, not on the next cron run; then a first Dropbox pass
   // on the same invocation so the mirror does not wait for the cron either.
@@ -150,9 +161,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         console.error("[submit] immediate start failed", id, e);
       }
     }
-    if (mirrorJobs > 0) {
+    if (mirrorJobs > 0 || driveJobs > 0) {
       try {
-        await drainJobs({ kinds: MIRROR_KINDS, budgetMs: MIRROR_BUDGET_MS, limit: 200 });
+        await drainJobs({ kinds: [...MIRROR_KINDS, ...DRIVE_KINDS], budgetMs: MIRROR_BUDGET_MS, limit: 200 });
       } catch (e) {
         console.error("[submit] mirror drain failed", id, e);
       }

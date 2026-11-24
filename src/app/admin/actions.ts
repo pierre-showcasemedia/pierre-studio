@@ -238,6 +238,16 @@ export async function sendDeliveryEmail(listingId: string, formData?: FormData) 
         } catch (e) {
           console.error("[delivery] video card", e);
         }
+        // ...and the same in Google Drive when the business is on Drive (src/lib/drive-mirror.ts).
+        try {
+          const { driveMirrorEnabled } = await import("@/lib/google-drive");
+          if (driveMirrorEnabled()) {
+            const { enqueueDriveFinalSweep } = await import("@/lib/drive-mirror");
+            await enqueueDriveFinalSweep({ listingId });
+          }
+        } catch (e) {
+          console.error("[delivery] Drive FINAL DELIVERY sweep", e);
+        }
         // What was delivered goes to the listing's FINAL DELIVERY folder in Dropbox (src/lib/dropbox-mirror.ts).
         try {
           const { dropboxMirrorEnabled } = await import("@/lib/dropbox");

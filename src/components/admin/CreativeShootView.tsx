@@ -12,7 +12,7 @@ import { FALLBACK_LOOKS } from "@/lib/autohdr";
 import { twilightLookName } from "@/lib/twilight-preset";
 import { STEP_BLURBS, fmtBytes, fmtWhen, isActive, railFor } from "@/lib/shoot-status";
 
-export default function CreativeShootView({ shoot, files, mirror, mirrorState }: { shoot: AdminShoot; files: AdminShootFile[]; mirror: { total: number; synced: number; photos: number; video: number }; mirrorState: MirrorState }) {
+export default function CreativeShootView({ shoot, files, mirror, mirrorState, service = "Dropbox", folderUrl = null }: { shoot: AdminShoot; files: AdminShootFile[]; mirror: { total: number; synced: number; photos: number; video: number }; mirrorState: MirrorState; service?: "Dropbox" | "Google Drive"; folderUrl?: string | null }) {
   const o = shoot.options;
   const rail = railFor(shoot.status, (shoot.progress?.failedFrom as string | undefined) ?? null, Boolean(o?.twilight?.enabled));
   const look = twilightLookName(o?.twilight?.look, FALLBACK_LOOKS);
@@ -43,7 +43,7 @@ export default function CreativeShootView({ shoot, files, mirror, mirrorState }:
 
       {shoot.status === "uploaded" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Your upload went through. Editing starts from here; the team takes it the rest of the way.</p>}
       {active && shoot.status !== "uploaded" && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>Your upload went through and is in editing. This page refreshes on its own for a while.</p>}
-      {videoOnly && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Your upload went through. Video only: the clips are copied to Dropbox and nothing goes to editing.</p>}
+      {videoOnly && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Your upload went through. Video only: the clips are copied to {service} and nothing goes to editing.</p>}
       {done && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Editing finished. The team reviews the frames and delivers the gallery from here.</p>}
       {shoot.status === "failed" && (
         <p className="adm-banner adm-banner--bad" style={{ marginTop: 18 }}>
@@ -69,7 +69,7 @@ export default function CreativeShootView({ shoot, files, mirror, mirrorState }:
         <div><dt>Files</dt><dd className="adm-mono">{mirror.video ? `${mirror.photos} photo${mirror.photos === 1 ? "" : "s"} · ${mirror.video} clip${mirror.video === 1 ? "" : "s"}` : `${shoot.fileCount} uploaded`}</dd></div>
         {!videoOnly && <div><dt>Frames</dt><dd className="adm-mono">{shoot.photoCount || "pending"}</dd></div>}
         <div><dt>Timing</dt><dd className="adm-mono" style={{ fontSize: 12 }}>submitted {fmtWhen(shoot.submittedAt) || "no"}{shoot.readyAt ? ` · ready ${fmtWhen(shoot.readyAt)}` : ""}{shoot.publishedAt ? ` · published ${fmtWhen(shoot.publishedAt)}` : ""}</dd></div>
-        <div style={{ gridColumn: "1 / -1" }}><dt>Dropbox</dt><dd><DropboxMirrorLine mirror={mirror} state={mirrorState} folder={shoot.dropboxFolder} syncedAt={shoot.dropboxSyncedAt} admin={false} /></dd></div>
+        <div style={{ gridColumn: "1 / -1" }}><dt>{service}</dt><dd><DropboxMirrorLine mirror={mirror} state={mirrorState} folder={shoot.dropboxFolder} syncedAt={service === "Google Drive" ? shoot.driveSyncedAt ?? null : shoot.dropboxSyncedAt} admin={false} service={service} folderNode={service === "Google Drive" ? (folderUrl ? <a className="adm-link" style={{ fontSize: 12.5 }} href={folderUrl} target="_blank" rel="noreferrer">Open the folder in Drive ↗</a> : <span className="muted" style={{ fontSize: 12.5 }}>folder is made on the first copy</span>) : undefined} /></dd></div>
         {o?.notes && <div style={{ gridColumn: "1 / -1" }}><dt>Notes</dt><dd style={{ whiteSpace: "pre-wrap" }}>{o.notes}</dd></div>}
       </dl>
 
@@ -85,7 +85,7 @@ export default function CreativeShootView({ shoot, files, mirror, mirrorState }:
                     <td className="adm-mono muted">{fmtBytes(f.bytes)}</td>
                     <td className="muted">{f.kind === "raw_video" ? "raw video" : f.kind}</td>
                     <td className="muted">{f.kind === "raw_video" ? "not for editing" : f.uploaded ? "sent to editing" : "in storage"}</td>
-                    <td className="muted" style={{ textAlign: "right", whiteSpace: "nowrap" }}>{f.dropboxSyncedAt ? "in Dropbox" : mirrorState === "off" ? "" : "not in Dropbox yet"}</td>
+                    <td className="muted" style={{ textAlign: "right", whiteSpace: "nowrap" }}>{(service === "Google Drive" ? f.driveSyncedAt : f.dropboxSyncedAt) ? `in ${service}` : mirrorState === "off" ? "" : `not in ${service} yet`}</td>
                   </tr>
                 ))}
               </tbody>

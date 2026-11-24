@@ -11,6 +11,8 @@ export default function DropboxMirrorLine({
   folder,
   syncedAt,
   admin,
+  service = "Dropbox",
+  folderNode,
   children,
 }: {
   mirror: { total: number; synced: number; photos: number; video: number };
@@ -18,10 +20,14 @@ export default function DropboxMirrorLine({
   folder: string | null;
   syncedAt: string | null;
   admin: boolean;
+  // Nov 18 2026: the same line for Google Drive (business.fileStore): the
+  // service's name and how its folder shows (a link, Drive has no paths).
+  service?: "Dropbox" | "Google Drive";
+  folderNode?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   if (state === "off") {
-    return <span className="muted">Not set up.{admin ? " Add the Dropbox app in Vercel, then connect it on Settings." : ""}</span>;
+    return <span className="muted">Not set up.{admin ? (service === "Dropbox" ? " Add the Dropbox app in Vercel, then connect it on Settings." : " Add the Google Drive keys in Vercel, then connect it on Settings.") : ""}</span>;
   }
   const all = mirror.total > 0 && mirror.synced === mirror.total;
   const words = all ? `all ${mirror.total} file${mirror.total === 1 ? "" : "s"} copied` : `${mirror.synced} of ${mirror.total} file${mirror.total === 1 ? "" : "s"} copied`;
@@ -32,7 +38,7 @@ export default function DropboxMirrorLine({
         {all && syncedAt ? <span className="muted"> · {fmtWhen(syncedAt)}</span> : null}
         {!all && state === "elsewhere" ? <span className="muted"> · the copy runs on the live portal</span> : null}
       </span>
-      {folder ? <span className="adm-mono muted" style={{ fontSize: 12 }}>{folder}/Raw</span> : <span className="muted" style={{ fontSize: 12.5 }}>folder is made on the first copy</span>}
+      {folderNode !== undefined ? folderNode : folder ? <span className="adm-mono muted" style={{ fontSize: 12 }}>{folder}/Raw</span> : <span className="muted" style={{ fontSize: 12.5 }}>folder is made on the first copy</span>}
       {children}
     </span>
   );

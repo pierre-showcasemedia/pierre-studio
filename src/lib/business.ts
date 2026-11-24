@@ -14,6 +14,7 @@ export const TEMPLATE = false;
 
 export type PaymentMethod = "stripe" | "manual";
 export type EditingPath = "autohdr" | "manual";
+export type FileStore = "dropbox" | "google_drive";
 
 export const business = {
   // ---- Who ---------------------------------------------------------------------
@@ -78,6 +79,12 @@ export const business = {
   // Pierre: Fotello today (AutoHDR soon), then he finishes the edit himself.
   // Switch to "autohdr" once his AutoHDR API app is connected.
   editing: "manual" as EditingPath,
+  // Where the team keeps its files. "dropbox": the Dropbox card on Settings,
+  // Save to Dropbox for clients, Import from Dropbox for the team.
+  // "google_drive": the same three through Google Drive (src/lib/google-drive.ts)
+  // and no Dropbox anywhere. Both need the buyer's own keys before they work.
+  // Pierre keeps his files in Dropbox (Nov 24 2026).
+  fileStore: "dropbox" as FileStore,
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.
   payAtClose: false,

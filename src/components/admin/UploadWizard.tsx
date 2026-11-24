@@ -57,6 +57,7 @@ import { estimateCredits, fmtBytes } from "@/lib/shoot-status";
 import { dirOf, dropEntries, skipName, storedName, walkEntries, type Picked } from "@/lib/folder-drop";
 import "@/styles/upload.css";
 import { brand } from "@/lib/brand";
+import { googleDriveToken, loadGoogleIdentity } from "@/components/gallery/DriveModal";
 
 type Model = { id: number; name: string; description: string | null; variant: "indoor" | "outdoor" | "indoor/outdoor"; type: string; credits: number | null };
 
@@ -73,8 +74,9 @@ type UFile = {
   kind: FileKind;
   // The folder it was dropped in, from the dropped folder down ("" = a loose file).
   dir: string;
-  source: "device" | "dropbox";
+  source: "device" | "dropbox" | "drive";
   link?: string;
+  driveId?: string; // Nov 18 2026: picked in Google Drive (imported server side)
   state: "queued" | "uploading" | "done" | "failed" | "skipped";
   loaded: number;
   error?: string;
@@ -83,6 +85,10 @@ type UFile = {
 type Props = {
   demo: boolean;
   dropboxKey: string | null;
+  // Nov 18 2026: Import from Google Drive (the Picker), and which service the
+  // copies go to, for the words on this page (business.fileStore).
+  drivePicker?: { clientId: string; apiKey: string; appId: string } | null;
+  storeName?: string;
   editingConnected: boolean;
   // business.editing "manual": photos are edited outside the studio, so the
   // photo box keeps raws (and their Dropbox copy) and never says "editing".
@@ -146,7 +152,7 @@ function Switch({ on, onChange, disabled, label }: { on: boolean; onChange: (v: 
   return <button type="button" role="switch" aria-checked={on} aria-label={label} className={`adm-switch${on ? " is-on" : ""}`} disabled={disabled} onClick={() => onChange(!on)} />;
 }
 
-export default function UploadWizard({ demo, dropboxKey, editingConnected, editedOutside = false, canCreate = true, initialClient, initialListing }: Props) {
+export default function UploadWizard({ demo, dropboxKey, drivePicker = null, storeName = "Dropbox", editingConnected, editedOutside = false, canCreate = true, initialClient, initialListing }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(initialListing ? 2 : 1);
 
@@ -640,6 +646,113 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
     });
   };
 
+  // Google Drive Picker → server-side import (Nov 18 2026). Sign in to Google
+  // straight from the click (drive.file: the site sees only the picked files),
+  // pick in Google's own window, then the server streams each file from Drive
+  // into storage, a few per request, like the Dropbox import.
+  const chooseDrive = async () => {
+    if (!drivePicker) return;
+    setErr(null);
+    try {
+      await loadGoogleIdentity();
+    } catch {
+      setErr("Google did not load. Check the connection and try again.");
+      return;
+    }
+    const token = await googleDriveToken(drivePicker.clientId);
+    if (!token) return; // closed or declined
+    type Doc = { id: string; name: string; sizeBytes?: number | string; mimeType?: string };
+    type PickerNs = {
+      Action: { PICKED: string; CANCEL: string };
+      Response: { ACTION: string; DOCUMENTS: string };
+      DocsView: new (v?: unknown) => { setIncludeFolders: (b: boolean) => unknown; setSelectFolderEnabled: (b: boolean) => unknown; setMimeTypes: (m: string) => unknown };
+      ViewId: { DOCS: unknown };
+      Feature: { MULTISELECT_ENABLED: unknown };
+      PickerBuilder: new () => {
+        addView: (v: unknown) => PickerB; setOAuthToken: (t: string) => PickerB; setDeveloperKey: (k: string) => PickerB; setAppId: (a: string) => PickerB;
+        enableFeature: (f: unknown) => PickerB; setCallback: (cb: (d: Record<string, unknown>) => void) => PickerB; setTitle: (t: string) => PickerB; build: () => { setVisible: (v: boolean) => void };
+      };
+    };
+    type PickerB = InstanceType<PickerNs["PickerBuilder"]>;
+    type Gapi = { load: (lib: string, cb: () => void) => void };
+    const w = window as Window & { gapi?: Gapi; google?: { picker?: PickerNs } };
+    try {
+      if (!w.gapi) {
+        await new Promise<void>((res, rej) => {
+          const s = document.createElement("script");
+          s.src = "https://apis.google.com/js/api.js";
+          s.onload = () => res();
+          s.onerror = () => rej(new Error("Google Drive did not load"));
+          document.body.appendChild(s);
+        });
+      }
+      if (!w.google?.picker) await new Promise<void>((res) => w.gapi!.load("picker", () => res()));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Google Drive did not load");
+      return;
+    }
+    const P = w.google?.picker;
+    if (!P) {
+      setErr("Google Drive did not load. Try again.");
+      return;
+    }
+    const view = new P.DocsView(P.ViewId.DOCS);
+    view.setIncludeFolders(true);
+    view.setSelectFolderEnabled(false);
+    view.setMimeTypes("image/jpeg,image/png,image/tiff,image/x-adobe-dng,image/x-canon-cr2,image/x-canon-cr3,image/x-nikon-nef,image/x-sony-arw,image/x-fuji-raf,application/octet-stream");
+    const picked = await new Promise<Doc[]>((resolve) => {
+      new P.PickerBuilder()
+        .addView(view)
+        .enableFeature(P.Feature.MULTISELECT_ENABLED)
+        .setOAuthToken(token)
+        .setDeveloperKey(drivePicker.apiKey)
+        .setAppId(drivePicker.appId)
+        .setTitle("Choose the photos for this shoot")
+        .setCallback((d) => {
+          const action = d[P.Response.ACTION];
+          if (action === P.Action.PICKED) resolve(((d[P.Response.DOCUMENTS] as Doc[]) ?? []).filter((x) => x && x.id));
+          else if (action === P.Action.CANCEL) resolve([]);
+        })
+        .build()
+        .setVisible(true);
+    });
+    if (!picked.length) return;
+    const next: UFile[] = picked.map((p) => ({ id: `drive:${p.id}`, file: null, name: p.name, size: Number(p.sizeBytes ?? 0) || 0, type: contentTypeFor(p.name), kind: "photo", dir: "", source: "drive", driveId: p.id, state: "queued", loaded: 0 }));
+    commit([...filesRef.current, ...next]);
+    if (demo) { await runUploads(); return; }
+    if (!listing || runningRef.current) return;
+    runningRef.current = true;
+    setUploading(true);
+    for (let b = 0; b < next.length; b += 5) {
+      const batch = next.slice(b, b + 5);
+      batch.forEach((f) => patch(f.id, { state: "uploading" }));
+      try {
+        const r = await fetch("/api/studio/import-drive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shootId: shootIdRef.current, listingId: listing.id, kind: "raw", token, files: batch.map((f) => ({ id: f.driveId, name: f.name })) }),
+        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const j: any = await readJson(r);
+        if (!j.ok) throw new Error(j.error || "Import failed");
+        if (j.shootId && j.shootId !== shootIdRef.current) { shootIdRef.current = j.shootId; setShootId(j.shootId); }
+        const okNames = new Map((j.imported as { filename: string; bytes: number }[]).map((x) => [x.filename, x.bytes]));
+        const bad = new Map((j.failed as { filename: string; error: string }[]).map((x) => [x.filename, x.error]));
+        for (const f of batch) {
+          const safe = f.name.replace(/[^A-Za-z0-9._-]+/g, "-");
+          if (okNames.has(safe)) patch(f.id, { state: "done", size: okNames.get(safe) || f.size, loaded: okNames.get(safe) || f.size });
+          else patch(f.id, { state: "failed", error: bad.get(safe) || "not imported" });
+        }
+      } catch (e) {
+        batch.forEach((f) => patch(f.id, { state: "failed", error: e instanceof Error ? e.message : "failed" }));
+      }
+    }
+    setUploading(false);
+    runningRef.current = false;
+    persist();
+    if (filesRef.current.some((f) => f.state === "queued" && f.file)) void runUploads();
+  };
+
   const cellularish = useMemo(() => {
     if (typeof navigator === "undefined") return true;
     const c = (navigator as Navigator & { connection?: { type?: string; effectiveType?: string } }).connection;
@@ -703,7 +816,7 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
             twilight: options.twilight,
             nda: options.nda,
             notes: options.notes,
-            source: files.some((f) => f.source === "dropbox") ? (files.every((f) => f.source === "dropbox") ? "dropbox" : "mixed") : "device",
+            source: files.some((f) => f.source !== "device") ? (files.every((f) => f.source === "dropbox") ? "dropbox" : files.every((f) => f.source === "drive") ? "google_drive" : "mixed") : "device",
           },
         }),
       });
@@ -950,7 +1063,7 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
               <input type="file" multiple accept={RAW_ACCEPT} style={{ display: "none" }} onChange={(e) => { if (e.target.files) addFiles(e.target.files, "photo"); e.target.value = ""; }} aria-label={editedOutside ? "Raw photos (kept, not edited)" : "Photos (sent for editing)"} />
               <div className="upl-box__kicker">Photos</div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>{editedOutside ? "Raw photos (kept, not edited)" : "Photos (sent for editing)"}</div>
-              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>{editedOutside ? "Optional: raws kept on the shoot and copied to Dropbox, never sent to editing. Finished photos go on the listing page." : "Raws and JPGs from Files, your camera roll or an SD card reader, or drop the whole raw folder. These go to editing, and a copy goes to Dropbox (a dropped folder keeps its name there). Tap again to add more."}</div>
+              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>{editedOutside ? `Optional: raws kept on the shoot and copied to ${storeName}, never sent to editing. Finished photos go on the listing page.` : "Raws and JPGs from Files, your camera roll or an SD card reader, or drop the whole raw folder. These go to editing, and a copy goes to Dropbox (a dropped folder keeps its name there). Tap again to add more."}</div>
               <span className="btn btn-ghost" style={{ marginTop: 14, pointerEvents: "none" }}>Browse photos</span>
             </label>
             <label
@@ -960,10 +1073,10 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
               onDragLeave={() => setDragOverVideo(false)}
               onDrop={(e) => { e.preventDefault(); setDragOverVideo(false); void dropInto(e.dataTransfer, "video"); }}
             >
-              <input type="file" multiple accept={VIDEO_ACCEPT} style={{ display: "none" }} onChange={(e) => { if (e.target.files) addFiles(e.target.files, "video"); e.target.value = ""; }} aria-label="Video (raw footage, to Dropbox only)" />
+              <input type="file" multiple accept={VIDEO_ACCEPT} style={{ display: "none" }} onChange={(e) => { if (e.target.files) addFiles(e.target.files, "video"); e.target.value = ""; }} aria-label={`Video (raw footage, to ${storeName} only)`} />
               <div className="upl-box__kicker">Video</div>
-              <div style={{ fontSize: 15, fontWeight: 500 }}>Video (raw footage, to Dropbox only)</div>
-              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>Camera clips: MP4, MOV, MXF, BRAW, R3D, MTS and the like, up to 5 GB each, or drop the whole video folder. They go to the listing&rsquo;s Dropbox folder (a dropped folder keeps its name) and never to editing.</div>
+              <div style={{ fontSize: 15, fontWeight: 500 }}>Video (raw footage, to {storeName} only)</div>
+              <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>Camera clips: MP4, MOV, MXF, BRAW, R3D, MTS and the like, up to 5 GB each, or drop the whole video folder. They go to the listing&rsquo;s {storeName} folder (a dropped folder keeps its name) and never to editing.</div>
               <span className="btn btn-ghost" style={{ marginTop: 14, pointerEvents: "none" }}>Browse clips</span>
             </label>
           </div>
@@ -984,6 +1097,9 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
 
           {dropboxKey && (
             <button type="button" className="btn btn-ghost" style={{ justifySelf: "start" }} onClick={chooseDropbox} disabled={uploading}>Choose photos from Dropbox →</button>
+          )}
+          {drivePicker && (
+            <button type="button" className="btn btn-ghost" style={{ justifySelf: "start" }} onClick={() => void chooseDrive()} disabled={uploading}>Choose photos from Google Drive →</button>
           )}
 
           {skippedCount > 0 && <p className="muted" style={{ fontSize: 13 }}>{skippedCount} file{skippedCount === 1 ? "" : "s"} skipped (not a photo format we take).</p>}
@@ -1020,7 +1136,7 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
             <div className="upl-options" style={{ display: "grid", gap: 4, borderTop: "1px solid var(--line)", paddingTop: 16 }}>
               <div className="kicker" style={{ marginBottom: 8 }}>Editing options</div>
             {videoOnly && (
-              <p className="adm-banner adm-banner--info" style={{ marginBottom: 10 }}>Video only: no photos were added, so there is nothing to edit. The clips go to the listing&rsquo;s Dropbox folder under Video. Finish the upload below.</p>
+              <p className="adm-banner adm-banner--info" style={{ marginBottom: 10 }}>Video only: no photos were added, so there is nothing to edit. The clips go to the listing&rsquo;s {storeName} folder under Video. Finish the upload below.</p>
             )}
             {!connected && !videoOnly && (
               <p className="adm-banner adm-banner--warn" style={{ marginBottom: 10 }}>Editing account not connected yet. Aura is the only option shown; the shoot will wait safely until the account is connected.</p>
@@ -1083,7 +1199,7 @@ export default function UploadWizard({ demo, dropboxKey, editingConnected, edite
             </>)}
 
             <div className="adm-toggle">
-              <div><div className="adm-toggle__t">NDA listing</div><div className="adm-toggle__d">{videoOnly ? "Hidden from partners. The clips still go to Dropbox under the listing's folder." : "Runs on Aura under the NDA name, never with an address. Hidden from partners."}</div></div>
+              <div><div className="adm-toggle__t">NDA listing</div><div className="adm-toggle__d">{videoOnly ? `Hidden from partners. The clips still go to ${storeName} under the listing's folder.` : "Runs on Aura under the NDA name, never with an address. Hidden from partners."}</div></div>
               <Switch on={options.nda} onChange={(v) => setOptions((o) => ({ ...o, nda: v }))} label="NDA" disabled={Boolean(listing.nda)} />
             </div>
 

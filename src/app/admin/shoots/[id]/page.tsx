@@ -16,6 +16,8 @@ import { STEP_BLURBS, canPublishFrom, estimateCredits, fmtBytes, fmtWhen, isActi
 import { rerunQc, retryShoot, runShootNow } from "../../actions";
 import { publishedBanner } from "@/lib/publish-plan";
 import { mirrorShootAgain } from "../../dropbox-actions";
+import { driveShootAgain } from "../../drive-actions";
+import { shootCopyView } from "@/lib/file-store";
 import ShootReview from "@/components/admin/ShootReview";
 import QcReport from "@/components/admin/QcReport";
 import UploadFinals from "@/components/admin/UploadFinals";
@@ -27,9 +29,7 @@ import DropboxMirrorLine from "@/components/admin/DropboxMirrorLine";
 import { ShootPill } from "@/components/admin/bits";
 import { CREATIVE_DENIED_PATH, VIDEO_DENIED_PATH, isStaffRole, mayOpenShoot, requireTeam } from "@/lib/admin";
 import { isClientVisibleRow } from "@/lib/visibility";
-import { dropboxMirrorEnabled, hasDropboxApp } from "@/lib/dropbox";
 import { finalReviewOpen, lastFinalReviews } from "@/lib/final-review";
-import { mirrorSummary } from "@/lib/dropbox-mirror";
 
 // Server actions on this page push the pipeline in after(); give them room.
 export const maxDuration = 120;
@@ -61,9 +61,11 @@ export default async function ShootPage({ params, searchParams }: { params: Prom
     : { reason: demo ? "Demo mode: nothing runs." : !twilightReady ? "Set the Champagne preset in Settings → Virtual twilight first." : !(MAKE_TWILIGHT_STATUSES as readonly string[]).includes(shoot.status) ? "Available once editing has finished pulling this shoot in." : null };
   // The Dropbox raw mirror (Oct 21 2026): how many of this shoot's files are
   // in Dropbox, and whether the mirror is set up on this deployment at all.
-  const mirror = mirrorSummary(files);
-  const mirrorState = demo ? "on" : dropboxMirrorEnabled() ? "on" : hasDropboxApp() ? "elsewhere" : "off";
-  if (staff.role === "creative") return <CreativeShootView shoot={shoot} files={files} mirror={mirror} mirrorState={mirrorState} />;
+  // Nov 18 2026: or in Google Drive, when that is where the business keeps files (business.fileStore).
+  const copy = shootCopyView(shoot, files, demo);
+  const { mirror, state: mirrorState, service } = copy;
+  const folderNode = service === "Google Drive" ? (copy.folderUrl ? <a className="adm-link" style={{ fontSize: 12.5 }} href={copy.folderUrl} target="_blank" rel="noreferrer">Open the folder in Drive ↗</a> : <span className="muted" style={{ fontSize: 12.5 }}>folder is made on the first copy</span>) : undefined;
+  if (staff.role === "creative") return <CreativeShootView shoot={shoot} files={files} mirror={mirror} mirrorState={mirrorState} service={service} folderUrl={copy.folderUrl} />;
   const replacedOriginals = await adminReplacedOriginals({ shootId: shoot.id });
   const o = shoot.options;
   const videoOnly = shoot.status === "video_only";
@@ -208,8 +210,8 @@ export default async function ShootPage({ params, searchParams }: { params: Prom
       {sp.retried === "demo" && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>Demo mode: nothing was retried.</p>}
       {sp.ran && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>{sp.ran === "demo" ? "Demo mode: nothing ran." : "Pipeline pushed forward. This page refreshes as the shoot moves."}</p>}
       {sp.qc && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>{sp.qc === "demo" ? "Demo mode: QC did not run." : "QC is running again. Results land here frame by frame."}</p>}
-      {sp.mirror === "demo" && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>Demo mode: nothing was queued for Dropbox.</p>}
-      {mirrorN != null && !Number.isNaN(mirrorN) && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>{mirrorN ? `Copying ${mirrorN} file${mirrorN === 1 ? "" : "s"} to Dropbox again. This page refreshes as they land.` : "Every file of this shoot is already in Dropbox."}</p>}
+      {sp.mirror === "demo" && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>Demo mode: nothing was queued for {service}.</p>}
+      {mirrorN != null && !Number.isNaN(mirrorN) && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>{mirrorN ? `Copying ${mirrorN} file${mirrorN === 1 ? "" : "s"} to ${service} again. This page refreshes as they land.` : `Every file of this shoot is already in ${service}.`}</p>}
       {sp.error && <p className="adm-banner adm-banner--bad" style={{ marginTop: 18 }}>{sp.error}</p>}
       {parked && <p className="adm-banner adm-banner--warn" style={{ marginTop: 18 }}>Editing account not connected. Files are safe; processing starts once it is.</p>}
       {shoot.status === "failed" && shoot.error && (
@@ -253,18 +255,18 @@ export default async function ShootPage({ params, searchParams }: { params: Prom
         {!videoOnly && <div><dt>Frames</dt><dd className="adm-mono">{shoot.photoCount || (frames.length ? frames.length : "pending")}{frames.some((f) => f.corrected) ? ` · ${frames.filter((f) => f.corrected).length} corrected` : ""}</dd></div>}
         {admin && !videoOnly && <div><dt>Credits</dt><dd className="adm-mono">{credits.exact ? "" : "about "}{credits.total}{credits.twilight ? ` (${credits.edit} edit + ${credits.twilight} twilight)` : ""}</dd></div>}
         <div style={{ gridColumn: "1 / -1" }}>
-          <dt>Dropbox</dt>
+          <dt>{service}</dt>
           <dd>
-            <DropboxMirrorLine mirror={mirror} state={mirrorState} folder={shoot.dropboxFolder} syncedAt={shoot.dropboxSyncedAt} admin={admin}>
+            <DropboxMirrorLine mirror={mirror} state={mirrorState} folder={shoot.dropboxFolder} syncedAt={copy.syncedAt} admin={admin} service={service} folderNode={folderNode}>
               {admin && shoot.status !== "draft" && mirrorState !== "off" && mirror.synced < mirror.total && (
-                <form action={mirrorShootAgain.bind(null, shoot.id)} style={{ display: "inline" }}>
-                  <button type="submit" className="adm-chip" title="Queues every file that is not in Dropbox yet and starts on them now.">Copy to Dropbox again</button>
+                <form action={(service === "Google Drive" ? driveShootAgain : mirrorShootAgain).bind(null, shoot.id)} style={{ display: "inline" }}>
+                  <button type="submit" className="adm-chip" title={`Queues every file that is not in ${service} yet and starts on them now.`}>Copy to {service} again</button>
                 </form>
               )}
             </DropboxMirrorLine>
           </dd>
         </div>
-        {admin && !demo && files.length > 0 && (
+        {admin && !demo && files.length > 0 && service === "Dropbox" && (
           <div style={{ gridColumn: "1 / -1" }}>
             <dt>R2</dt>
             <dd className="muted" style={{ fontSize: 13 }}>

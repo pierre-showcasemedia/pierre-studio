@@ -15,15 +15,17 @@ import { business } from "./src/lib/business";
 const R2 = "https://*.r2.cloudflarestorage.com";
 const DROPBOX = "https://www.dropbox.com https://*.dropboxapi.com";
 const TITUS = "https://assets.gotitus.com https://*.gotitus.com";
+// Nov 18 2026: Google sign-in (Save to Google Drive) and the Drive Picker (Import from Google Drive).
+const GOOGLE = "https://accounts.google.com https://apis.google.com https://docs.google.com https://www.googleapis.com";
 
 const CSP_REPORT_ONLY = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' ${DROPBOX} ${TITUS}`,
+  `script-src 'self' 'unsafe-inline' ${DROPBOX} ${TITUS} ${GOOGLE}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   `img-src 'self' data: blob: ${R2} ${business.portalUrl} https://*.vercel.app`,
   "font-src 'self' data: https://fonts.gstatic.com",
-  `connect-src 'self' ${R2} ${DROPBOX} ${TITUS}`,
-  `frame-src 'self' ${DROPBOX} ${TITUS}`,
+  `connect-src 'self' ${R2} ${DROPBOX} ${TITUS} ${GOOGLE}`,
+  `frame-src 'self' ${DROPBOX} ${TITUS} ${GOOGLE}`,
   `media-src 'self' blob: ${R2}`,
   "worker-src 'self' blob:",
   "object-src 'none'",

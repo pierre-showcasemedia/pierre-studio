@@ -84,7 +84,7 @@ export function adminLink(path: string, label: string) {
 
 // ---- The six posts -------------------------------------------------------
 
-export function hubShootUploaded(p: { shootId: string; listing: { address: string; nda?: boolean | null }; fileCount: number; by: string; parked: boolean; videoCount?: number; mirror?: boolean }) {
+export function hubShootUploaded(p: { shootId: string; listing: { address: string; nda?: boolean | null }; fileCount: number; by: string; parked: boolean; videoCount?: number; mirror?: boolean; mirrorTo?: string }) {
   const name = hubListingName(p.listing);
   const video = p.videoCount ?? 0;
   const photos = p.fileCount - video;
@@ -95,7 +95,7 @@ export function hubShootUploaded(p: { shootId: string; listing: { address: strin
     : p.parked
       ? "Files are safe. Editing starts once the editing account is connected."
       : "Editing has started.";
-  const mirror = p.mirror ? " The raw files are being copied to Dropbox." : "";
+  const mirror = p.mirror ? ` The raw files are being copied to ${p.mirrorTo ?? "Dropbox"}.` : "";
   return postToHub({
     text: `New shoot uploaded for ${name}: ${what} from ${p.by}. ${tail}${mirror} ${adminLink(`/admin/shoots/${p.shootId}`, "Open the shoot")}`,
   });

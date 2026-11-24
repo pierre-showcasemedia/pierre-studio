@@ -98,7 +98,10 @@ async function main() {
   ok(/if \(file\.kind === "raw_video"\) await queueVideoEditingLine\(shoot\.id, listing\.id\)\.catch/.test(mirror), "a landed clip checks the shoot, and a failure never fails the copy");
   const q = mirror.slice(mirror.indexOf("export async function queueVideoEditingLine"));
   ok(/shoot\.status === "draft"\) return false/.test(q), "a draft never queues it (more clips may be on the way)");
-  ok(/clips\.some\(\(c\) => !c\.dropboxSyncedAt\)\) return false/.test(q), "every clip must be in Dropbox");
+  // Nov 18 2026: in the business's file store, Dropbox or Google Drive (business.fileStore).
+  ok(/clips\.some\(\(c\) => !\(drive \? c\.driveSyncedAt : c\.dropboxSyncedAt\)\)\) return false/.test(q) && /const drive = business\.fileStore === "google_drive"/.test(q), "every clip must be in the file store (Dropbox or Google Drive)");
+  const dmirror = readFileSync("src/lib/drive-mirror.ts", "utf8");
+  ok(/if \(file\.kind === "raw_video"\) \{[\s\S]{0,200}queueVideoEditingLine\(shoot\.id, listing\.id\)\.catch/.test(dmirror), "a clip landed in Google Drive checks the shoot too, and a failure never fails the copy");
   ok(/idempotencyKey: jobKey\(VIDEO_EDITING_KIND, shootId\)/.test(q), "once per shoot");
 
   const submit = readFileSync("src/app/api/studio/shoots/[id]/submit/route.ts", "utf8");

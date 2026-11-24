@@ -18,6 +18,7 @@ import Lightbox, { tileHint, type LightboxRevisions, type LightboxStart } from "
 import RevisionTray from "@/components/gallery/RevisionTray";
 import VideoReview from "@/components/gallery/VideoReview";
 import DropboxModal, { type DropboxMode, type DropboxOption } from "@/components/gallery/DropboxModal";
+import DriveModal, { type DriveMode } from "@/components/gallery/DriveModal";
 import DownloadBar from "@/components/gallery/DownloadBar";
 import FilmCard from "@/components/gallery/FilmCard";
 import Rise from "@/components/gallery/Rise";
@@ -42,6 +43,7 @@ export default function PortalGallery({
   approvedAt,
   readOnly = false,
   dropbox = null,
+  drive = null,
   revisionDraft = null,
   videoNotes = null,
 }: {
@@ -56,12 +58,14 @@ export default function PortalGallery({
   approvedAt: string | null;
   readOnly?: boolean; // partners: downloads only, no approve / revision
   dropbox?: DropboxMode | null; // null hides Add to Dropbox (no app key on this deployment)
+  drive?: DriveMode | null; // null hides Save to Google Drive (Nov 18 2026; business.fileStore google_drive with the client id set)
   revisionDraft?: RevisionDraft | null; // the client's saved revision notes (null for partners)
   videoNotes?: VideoNote[] | null; // the client's film notes (null for partners)
 }) {
   const [lightbox, setLightbox] = useState<LightboxStart | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dbxOpen, setDbxOpen] = useState(false);
+  const [driveOpen, setDriveOpen] = useState(false);
   // Approve state, and the client's revision list (per-photo notes from the
   // lightbox, saved as they are written, sent to the business together).
   const [busy, setBusy] = useState(false);
@@ -209,6 +213,7 @@ export default function PortalGallery({
   }, [g]);
 
   const canDropbox = !locked && Boolean(dropbox) && dropboxOptions.length > 0;
+  const canDrive = !locked && Boolean(drive) && dropboxOptions.length > 0;
   const hasMedia = photos.length > 0 || videos.length > 0;
 
   // One area's zip buttons, in its section heading. Hidden while locked; the
@@ -280,6 +285,7 @@ export default function PortalGallery({
           fullHref={bundles.full ? `/api/portal/bundle/${listingId}/full` : null}
           mlsHref={bundles.mls ? `/api/portal/bundle/${listingId}/mls` : null}
           onDropbox={canDropbox ? () => setDbxOpen(true) : null}
+          onDrive={canDrive ? () => setDriveOpen(true) : null}
           selectedCount={selected.size}
           onDownloadSelected={() => void downloadSelected()}
           onClearSelection={() => setSelected(new Set())}
@@ -423,6 +429,9 @@ export default function PortalGallery({
         />
       )}
 
+      {driveOpen && drive && (
+        <DriveModal slug={slug} drive={drive} options={dropboxOptions} selectedIds={[...selected]} onClose={() => setDriveOpen(false)} />
+      )}
       {dbxOpen && dropbox && (
         <DropboxModal slug={slug} dropbox={dropbox} options={dropboxOptions} selectedIds={[...selected]} onClose={() => setDbxOpen(false)} />
       )}

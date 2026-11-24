@@ -101,6 +101,9 @@ export const listings = pgTable("listings", {
   // Oct 26 2026: a view link to the listing's Dropbox Video folder (made by
   // the dropbox.folder job when the app may share), for the Video card.
   dropboxVideoLink: text("dropbox_video_link"),
+  // Nov 18 2026: the same folder in Google Drive (src/lib/drive-mirror.ts):
+  // the id of Listings/<address>, made on the first copy and kept for good.
+  driveFolderId: text("drive_folder_id"),
   // Nov 22 2026: the listing's Pic-Time gallery (src/lib/pictime.ts). Set,
   // the portal and the delivery email send the client there.
   picTimeUrl: text("pictime_url"),
@@ -182,6 +185,12 @@ export const media = pgTable("media", {
   dropboxFinalKey: text("dropbox_final_key"),
   dropboxFinalBytes: bigint("dropbox_final_bytes", { mode: "number" }),
   dropboxFinalAt: timestamp("dropbox_final_at"),
+  // Nov 18 2026: the copy in Google Drive under <listing>/FINAL DELIVERY
+  // (src/lib/drive-mirror.ts), the same way: the file id, and which version.
+  driveFinalId: text("drive_final_id"),
+  driveFinalKey: text("drive_final_key"),
+  driveFinalBytes: bigint("drive_final_bytes", { mode: "number" }),
+  driveFinalAt: timestamp("drive_final_at"),
 });
 
 // Nov 2 2026: a Photo QC tick on one automatic QC flag of a frame ("this fix
@@ -458,7 +467,7 @@ export type ShootOptions = {
   twilight: { enabled: boolean; count: number; look: string };
   nda: boolean;
   notes?: string;
-  source?: "device" | "dropbox" | "mixed";
+  source?: "device" | "dropbox" | "google_drive" | "mixed";
   // Oct 21 2026: how many of the shoot's files are photos (raw or display)
   // and how many are raw video, written at submit so lists can estimate
   // credits from the photos alone without loading every file row.
@@ -497,6 +506,8 @@ export const shoots = pgTable("shoots", {
   // Oct 21 2026: when the last of this shoot's files landed in Dropbox (the
   // one hub line is posted by whichever mirror job sets it first).
   dropboxSyncedAt: timestamp("dropbox_synced_at"),
+  // Nov 18 2026: the same for Google Drive (src/lib/drive-mirror.ts).
+  driveSyncedAt: timestamp("drive_synced_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -524,6 +535,10 @@ export const shootFiles = pgTable("shoot_files", {
   // Dropbox content hash both sides matched on.
   r2DeletedAt: timestamp("r2_deleted_at"),
   dropboxHash: text("dropbox_hash"),
+  // Nov 18 2026: the Google Drive mirror (src/lib/drive-mirror.ts): the file
+  // id the copy landed as and when; null until the drive.mirror job finishes.
+  driveFileId: text("drive_file_id"),
+  driveSyncedAt: timestamp("drive_synced_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -740,6 +755,12 @@ export const JOB_KINDS = [
   // Nov 1 2026: a shoot's raw video is all in Dropbox: one line in
   // #video-editing tagging the video editor (src/lib/slack.ts), once per shoot.
   "slack.video_editing",
+  // Nov 18 2026: the Google Drive mirror (src/lib/drive-mirror.ts), the Dropbox
+  // jobs' twins for a business on Google Drive: one raw file into
+  // Listings/<address>/Photo or /Video, and delivered finals into FINAL DELIVERY.
+  "drive.mirror",
+  "drive.final_sweep",
+  "drive.final",
 ] as const;
 export type JobKind = (typeof JOB_KINDS)[number];
 export const JOB_STATUSES = ["queued", "running", "done", "dead"] as const;
@@ -795,6 +816,10 @@ export type JobPayload = {
   // rows (the list of files, which zip, which part); the result once it is
   // done. A row without it has not begun (src/lib/bundles.ts, Nov 10 2026).
   bundle?: BundleProgress;
+  // drive.mirror / drive.final: the Google Drive resumable upload a long copy
+  // leaves behind (its session address, the next byte, the name and folder it
+  // is writing to); the next tick resumes it (src/lib/drive-mirror.ts).
+  driveSession?: { uri: string; offset: number; name: string; folderId: string; startedAt: string };
 };
 
 // Side effects run from here, never inline: enqueued in the same transaction

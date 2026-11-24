@@ -7,7 +7,7 @@
 // Pinned with position: fixed (measured from the holder), so it can float over
 // the full-bleed hero area with its own top offset under any visible header.
 import { useEffect, useRef, useState } from "react";
-import { DownloadIcon, DropboxIcon } from "./icons";
+import { DownloadIcon, DriveIcon, DropboxIcon } from "./icons";
 import "@/styles/gallery.css";
 
 type Pin = { stuck: boolean; top: number; left: number; maxWidth: number; height: number };
@@ -16,6 +16,7 @@ export default function DownloadBar({
   fullHref,
   mlsHref,
   onDropbox,
+  onDrive = null,
   selectedCount,
   onDownloadSelected,
   onClearSelection,
@@ -24,6 +25,7 @@ export default function DownloadBar({
   fullHref: string | null;
   mlsHref: string | null;
   onDropbox: (() => void) | null;
+  onDrive?: (() => void) | null; // Save to Google Drive (business.fileStore google_drive)
   selectedCount: number;
   onDownloadSelected: () => void;
   onClearSelection: () => void;
@@ -66,7 +68,7 @@ export default function DownloadBar({
 
   // Nothing to offer yet (no zips, no Dropbox, nothing ticked): keep the
   // element so pinning works the moment something appears.
-  if (!fullHref && !mlsHref && !onDropbox && selectedCount === 0) return <div ref={holder} className="g-bar g-bar--empty" aria-hidden="true" />;
+  if (!fullHref && !mlsHref && !onDropbox && !onDrive && selectedCount === 0) return <div ref={holder} className="g-bar g-bar--empty" aria-hidden="true" />;
 
   return (
     <div ref={holder} className={`g-bar${pin.stuck ? " is-stuck" : ""}`} style={pin.stuck ? { height: pin.height } : undefined}>
@@ -94,6 +96,13 @@ export default function DownloadBar({
             <DropboxIcon />
             <span className="g-lbl-long">Add to Dropbox</span>
             <span className="g-lbl-short">Dropbox</span>
+          </button>
+        )}
+        {onDrive && (
+          <button type="button" className="chip g-pill g-pill--dropbox" onClick={onDrive} title="Copy files straight into your Google Drive, no downloading">
+            <DriveIcon />
+            <span className="g-lbl-long">Save to Google Drive</span>
+            <span className="g-lbl-short">Drive</span>
           </button>
         )}
         {selectedCount > 0 && (

@@ -55,6 +55,7 @@ import { currentEnv, DeferError, drainDeadline, enqueueJobs, FatalJobError, jobK
 import { getObjectBuffer, getObjectRange, headObject } from "./r2";
 import { countKinds } from "./shoot-files";
 import { clientVisibleMedia } from "./media-visibility";
+import { business } from "./business";
 
 export const MIRROR_KIND: JobKind = "dropbox.mirror";
 export const FOLDER_KIND: JobKind = "dropbox.folder";
@@ -334,8 +335,10 @@ export async function queueVideoEditingLine(shootId: string, listingId: string):
   const d = db();
   const shoot = await d.query.shoots.findFirst({ where: eq(schema.shoots.id, shootId), columns: { status: true } });
   if (!shoot || shoot.status === "draft") return false;
-  const clips = await d.query.shootFiles.findMany({ where: and(eq(schema.shootFiles.shootId, shootId), eq(schema.shootFiles.kind, "raw_video")), columns: { dropboxSyncedAt: true } });
-  if (!clips.length || clips.some((c) => !c.dropboxSyncedAt)) return false;
+  // Nov 18 2026: in the business's file store, Dropbox or Google Drive (business.fileStore).
+  const drive = business.fileStore === "google_drive";
+  const clips = await d.query.shootFiles.findMany({ where: and(eq(schema.shootFiles.shootId, shootId), eq(schema.shootFiles.kind, "raw_video")), columns: { dropboxSyncedAt: true, driveSyncedAt: true } });
+  if (!clips.length || clips.some((c) => !(drive ? c.driveSyncedAt : c.dropboxSyncedAt))) return false;
   return (await enqueueJobs([{ kind: VIDEO_EDITING_KIND, idempotencyKey: jobKey(VIDEO_EDITING_KIND, shootId), payload: { version: 1, shootId }, listingId }])) > 0;
 }
 

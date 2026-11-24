@@ -128,6 +128,12 @@ export type ActivityAction =
   | "email.rescheduled_sent"
   // Oct 21 2026: the Dropbox raw mirror (src/lib/dropbox-mirror.ts)
   | "dropbox.connected"
+  // Nov 18 2026: the Google Drive mirror (src/lib/drive-mirror.ts)
+  | "drive.connected"
+  | "drive.disconnected"
+  | "shoot.drive_synced"
+  | "shoot.drive_requeued"
+  | "client.drive"
   | "dropbox.disconnected"
   // Oct 27 2026: the Champagne preset every virtual twilight runs (src/lib/twilight-preset.ts)
   | "twilight.preset_saved"
@@ -348,6 +354,11 @@ export function describeActivity(a: { action: string; actorEmail: string | null;
     // The Dropbox raw mirror (Oct 21 2026). Never a token; the account's name and email only.
     case "dropbox.connected": return `${who} connected Dropbox${m.email ? ` (${String(m.email)})` : ""}`;
     case "dropbox.disconnected": return `${who} disconnected Dropbox`;
+    case "drive.connected": return `${who} connected Google Drive${m.email ? ` (${String(m.email)})` : ""}`;
+    case "drive.disconnected": return `${who} disconnected Google Drive`;
+    case "shoot.drive_synced": return `Raw files copied to Google Drive${n("photos") != null ? ` (${dropboxCounts(n("photos") ?? 0, n("video") ?? 0)})` : ""}`;
+    case "shoot.drive_requeued": return `${who} asked for ${n("count") ?? "the"} file${n("count") === 1 ? "" : "s"} to be copied to Google Drive again`;
+    case "client.drive": return `${String(m.email ?? who)} added ${n("count") ?? 1} file${n("count") === 1 ? "" : "s"} to Google Drive`;
     case "shoot.twilight_made": return `${who} made a Champagne twilight of ${m.from ? String(m.from) : "a frame"}`;
     case "shoot.final_review": return `${who} sent ${n("corrected") ? `${n("corrected")} corrected photo${n("corrected") === 1 ? "" : "s"}` : "the shoot"} for final review`;
     case "shoot.qc_status": return `${who} moved the Photo QC card to ${m.label ? String(m.label) : "another column"}`;

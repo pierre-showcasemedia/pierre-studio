@@ -20,44 +20,13 @@
 // file list comes back without URLs, so nothing can be sent anywhere.
 import { db, hasDb, schema } from "@/db";
 import { sessionEmail } from "@/lib/portal-auth";
-import { listingForEmail, type PortalMedia } from "@/lib/portal-data";
+import { listingForEmail } from "@/lib/portal-data";
+import { mlsName, type Pick, picksFor, uniqueNames } from "@/lib/portal-save";
 import { hasR2, headObject, signedDownloadUrl } from "@/lib/r2";
 import { derivativeKey } from "@/lib/media-keys";
 import { syncLockedListing } from "@/lib/payments";
 import { logActivity } from "@/lib/activity";
 import { isPartnerEmail } from "@/lib/partner";
-
-type Pick = { m: PortalMedia; variant: "original" | "mls" };
-
-const isMain = (m: PortalMedia) => !m.revision && !m.section;
-const mlsName = (filename: string) => filename.replace(/\.[^.]+$/, "") + "-MLS.jpg";
-
-function picksFor(group: string, media: PortalMedia[]): Pick[] | null {
-  if (group === "photos") return media.filter((m) => m.kind === "photo" && isMain(m)).map((m) => ({ m, variant: "original" }));
-  if (group === "mls") return media.filter((m) => m.kind === "photo" && isMain(m)).map((m) => ({ m, variant: "mls" }));
-  if (group === "films") return media.filter((m) => m.kind === "video" && isMain(m)).map((m) => ({ m, variant: "original" }));
-  if (group === "revised") return media.filter((m) => m.revision && !m.section).map((m) => ({ m, variant: "original" }));
-  if (group.startsWith("section:")) {
-    const name = group.slice("section:".length);
-    if (!name) return null;
-    return media.filter((m) => m.section === name).map((m) => ({ m, variant: "original" }));
-  }
-  return null;
-}
-
-// Two files with the same name would overwrite each other in one Dropbox
-// folder: number the repeats ("name (2).jpg").
-function uniqueNames(names: string[]): string[] {
-  const seen = new Map<string, number>();
-  return names.map((name) => {
-    const k = name.toLowerCase();
-    const n = (seen.get(k) ?? 0) + 1;
-    seen.set(k, n);
-    if (n === 1) return name;
-    const dot = name.lastIndexOf(".");
-    return dot > 0 ? `${name.slice(0, dot)} (${n})${name.slice(dot)}` : `${name} (${n})`;
-  });
-}
 
 export async function POST(request: Request) {
   const email = await sessionEmail();

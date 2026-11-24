@@ -4,6 +4,7 @@
 // internal only), the video revisions with their timestamps, and what this
 // client has told us about video before (their video notes, the client file,
 // past video bookings and revisions). No money, no contact details, no photos.
+import { fileStoreName } from "@/lib/file-store";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireVideo } from "@/lib/admin";
@@ -77,7 +78,7 @@ export default async function VideoCardPage({ params, searchParams }: { params: 
           ))}
         </div>
         <p className="faint" style={{ margin: "10px 0 0", fontSize: 12.5 }}>
-          The card moves on its own: In editing once the footage is in Dropbox, In review when a cut is uploaded here, Sent to client when the delivery email goes out with a film live, Complete 3 days after that unless a revision is open. Sent to client never emails anyone; an admin sends the delivery. Moving to In editing marks an open revision in progress, and Sent to client or Complete marks it done.
+          The card moves on its own: In editing once the footage is in {fileStoreName()}, In review when a cut is uploaded here, Sent to client when the delivery email goes out with a film live, Complete 3 days after that unless a revision is open. Sent to client never emails anyone; an admin sends the delivery. Moving to In editing marks an open revision in progress, and Sent to client or Complete marks it done.
         </p>
       </div>
 
@@ -112,16 +113,20 @@ export default async function VideoCardPage({ params, searchParams }: { params: 
             <div className="vc-h">Raw footage</div>
             <div className="vc-dbx">
               {c.dropbox.url ? (
-                <a href={c.dropbox.url} target="_blank" rel="noreferrer" className="vc-dbx__btn">{c.dropbox.shared ? "Open the Video folder in Dropbox ↗" : `Open the Video folder (${brand.shortName} Dropbox members) ↗`}</a>
+                <a href={c.dropbox.url} target="_blank" rel="noreferrer" className="vc-dbx__btn">{c.dropbox.service === "Google Drive" ? "Open the listing folder in Google Drive ↗" : c.dropbox.shared ? "Open the Video folder in Dropbox ↗" : `Open the Video folder (${brand.shortName} Dropbox members) ↗`}</a>
               ) : (
-                <span className="vc-dbx__btn" aria-disabled="true">No Dropbox folder yet</span>
+                <span className="vc-dbx__btn" aria-disabled="true">No {c.dropbox.service ?? "Dropbox"} folder yet</span>
               )}
               <span className="muted" style={{ fontSize: 13.5 }}>
-                {c.clips.count ? `${c.clips.count} clip${c.clips.count === 1 ? "" : "s"} uploaded, ${c.clips.inDropbox} in Dropbox` : c.footage ? "Footage uploaded" : "No footage uploaded yet"}
+                {c.clips.count ? `${c.clips.count} clip${c.clips.count === 1 ? "" : "s"} uploaded, ${c.clips.inDropbox} in ${c.dropbox.service ?? "Dropbox"}` : c.footage ? "Footage uploaded" : "No footage uploaded yet"}
               </span>
             </div>
             <p className="faint" style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.6 }}>
-              {!c.dropbox.connected
+              {c.dropbox.service === "Google Drive"
+                ? c.dropbox.connected
+                  ? "The clips copy into the listing's Video folder in Google Drive. The button opens the listing's folder; Video is inside it."
+                  : "Google Drive is not connected yet. Uploaded clips are safe in Studio and copy into the Video folder as soon as an admin connects it in Settings."
+                : !c.dropbox.connected
                 ? "Dropbox is not connected yet. Uploaded clips are safe in Studio and copy into the Video folder as soon as an admin connects it in Settings."
                 : c.dropbox.url && !c.dropbox.shared
                   ? `No share link yet, so this button only works for people signed in to ${brand.shortName}’s Dropbox. Studio asks Dropbox for a share link every 30 minutes and swaps it in here as soon as Dropbox allows one. Until then, the folder is ${c.dropbox.folder ?? "the Video folder"}.`

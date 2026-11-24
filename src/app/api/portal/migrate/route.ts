@@ -569,6 +569,18 @@ const DDL = [
   // Nov 24 2026: people who opened the website's price list with their name
   // and email (src/lib/leads.ts). id = the form's submission id, so a retry
   // is the same lead.
+  // Nov 18 2026 (merged Nov 24): the Google Drive mirror (src/lib/drive-mirror.ts),
+  // beside the Dropbox columns: the listing's folder id, each raw file's copy,
+  // the shoot's "all in" stamp, and each delivered file's copy in FINAL DELIVERY.
+  // Unused while business.fileStore is "dropbox".
+  `ALTER TABLE "listings" ADD COLUMN IF NOT EXISTS "drive_folder_id" text`,
+  `ALTER TABLE "shoot_files" ADD COLUMN IF NOT EXISTS "drive_file_id" text`,
+  `ALTER TABLE "shoot_files" ADD COLUMN IF NOT EXISTS "drive_synced_at" timestamp`,
+  `ALTER TABLE "shoots" ADD COLUMN IF NOT EXISTS "drive_synced_at" timestamp`,
+  `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_id" text`,
+  `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_key" text`,
+  `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_bytes" bigint`,
+  `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_at" timestamp`,
   `CREATE TABLE IF NOT EXISTS "leads" (
     "id" uuid PRIMARY KEY,
     "kind" text DEFAULT 'pricing' NOT NULL,

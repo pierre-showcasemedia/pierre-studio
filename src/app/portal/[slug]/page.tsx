@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import type { DriveMode } from "@/components/gallery/DriveModal";
+import { business } from "@/lib/business";
 import { notFound, redirect } from "next/navigation";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -114,8 +116,13 @@ export default async function PortalListingPage({ params, searchParams }: { para
 
   // Add to Dropbox needs the Dropbox app key. Without one on a real deployment
   // the button is hidden; in demo mode it runs but sends nothing.
+  // Nov 18 2026: a business on Google Drive (business.fileStore) offers Save to
+  // Google Drive instead, once its OAuth client id is set.
+  const onGoogleDrive = business.fileStore === "google_drive";
   const appKey = process.env.NEXT_PUBLIC_DROPBOX_APP_KEY?.trim();
-  const dropbox: DropboxMode | null = isDemo() ? { mode: "demo" } : appKey ? { mode: "live", appKey } : null;
+  const dropbox: DropboxMode | null = onGoogleDrive ? null : isDemo() ? { mode: "demo" } : appKey ? { mode: "live", appKey } : null;
+  const driveClient = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID?.trim();
+  const drive: DriveMode | null = !onGoogleDrive ? null : isDemo() ? { mode: "demo" } : driveClient ? { mode: "live", clientId: driveClient } : null;
 
   const impersonating = await viewingAs();
   const street = listing.address.split(",")[0];
@@ -190,6 +197,7 @@ export default async function PortalListingPage({ params, searchParams }: { para
               approvedAt={listing.approvedAt ?? null}
               readOnly={isPartnerEmail(email)}
               dropbox={dropbox}
+              drive={drive}
               revisionDraft={isPartnerEmail(email) ? null : hasDb() ? await revisionDraftFor(listing.id, email) : EMPTY_DRAFT}
               videoNotes={isPartnerEmail(email) ? null : await videoNotesFor(listing.id, email)}
             />}

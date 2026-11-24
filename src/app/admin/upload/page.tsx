@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { fileStoreName, onDrive } from "@/lib/file-store";
+import { drivePickerConfig } from "@/lib/google-drive";
 import { hasDb } from "@/db";
 import { hasAutoHdr } from "@/lib/autohdr";
 import { adminClientById, adminListingById, adminShoots } from "@/lib/admin-data";
@@ -23,17 +25,19 @@ export default async function UploadPage({ searchParams }: { searchParams: Promi
   const mine = creative ? (await adminShoots()).filter((s) => s.status !== "draft" && s.createdBy.toLowerCase() === staff.email.toLowerCase()).slice(0, 20) : [];
   return (
     <section className="wrap adm-page" style={{ maxWidth: 820 }}>
-      <PageHead eyebrow={creative ? "Creative specialist" : "Admin"} title="Upload a shoot." lede={business.editing === "manual" ? "Straight from the card: raw video for the listing\u2019s Dropbox folder, and raws to keep if you want them." : "Straight from the card. Pick the listing, add the files, choose the look, and editing takes it from there."} />
+      <PageHead eyebrow={creative ? "Creative specialist" : "Admin"} title="Upload a shoot." lede={business.editing === "manual" ? `Straight from the card: raw video for the listing\u2019s ${fileStoreName()} folder, and raws to keep if you want them.` : "Straight from the card. Pick the listing, add the files, choose the look, and editing takes it from there."} />
       {sp.denied && <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>That page is for admins. Upload a shoot here, and ask an admin if you need something else.</p>}
       {business.editing === "manual" && (
         <p className="adm-banner adm-banner--info" style={{ marginTop: 18 }}>
-          Photos are edited outside the studio. Add the finished photos on the listing&apos;s page (Listings, the listing, Upload photos): they go straight onto the listing, nothing is sent to editing.{listing ? <> <a className="adm-link" href={`/admin/listings/${listing.id}#upload`}>Open this listing&apos;s upload →</a></> : null} Use this page for raw video, which goes to Dropbox.
+          Photos are edited outside the studio. Add the finished photos on the listing&apos;s page (Listings, the listing, Upload photos): they go straight onto the listing, nothing is sent to editing.{listing ? <> <a className="adm-link" href={`/admin/listings/${listing.id}#upload`}>Open this listing&apos;s upload →</a></> : null} Use this page for raw video, which goes to {fileStoreName()}.
         </p>
       )}
       <div style={{ marginTop: 26 }}>
         <UploadWizard
           demo={!hasDb()}
-          dropboxKey={process.env.NEXT_PUBLIC_DROPBOX_APP_KEY || null}
+          dropboxKey={onDrive() ? null : process.env.NEXT_PUBLIC_DROPBOX_APP_KEY || null}
+          drivePicker={onDrive() ? drivePickerConfig() : null}
+          storeName={fileStoreName()}
           editingConnected={hasAutoHdr()}
           editedOutside={business.editing === "manual"}
           canCreate={!creative}

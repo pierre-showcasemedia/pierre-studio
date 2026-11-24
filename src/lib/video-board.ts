@@ -36,6 +36,8 @@ import { isVideoBooking, itemById } from "./studio-pricing";
 import { brainBriefFor, hasBrain } from "./brain";
 import { isDropboxConnected } from "./dropbox";
 import { videoFolderUrl } from "./dropbox-mirror";
+import { business } from "./business";
+import { driveConnection, driveFolderUrl } from "./google-drive";
 import { currentEnv, FatalJobError, SkipJobError } from "./jobs-core";
 import { signedViewUrl } from "./r2";
 import { hubVideoLine, hubVideoReview, scrubMoney, type VideoEditingLine } from "./slack";
@@ -151,11 +153,14 @@ export async function videoEditingLineFor(shootId: string): Promise<VideoEditing
   const shoot = await d.query.shoots.findFirst({
     where: eq(schema.shoots.id, shootId),
     columns: { id: true, listingId: true },
-    with: { listing: { columns: { address: true, nda: true, dropboxFolder: true, dropboxVideoLink: true } } },
+    with: { listing: { columns: { address: true, nda: true, dropboxFolder: true, dropboxVideoLink: true, driveFolderId: true } } },
   });
   if (!shoot) return null;
-  const clips = await d.query.shootFiles.findMany({ where: and(eq(schema.shootFiles.shootId, shootId), eq(schema.shootFiles.kind, "raw_video")), columns: { bytes: true, dropboxSyncedAt: true } });
-  if (!clips.length || clips.some((c) => !c.dropboxSyncedAt)) return null;
+  // Nov 18 2026: "in" means in the business's file store (Dropbox or Google Drive).
+  const drive = business.fileStore === "google_drive";
+  const rows = await d.query.shootFiles.findMany({ where: and(eq(schema.shootFiles.shootId, shootId), eq(schema.shootFiles.kind, "raw_video")), columns: { bytes: true, dropboxSyncedAt: true, driveSyncedAt: true } });
+  const clips = rows.map((c) => ({ bytes: c.bytes, landed: drive ? c.driveSyncedAt : c.dropboxSyncedAt }));
+  if (!clips.length || clips.some((c) => !c.landed)) return null;
   const own = await d.query.videoProjects.findFirst({ where: and(eq(schema.videoProjects.shootId, shootId), envWhere()), orderBy: [desc(schema.videoProjects.createdAt)], columns: { id: true } });
   const card = own ?? (await openCardFor(shoot.listingId));
   return {
@@ -163,8 +168,8 @@ export async function videoEditingLineFor(shootId: string): Promise<VideoEditing
     listing: { address: shoot.listing.address, nda: shoot.listing.nda },
     clips: clips.length,
     bytes: clips.reduce((n, c) => n + (c.bytes ?? 0), 0),
-    landedAt: new Date(Math.max(...clips.map((c) => c.dropboxSyncedAt!.getTime()))),
-    folderUrl: videoFolderUrl(shoot.listing)?.url ?? null,
+    landedAt: new Date(Math.max(...clips.map((c) => c.landed!.getTime()))),
+    folderUrl: drive ? (shoot.listing.driveFolderId ? driveFolderUrl(shoot.listing.driveFolderId) : null) : videoFolderUrl(shoot.listing)?.url ?? null,
   };
 }
 
@@ -254,7 +259,7 @@ function toCard(r: CardRow, revs: Map<string, { status: string; comments: number
 
 const CARD_WITH = {
   listing: {
-    columns: { id: true, address: true, slug: true, nda: true, shootDate: true, clientId: true, dropboxFolder: true, dropboxVideoLink: true },
+    columns: { id: true, address: true, slug: true, nda: true, shootDate: true, clientId: true, dropboxFolder: true, dropboxVideoLink: true, driveFolderId: true },
     with: { client: { columns: { id: true, name: true, email: true, team: true, videoNotes: true } }, media: { where: eq(schema.media.kind, "video"), columns: { id: true, published: true, held: true } } },
   },
   booking: { columns: { id: true, status: true, desiredDate: true, startTime: true, launchDate: true, serviceIds: true, addonIds: true, property: true, clientNotes: true, customRequest: true } },
@@ -284,7 +289,9 @@ export type VideoRevisionEntry = { id: string; listingId: string; street: string
 
 export type VideoCardDetail = VideoCard & {
   booking: { id: string; status: string; music: string | null; formNotes: string | null; customRequest: string | null } | null;
-  dropbox: { url: string | null; shared: boolean; folder: string | null; connected: boolean };
+  // Nov 18 2026: service = where the footage is copied (business.fileStore); the
+  // field keeps its name for both, so the card reads the same either way.
+  dropbox: { url: string | null; shared: boolean; folder: string | null; connected: boolean; service?: "Dropbox" | "Google Drive" };
   clips: { count: number; inDropbox: number };
   filmFiles: { id: string; filename: string; published: boolean; held: boolean; url: string | null; createdAt: string }[];
   editorNotes: string | null;
@@ -303,7 +310,7 @@ export async function videoCardDetail(id: string): Promise<VideoCardDetail | nul
   if (!hasDb()) return demoVideoDetail(id);
   const d = db();
   const r = (await d.query.videoProjects.findFirst({ where: and(eq(schema.videoProjects.id, id), envWhere()), with: CARD_WITH })) as unknown as
-    | (CardRow & { listing: CardRow["listing"] & { dropboxFolder: string | null; dropboxVideoLink: string | null; client: (NonNullable<CardRow["listing"]["client"]> & { videoNotes: string | null }) | null }; booking: (NonNullable<CardRow["booking"]> & { clientNotes: string | null; customRequest: string | null }) | null })
+    | (CardRow & { listing: CardRow["listing"] & { dropboxFolder: string | null; dropboxVideoLink: string | null; driveFolderId: string | null; client: (NonNullable<CardRow["listing"]["client"]> & { videoNotes: string | null }) | null }; booking: (NonNullable<CardRow["booking"]> & { clientNotes: string | null; customRequest: string | null }) | null })
     | undefined;
   if (!r) return null;
   const revs = await revisionState(r.revisionRequestId ? [r.revisionRequestId] : []);
@@ -330,8 +337,8 @@ export async function videoCardDetail(id: string): Promise<VideoCardDetail | nul
       ? d.query.bookings.findMany({ where: and(inArray(schema.bookings.listingId, listingIds), ne(schema.bookings.status, "canceled")), columns: { id: true, listingId: true, desiredDate: true, serviceIds: true, addonIds: true, property: true }, orderBy: [desc(schema.bookings.createdAt)], limit: 40 })
       : Promise.resolve([]),
     d.query.media.findMany({ where: and(eq(schema.media.listingId, r.listingId), eq(schema.media.kind, "video")), columns: { id: true, filename: true, published: true, held: true, r2Key: true, createdAt: true }, orderBy: [asc(schema.media.sort), asc(schema.media.createdAt)] }),
-    d.query.shoots.findMany({ where: eq(schema.shoots.listingId, r.listingId), columns: { id: true }, with: { files: { where: eq(schema.shootFiles.kind, "raw_video"), columns: { id: true, dropboxSyncedAt: true } } } }),
-    isDropboxConnected().catch(() => false),
+    d.query.shoots.findMany({ where: eq(schema.shoots.listingId, r.listingId), columns: { id: true }, with: { files: { where: eq(schema.shootFiles.kind, "raw_video"), columns: { id: true, dropboxSyncedAt: true, driveSyncedAt: true } } } }),
+    business.fileStore === "google_drive" ? driveConnection().then((c) => c.connected).catch(() => false) : isDropboxConnected().catch(() => false),
   ]);
 
   let brainLines: string[] = [];
@@ -355,8 +362,11 @@ export async function videoCardDetail(id: string): Promise<VideoCardDetail | nul
     booking: booking
       ? { id: booking.id, status: booking.status, music: str(booking.property?.musicLink), formNotes: scrubOrNull(booking.clientNotes), customRequest: scrubOrNull(booking.customRequest) }
       : null,
-    dropbox: { url: folder?.url ?? null, shared: folder?.shared ?? false, folder: r.listing.dropboxFolder ? `${r.listing.dropboxFolder}/Video` : null, connected },
-    clips: { count: rawFiles.length, inDropbox: rawFiles.filter((f) => f.dropboxSyncedAt).length },
+    dropbox:
+      business.fileStore === "google_drive"
+        ? { url: r.listing.driveFolderId ? driveFolderUrl(r.listing.driveFolderId) : null, shared: true, folder: null, connected, service: "Google Drive" }
+        : { url: folder?.url ?? null, shared: folder?.shared ?? false, folder: r.listing.dropboxFolder ? `${r.listing.dropboxFolder}/Video` : null, connected, service: "Dropbox" },
+    clips: { count: rawFiles.length, inDropbox: rawFiles.filter((f) => (business.fileStore === "google_drive" ? f.driveSyncedAt : f.dropboxSyncedAt)).length },
     filmFiles: filmRows,
     editorNotes: r.editorNotes,
     client: client ? { id: client.id, name: client.name ?? client.email, team: client.team, videoNotes: client.videoNotes } : null,

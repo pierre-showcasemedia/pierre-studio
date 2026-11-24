@@ -31,6 +31,7 @@ import { cancelBookingEvent, cancelVisitEvent, hasCalendarSync, refreshBookingWe
 import { runRevisionIntake } from "./revision-intake";
 import { createCheckoutForInvoice } from "./titus";
 import { MIRROR_KINDS, runDropboxFinal, runDropboxFolder, runDropboxMirror, runFinalSweep } from "./dropbox-mirror";
+import { DRIVE_KINDS, runDriveFinal, runDriveFinalSweep, runDriveMirror } from "./drive-mirror";
 import { runRawCleanup, runRawSweep } from "./r2-raw-cleanup";
 import { ensureCardForBooking, videoEditingLineFor, videoFootageInEditing } from "./video-board";
 import { runUploadCheck } from "./upload-runs";
@@ -60,7 +61,7 @@ export const WEATHER_KINDS: readonly JobKind[] = ["calendar.weather"];
 // pass after everything else, so a shoot of 200 raws never holds a booking
 // email behind it), the weather refresh, and since Nov 10 2026 the "Download
 // all" rebuilds (minutes of zip writing; the cron's zip pass runs them).
-export const BACKGROUND_KINDS: readonly string[] = [...MIRROR_KINDS, ...WEATHER_KINDS, ...BUNDLE_KINDS];
+export const BACKGROUND_KINDS: readonly string[] = [...MIRROR_KINDS, ...DRIVE_KINDS, ...WEATHER_KINDS, ...BUNDLE_KINDS];
 
 type JobRow = typeof schema.jobs.$inferSelect;
 
@@ -268,6 +269,18 @@ async function dispatch(job: JobRow): Promise<void> {
     case "dropbox.final":
       // One delivered file into <listing>/FINAL DELIVERY/<section> (src/lib/dropbox-mirror.ts).
       await runDropboxFinal(job);
+      return;
+    case "drive.mirror":
+      // One raw file from R2 into the business's Google Drive (src/lib/drive-mirror.ts).
+      await runDriveMirror(job);
+      return;
+    case "drive.final_sweep":
+      // Delivered files whose copy in Drive's FINAL DELIVERY is missing or old: one drive.final each.
+      await runDriveFinalSweep(job);
+      return;
+    case "drive.final":
+      // One delivered file into <listing>/FINAL DELIVERY/<section> in Google Drive.
+      await runDriveFinal(job);
       return;
     case "r2.raw_sweep":
       // Raws Dropbox has a copy of and editing is done with: one check each (src/lib/r2-raw-cleanup.ts).

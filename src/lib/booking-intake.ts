@@ -666,7 +666,8 @@ export async function intakeBooking(p: IntakePayload): Promise<IntakeResult> {
   // Oct 26 2026: the listing's folder in Dropbox the moment the shoot is
   // booked (waits quietly until Dropbox is connected), and a card on the
   // Video board when the booking has a film or reel.
-  specs.push({ kind: "dropbox.folder", idempotencyKey: jobKey("dropbox.folder", listingId, 1), bookingId: p.submissionId, listingId, payload: { version: 1, subfolders: false } });
+  // Nov 19 2026: Dropbox only for a business on Dropbox (business.fileStore); on Google Drive the folder is made with the first copy.
+  if (business.fileStore === "dropbox") specs.push({ kind: "dropbox.folder", idempotencyKey: jobKey("dropbox.folder", listingId, 1), bookingId: p.submissionId, listingId, payload: { version: 1, subfolders: false } });
   if (isVideoBooking(p.serviceIds, p.addonIds)) specs.push({ kind: "video.card", idempotencyKey: jobKey("video.card", p.submissionId, 1), bookingId: p.submissionId, listingId, payload: { version: 1 } });
   stmts.push(d.insert(schema.jobs).values(jobRows(specs)).onConflictDoNothing({ target: schema.jobs.idempotencyKey }));
 

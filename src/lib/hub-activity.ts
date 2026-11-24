@@ -91,6 +91,11 @@ const CHANNEL: Partial<Record<ActivityAction, Channel>> = {
   "shoot.r2_raws_removed": "hub",
   "shoot.r2_raw_kept": "hub",
   "dropbox.connected": "hub",
+  "drive.connected": "hub",
+  "drive.disconnected": "hub",
+  "shoot.drive_synced": "hub",
+  "shoot.drive_requeued": "hub",
+  "client.drive": "hub",
   "dropbox.disconnected": "hub",
   "twilight.preset_saved": "hub",
   "shoot.twilight_made": "hub",
@@ -208,6 +213,8 @@ export function hubActivityText(a: HubActivityRow, place: Omit<HubPlace, "link">
       return `Downloaded: ${name}, ${str(m.what) ?? "a zip"}. By ${str(m.email) ?? "the client"}.`;
     case "client.dropbox":
       return `Added to Dropbox: ${name}, ${files(num(m.count))}. By ${str(m.email) ?? "the client"}.`;
+    case "client.drive":
+      return `Added to Google Drive: ${name}, ${files(num(m.count))}. By ${str(m.email) ?? "the client"}.`;
     case "team.created":
       return `New team: ${str(m.slug) ?? "a team"}${num(m.members) ? ` with ${files(num(m.members), "member")}` : ""}. Created by ${who}.`;
     case "team.updated":
@@ -314,6 +321,15 @@ export function hubActivityText(a: HubActivityRow, place: Omit<HubPlace, "link">
       return `Virtual twilight preset set: ${str(m.name) ?? "a preset"}${num(m.credits) != null ? ` (${num(m.credits)} credits a photo)` : ""}. Every twilight runs it from now on. By ${who}.`;
     case "dropbox.disconnected":
       return `Dropbox disconnected. Raw uploads wait until it is connected again. By ${who}.`;
+    // The Google Drive mirror (Nov 18 2026), worded like the Dropbox lines.
+    case "shoot.drive_synced":
+      return `Raw files copied to Google Drive: ${name}, ${dropboxCounts(num(m.photos) ?? 0, num(m.video) ?? 0)}.`;
+    case "shoot.drive_requeued":
+      return `Copying ${files(num(m.count))} to Google Drive again: ${name}. By ${who}.`;
+    case "drive.connected":
+      return `Google Drive connected${str(m.name) ? `: ${str(m.name)}` : ""}${str(m.email) ? ` (${str(m.email)})` : ""}. Raw uploads now copy to ${str(m.root) ?? "Listings"}. By ${who}.`;
+    case "drive.disconnected":
+      return `Google Drive disconnected. Raw uploads wait until it is connected again. By ${who}.`;
     default:
       return null;
   }
@@ -332,6 +348,7 @@ export const FLAGGED_ACTIONS: ReadonlySet<ActivityAction> = new Set<ActivityActi
   "media.repaired",
   "booking.client_rescheduled",
   "dropbox.disconnected",
+  "drive.disconnected",
 ]);
 
 // Finished text: test-site prefix, the link, every dollar amount scrubbed,

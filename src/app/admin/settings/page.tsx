@@ -17,6 +17,9 @@ import { Empty, PageHead, SectionHead } from "@/components/admin/bits";
 import { requireAdmin } from "@/lib/admin";
 import { canConnectDropboxHere, dropboxConnection, dropboxMirrorEnabled, dropboxRedirectUri, dropboxRoot, hasDropboxApp } from "@/lib/dropbox";
 import { currentEnv } from "@/lib/jobs-core";
+import { driveRootName } from "@/lib/google-drive";
+import { business } from "@/lib/business";
+import { DriveSettingsCard } from "@/components/admin/DriveSettingsCard";
 import { brand } from "@/lib/brand";
 import { mailDomain } from "@/lib/brand";
 
@@ -44,7 +47,7 @@ export default async function AdminSettings({ searchParams }: { searchParams: Pr
   // concurrently, so a page that fetched first would still stream its data.
   const me = await requireAdmin();
   const sp = await searchParams;
-  const [admins, counts, dropbox, qc, preset] = await Promise.all([adminAdmins(), portalCounts(), dropboxConnection().catch(() => null), qcTags(), twilightPreset()]);
+  const [admins, counts, dropbox, qc, preset] = await Promise.all([adminAdmins(), portalCounts(), (business.fileStore === "dropbox" ? dropboxConnection().catch(() => null) : Promise.resolve(null)), qcTags(), twilightPreset()]);
   const mine = me.trim().toLowerCase();
   const hasCounts = COUNTS.some(([k]) => typeof counts[k] === "number");
   const n = (r: StaffRole) => admins.filter((a) => a.role === r).length;
@@ -60,11 +63,16 @@ export default async function AdminSettings({ searchParams }: { searchParams: Pr
 
       {sp.saved === "dropbox" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Dropbox connected. Raw uploads now copy to {dropboxRoot()}.</p>}
       {sp.saved === "dropbox-off" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Dropbox disconnected. Raw uploads wait until it is connected again.</p>}
+      {sp.saved === "drive" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Google Drive connected. Uploads and deliveries now copy into {driveRootName()} in that Drive.</p>}
+      {sp.saved === "drive-off" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Google Drive disconnected. Uploads wait until it is connected again.</p>}
       {sp.saved === "slack" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Slack QC tags saved. The next photo or video request pings them.</p>}
       {sp.saved === "twilight" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Twilight preset saved. Every virtual twilight runs {preset?.name ?? "it"} from now on, and any shoot that was waiting for it starts its twilight frames.</p>}
-      {sp.saved && sp.saved !== "dropbox" && sp.saved !== "dropbox-off" && sp.saved !== "slack" && sp.saved !== "twilight" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Saved.</p>}
+      {sp.saved && sp.saved !== "dropbox" && sp.saved !== "dropbox-off" && sp.saved !== "drive" && sp.saved !== "drive-off" && sp.saved !== "slack" && sp.saved !== "twilight" && <p className="adm-banner adm-banner--ok" style={{ marginTop: 18 }}>Saved.</p>}
       {sp.error && <p className="adm-banner adm-banner--bad" style={{ marginTop: 18 }}>{sp.error}</p>}
 
+      {business.fileStore === "google_drive" ? <DriveSettingsCard /> : null}
+
+      {business.fileStore === "dropbox" ? (
       <div className="adm-section" id="dropbox">
         <SectionHead title="Dropbox" />
         <p className="muted" style={{ fontSize: 13, marginTop: -4, marginBottom: 14 }}>
@@ -134,6 +142,7 @@ export default async function AdminSettings({ searchParams }: { searchParams: Pr
           )}
         </div>
       </div>
+      ) : null}
 
       <div className="adm-section" id="twilight">
         <SectionHead title="Virtual twilight" />

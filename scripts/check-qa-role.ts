@@ -285,12 +285,12 @@ async function main() {
   // Studio routes.
   const STAFF_ROUTES = [/^src\/app\/api\/studio\/thumb\//, /^src\/app\/api\/studio\/frame\//, /^src\/app\/api\/studio\/shoots\/\[id\]\/(download|status|finals)\//, /^src\/app\/api\/studio\/listings\/\[id\]\//];
   // The upload flow: admins and creative specialists.
-  const UPLOADER_ROUTES = [/^src\/app\/api\/studio\/(import-dropbox|upload-urls|upload-status|upload-landed|upload-discard|models)\//, /^src\/app\/api\/studio\/shoots\/\[id\]\/submit\//];
+  const UPLOADER_ROUTES = [/^src\/app\/api\/studio\/(import-dropbox|import-drive|upload-urls|upload-status|upload-landed|upload-discard|models)\//, /^src\/app\/api\/studio\/shoots\/\[id\]\/submit\//];
   // Reports (Oct 21 2026): the CSV downloads carry money; admins only.
   // Dropbox connect and callback (Oct 21 2026): an admin session (the
   // callback also checks the signed state); the operator check stays token.
   // Nov 24 2026: intake-file opens a file a client attached to a booking (admins only).
-  const ADMIN_ROUTES = [/^src\/app\/api\/studio\/reports\//, /^src\/app\/api\/studio\/dropbox\/(connect|callback)\//, /^src\/app\/api\/studio\/intake-file\//];
+  const ADMIN_ROUTES = [/^src\/app\/api\/studio\/reports\//, /^src\/app\/api\/studio\/dropbox\/(connect|callback)\//, /^src\/app\/api\/studio\/drive\/(connect|callback)\//, /^src\/app\/api\/studio\/intake-file\//];
   for (const f of walk(path.join(ROOT, "src/app/api/studio"), (p) => p.endsWith("route.ts"))) {
     const name = rel(f);
     const want: Gate = STAFF_ROUTES.some((re) => re.test(name)) ? "staff" : UPLOADER_ROUTES.some((re) => re.test(name)) ? "uploader" : ADMIN_ROUTES.some((re) => re.test(name)) ? "admin" : "token";
@@ -310,6 +310,18 @@ async function main() {
   const cb = code(readFileSync(path.join(ROOT, "src/app/api/studio/dropbox/callback/route.ts"), "utf8"));
   ok(/verifyDropboxState\(state, admin\)/.test(cb) && cb.indexOf("requireAdminApi(") < cb.indexOf("verifyDropboxState("), "the callback checks the signed state for the signed-in admin, after the gate");
   ok(!/refreshToken|refresh_token/.test(code(readFileSync(path.join(ROOT, "src/app/admin/settings/page.tsx"), "utf8"))), "the settings page never touches the refresh token");
+  // The Google Drive mirror (Nov 18 2026), the same rules: connect and callback
+  // are admin session routes, the import is an uploader route, both actions are
+  // admin only, the callback checks the admin's own signed state, and neither
+  // the settings card nor the import ever touches a stored token.
+  ok(table.some((t) => t.kind === "route" && /drive\/connect/.test(t.name) && t.gate === "admin"), "drive connect is an admin session route");
+  ok(table.some((t) => t.kind === "route" && /drive\/callback/.test(t.name) && t.gate === "admin"), "drive callback is an admin session route");
+  ok(table.some((t) => t.kind === "route" && /import-drive/.test(t.name) && t.gate === "uploader"), "the Google Drive import is an uploader route");
+  ok(table.some((t) => t.kind === "action" && t.name === "drive-actions.disconnectDrive" && t.gate === "admin"), "disconnectDrive is admin only");
+  ok(table.some((t) => t.kind === "action" && t.name === "drive-actions.driveShootAgain" && t.gate === "admin"), "driveShootAgain is admin only");
+  const dcb = code(readFileSync(path.join(ROOT, "src/app/api/studio/drive/callback/route.ts"), "utf8"));
+  ok(/verifyDriveState\(state, admin\)/.test(dcb) && dcb.indexOf("requireAdminApi(") < dcb.indexOf("verifyDriveState("), "the Drive callback checks the signed state for the signed-in admin, after the gate");
+  ok(!/refreshToken|refresh_token|driveAccessToken/.test(code(readFileSync(path.join(ROOT, "src/components/admin/DriveSettingsCard.tsx"), "utf8"))), "the Drive card never touches a token");
   // Raw video never reaches editing: every file read in the pipeline goes
   // through the editing-kinds filter, and submit never flips a clip to display.
   const pipe = code(readFileSync(path.join(ROOT, "src/lib/pipeline.ts"), "utf8"));

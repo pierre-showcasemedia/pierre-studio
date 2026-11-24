@@ -246,7 +246,7 @@ export async function adminListingDetail(id: string): Promise<{
 // ---- Shoots --------------------------------------------------------------
 
 type ShootRow = typeof schema.shoots.$inferSelect;
-type ListingLite = { id: string; address: string; slug: string; nda: boolean; dropboxFolder?: string | null; client: { name: string | null; email: string } };
+type ListingLite = { id: string; address: string; slug: string; nda: boolean; dropboxFolder?: string | null; driveFolderId?: string | null; client: { name: string | null; email: string } };
 
 function toShoot(s: ShootRow, l: ListingLite): AdminShoot {
   return {
@@ -259,6 +259,8 @@ function toShoot(s: ShootRow, l: ListingLite): AdminShoot {
     nda: l.nda,
     dropboxFolder: l.dropboxFolder ?? null,
     dropboxSyncedAt: iso(s.dropboxSyncedAt),
+    driveFolderId: l.driveFolderId ?? null,
+    driveSyncedAt: iso(s.driveSyncedAt),
     status: s.status,
     options: s.options ?? null,
     progress: (s.progress as Record<string, unknown> | null) ?? null,
@@ -357,7 +359,7 @@ export async function adminShootDetail(id: string): Promise<{ shoot: AdminShoot;
   );
   return {
     shoot: toShoot(s, s.listing),
-    files: s.files.map((f) => ({ id: f.id, filename: f.filename, bytes: f.bytes, kind: f.kind, uploaded: Boolean(f.autohdrUploadedAt), dropboxPath: f.dropboxPath, dropboxSyncedAt: iso(f.dropboxSyncedAt), r2DeletedAt: iso(f.r2DeletedAt) })),
+    files: s.files.map((f) => ({ id: f.id, filename: f.filename, bytes: f.bytes, kind: f.kind, uploaded: Boolean(f.autohdrUploadedAt), dropboxPath: f.dropboxPath, dropboxSyncedAt: iso(f.dropboxSyncedAt), driveSyncedAt: iso(f.driveSyncedAt), r2DeletedAt: iso(f.r2DeletedAt) })),
     frames,
   };
 }

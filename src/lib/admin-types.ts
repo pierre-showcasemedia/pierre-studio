@@ -111,11 +111,14 @@ export type AdminShoot = {
   // once the first file was copied, and when the whole shoot was in.
   dropboxFolder: string | null;
   dropboxSyncedAt: string | null;
+  // Nov 18 2026: the same for Google Drive (src/lib/drive-mirror.ts).
+  driveFolderId?: string | null;
+  driveSyncedAt?: string | null;
 };
 
 // kind raw_video (Oct 21 2026) is camera footage: Dropbox only, never editing.
 // r2DeletedAt: the raw left R2 after its Dropbox copy was verified (src/lib/r2-raw-cleanup.ts).
-export type AdminShootFile = { id: string; filename: string; bytes: number | null; kind: ShootFileKind; uploaded: boolean; dropboxPath: string | null; dropboxSyncedAt: string | null; r2DeletedAt?: string | null };
+export type AdminShootFile = { id: string; filename: string; bytes: number | null; kind: ShootFileKind; uploaded: boolean; dropboxPath: string | null; dropboxSyncedAt: string | null; driveSyncedAt?: string | null; r2DeletedAt?: string | null };
 
 export type AdminFrame = {
   id: string;

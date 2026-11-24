@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { onDrive } from "@/lib/file-store";
+import { driveFinalsStatus } from "@/lib/drive-mirror";
+import { driveFolderUrl } from "@/lib/google-drive";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import "@/styles/admin-media.css";
@@ -103,10 +106,10 @@ export default async function AdminListingDetail({
   const editor = hasDb();
   const [clients, extra, rows, replacedOriginals, finals] = await Promise.all([
     admin ? adminClients() : Promise.resolve([]),
-    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, picTimeUrl: true, dropboxFolder: true, deliveryEmailAt: true } }) : Promise.resolve(null),
+    editor && admin ? db().query.listings.findFirst({ where: eq(schema.listings.id, id), columns: { city: true, state: true, zip: true, notes: true, links: true, picTimeUrl: true, dropboxFolder: true, driveFolderId: true, deliveryEmailAt: true } }) : Promise.resolve(null),
     adminMediaRows(id),
     adminReplacedOriginals({ listingId: id }),
-    editor && admin ? finalsStatus(id).catch(() => null) : Promise.resolve(null),
+    editor && admin ? (onDrive() ? driveFinalsStatus(id) : finalsStatus(id)).catch(() => null) : Promise.resolve(null),
   ]);
   const storage = hasR2();
   const bundleBase = `listings/${listing.slug}/bundles`;
@@ -260,7 +263,27 @@ export default async function AdminListingDetail({
               </div>
             </div>
           </div>
-          {extra?.dropboxFolder && (
+          {onDrive() && extra?.driveFolderId && (
+            <div className="lset__row">
+              <div>
+                <span className="lset__label">Google Drive folder</span>
+                <p className="lset__hint">Raw photos go to Photo and raw clips to Video when they are uploaded. Once the delivery email is sent, every file the client can see is copied to {FINAL_DELIVERY_FOLDER}. Kept through address edits, so no file is stranded.</p>
+              </div>
+              <div className="lset__fields">
+                <p style={{ margin: 0, fontSize: 13 }}>
+                  <a href={driveFolderUrl(extra.driveFolderId)} target="_blank" rel="noreferrer" style={{ textDecoration: "underline", textUnderlineOffset: 3 }}>Open the folder in Google Drive ↗</a>
+                </p>
+                {finals && finals.visible > 0 && (
+                  <p className="muted" style={{ margin: "6px 0 0", fontSize: 12.5 }}>
+                    {extra.deliveryEmailAt
+                      ? `${FINAL_DELIVERY_FOLDER}: ${finals.copied} of ${finals.visible} delivered file${finals.visible === 1 ? "" : "s"} copied${finals.copied < finals.visible ? ", the rest within a few minutes" : ""}.`
+                      : `${FINAL_DELIVERY_FOLDER} fills when the delivery email is sent.`}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+          {!onDrive() && extra?.dropboxFolder && (
             <div className="lset__row">
               <div>
                 <span className="lset__label">Dropbox folder</span>

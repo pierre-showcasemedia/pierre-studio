@@ -48,6 +48,16 @@ export function DropboxIcon(p: IconProps) {
   );
 }
 
+// Google Drive's triangle, drawn in the same line style as the other icons.
+export function DriveIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M5.6 2.25h4.8l4.1 7.1-2.4 4.15H3.9L1.5 9.35l4.1-7.1Z" />
+      <path d="M5.6 2.25 9.9 9.6M10.4 2.25 6.1 9.6M1.5 9.35h13" />
+    </Svg>
+  );
+}
+
 export function CloseIcon(p: IconProps) {
   return (
     <Svg {...p}>

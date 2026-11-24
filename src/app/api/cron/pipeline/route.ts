@@ -14,6 +14,7 @@ import { runPipelineTick, retryShootRow } from "@/lib/pipeline";
 import { drainJobs, heartbeat, WEATHER_KINDS } from "@/lib/jobs";
 import { BUNDLE_KINDS } from "@/lib/bundle-jobs";
 import { MIRROR_KINDS, scheduleFinalSweep, scheduleVideoLinks } from "@/lib/dropbox-mirror";
+import { DRIVE_KINDS, scheduleDriveFinalSweep } from "@/lib/drive-mirror";
 import { scheduleRawSweep } from "@/lib/r2-raw-cleanup";
 import { currentEnv, enqueueJobs } from "@/lib/jobs-core";
 import { scheduleShootBriefs } from "@/lib/shoot-brief";
@@ -65,7 +66,7 @@ export async function GET(request: Request) {
   const seconds = Math.min(280, Math.max(10, Number(process.env.PIPELINE_STEP_SECONDS || 200) || 200));
   const started = Date.now();
   const mirrorPass: Promise<Awaited<ReturnType<typeof drainJobs>> | { error: string }> | null = hasDb()
-    ? drainJobs({ kinds: [...WEATHER_KINDS, ...MIRROR_KINDS], budgetMs: DROPBOX_PASS_MS, limit: 600 }).catch((e) => {
+    ? drainJobs({ kinds: [...WEATHER_KINDS, ...MIRROR_KINDS, ...DRIVE_KINDS], budgetMs: DROPBOX_PASS_MS, limit: 600 }).catch((e) => {
         console.error("[cron/dropbox]", e);
         return { error: e instanceof Error ? e.message : String(e) };
       })
@@ -122,6 +123,12 @@ export async function GET(request: Request) {
         await scheduleFinalSweep();
       } catch (e) {
         console.error("[cron/dropbox-finals]", e);
+      }
+      // Delivered finals into Google Drive's FINAL DELIVERY folders, every 10 minutes (src/lib/drive-mirror.ts).
+      try {
+        await scheduleDriveFinalSweep();
+      } catch (e) {
+        console.error("[cron/drive-finals]", e);
       }
       // Share links for Video folders that still have none, every 30 minutes (src/lib/dropbox-mirror.ts).
       try {

@@ -314,6 +314,21 @@ Built on the `new-scope` branch at Hammad's go-ahead (Nov 24), not on `main`.
   "Came from".
 - Checks: `scripts/check-leads-intake.ts`.
 
+### Google Drive file store (branch `new-scope`, merged Nov 24 2026, off)
+
+Ported from the studio template (Jerry's build, template commit 3940ca2), all
+eight parts. It is **off** for Showcase Media: `business.fileStore` is
+`"dropbox"`, so Settings shows the Dropbox card, clients see Add to Dropbox,
+uploads copy to Dropbox, and no Drive job is ever made. Switching to
+`"google_drive"` gives the same three through Google Drive (a Settings card,
+Save to Google Drive in the gallery, Import from Google Drive on the upload
+page) and turns Dropbox off. That needs Pierre's own Google Cloud OAuth client
+and Picker key (names in `.env.example`) and the migrate route run once (it
+adds the `drive_*` columns, which stay empty while on Dropbox). Two wording
+gaps from the template were fixed in the merge (the Video board lede). Checks:
+`scripts/check-drive-mirror.ts`, plus the Drive lines in `check-qa-role.ts`
+and `check-video-editing.ts`.
+
 ## 12b. Pic-Time galleries (Nov 22 2026)
 
 Pierre keeps delivering on Pic-Time for the year he has paid. Each listing has
