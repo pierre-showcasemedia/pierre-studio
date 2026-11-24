@@ -51,6 +51,8 @@ import type { BookingProperty, InvoiceLineItem, InvoiceMeta, InvoiceStatus } fro
 import { logActivity } from "./activity";
 import { ADDONS, bookingExtra, fmtDollars, isSizeId, PRICING_VERSION, quote, type Quote, type Selection, SERVICES, SIZES } from "./studio-pricing";
 import { toYmd } from "./booking-time";
+import { business } from "./business";
+import { applyClientDiscount } from "./client-pricing";
 import { currentEnv, enqueueJobs, jobKey, type JobSpec } from "./jobs-core";
 import { closeProviderObject, isOtherEnv, isPaid, payLineFor, rowEnv } from "./payments";
 import { isPaidAnotherWay, payOtherPhrase } from "./pay-other";
@@ -554,8 +556,13 @@ export async function applyBookingEdit(bookingId: string, input: EditInput, acto
   const diff = diffEdit(b, b.client, input);
   if (!diff.changed.length) return { ok: true, message: "Nothing changed." };
 
-  const oldQ = quote(b.serviceIds ?? [], b.addonIds ?? [], bookingExtra(b));
-  const newQ = quote(input.serviceIds, input.addonIds, { items: input.items, clientType: b.clientType, area: b.market });
+  // A client discount (src/lib/client-pricing.ts) applies to both sides the way
+  // intake applied it, so the edit's difference and the reissued bill keep it.
+  // (The template re-priced without it; fixed in the Nov 24 merge.)
+  const pct = business.clientDiscount ? (await db().query.clients.findFirst({ where: eq(schema.clients.id, b.clientId), columns: { discountPercent: true } }))?.discountPercent ?? 0 : 0;
+  const discounted = (q: Quote): Quote => (pct && !needsQuoteReasons(q).length ? applyClientDiscount(q, pct) : q);
+  const oldQ = discounted(quote(b.serviceIds ?? [], b.addonIds ?? [], bookingExtra(b)));
+  const newQ = discounted(quote(input.serviceIds, input.addonIds, { items: input.items, clientType: b.clientType, area: b.market, miles: b.travelMiles }));
   const now = new Date();
   const version = b.calendarVersion + 1;
 

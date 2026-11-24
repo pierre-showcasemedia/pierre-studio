@@ -53,7 +53,8 @@ export async function createStripeInvoiceForInvoice(invoiceId: string): Promise<
   if (inv.provider !== "stripe") return { skipped: `provider is ${inv.provider ?? "unset"}` };
   if (inv.providerId) return { skipped: "already issued", providerId: inv.providerId, hostedUrl: inv.hostedUrl };
   if (inv.status !== "open") return { skipped: `status is ${inv.status}` };
-  const lines = (inv.lineItems ?? []).filter((l) => l.priced && l.cents > 0);
+  // A client discount is a negative line (src/lib/client-pricing.ts): Stripe takes it as a credit item.
+  const lines = (inv.lineItems ?? []).filter((l) => l.priced && l.cents !== 0);
   if (!lines.length || !inv.amountCents) return { skipped: "nothing priced" };
   const client = inv.client ?? (inv.clientEmail ? await d.query.clients.findFirst({ where: eq(schema.clients.email, inv.clientEmail) }) : null);
   if (!client) throw new Error("invoice has no client");

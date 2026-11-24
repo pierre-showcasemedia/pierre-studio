@@ -25,6 +25,7 @@ import { MERGE_DRAIN_KINDS, mergeListing } from "@/lib/merge-listing";
 import { sendSignInLink } from "@/lib/login-link";
 import { applyVisibility } from "@/lib/visibility-core";
 import { parsePicTimeUrl } from "@/lib/pictime";
+import { business } from "@/lib/business";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -68,8 +69,8 @@ export async function updateClient(id: string, formData: FormData) {
     }
     const teamRaw = field(formData, "team");
     const team = teamRaw ? slugify(teamRaw) || null : null;
-    const patch = { email, name: field(formData, "name") || null, company: field(formData, "company") || null, phone: field(formData, "phone") || null, team, notes: field(formData, "notes") || null };
-    const changed = (Object.keys(patch) as (keyof typeof patch)[]).filter((k) => cur![k] !== patch[k]);
+    const patch = { email, name: field(formData, "name") || null, company: field(formData, "company") || null, phone: field(formData, "phone") || null, team, notes: field(formData, "notes") || null, ...(business.clientDiscount ? { discountPercent: Math.max(0, Math.min(100, Math.round(Number(field(formData, "discountPercent")) || 0))), pricingNote: field(formData, "pricingNote") || null } : {}) };
+    const changed = (Object.keys(patch) as (keyof typeof patch)[]).filter((k) => JSON.stringify(cur![k] ?? null) !== JSON.stringify(patch[k] ?? null));
     if (changed.length) {
       await d.update(schema.clients).set(patch).where(eq(schema.clients.id, id));
       if (team) await ensureTeamRow(team);

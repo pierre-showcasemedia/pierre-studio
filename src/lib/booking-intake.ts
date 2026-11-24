@@ -21,6 +21,7 @@ import { wallClockToUtc, toHm, toYmd } from "./booking-time";
 import { siteUrl } from "./brand";
 import { currentEnv, jobKey, jobRows, type JobSpec } from "./jobs-core";
 import { parsePaymentDetail } from "./pay-other";
+import { applyClientDiscount } from "./client-pricing";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -39,6 +40,7 @@ export type IntakePayload = {
   givenId: string | null; // what the website sent when it was not a uuid
   source: string;
   market: string | null; // the service area the client picked (the website's "island" / service_area)
+  travelMiles: number | null; // driving miles from the base, worked out by the website's server (travel bands; empty table = unused)
   clientType: string | null; // agent | homeowner | builder | other
   items: Selection[]; // the website's selection with quantities (size not included)
   pricingHash: string | null; // the website's price table fingerprint
@@ -51,6 +53,11 @@ export type IntakePayload = {
   desiredDate: string | null; // YYYY-MM-DD
   startTime: string | null; // HH:MM, business time zone
   launchDate: string | null;
+  beds: number | null; // optional form fields (studio template, Nov 22 2026): stored only
+  baths: number | null;
+  sellerEmail: string | null; // never emailed: automated emails stay off (business switches)
+  timeShiftOk: boolean;
+  textsOptIn: boolean; // needed before any automated text; texts stay off (business.autoTexts)
   paymentMethod: BookingPaymentMethod | null;
   paymentDetail: BookingPaymentDetail | null; // check | ach | cash, only with paymentMethod "other"
   additionalDetails: string | null; // the form's "Additional details" (bookings.client_notes)
@@ -196,6 +203,18 @@ export function normalizeBookingPayload(body: Body): { ok: true; p: IntakePayloa
   const estimatedTotalLabel = first([body], ["estimated_total", "estimatedTotal"]) || null;
 
   const market = first([body], ["service_area", "area", "island", "market"]).slice(0, 80) || null;
+  const milesRaw = Number(body.travel_miles);
+  const travelMiles = body.travel_miles != null && Number.isFinite(milesRaw) && milesRaw >= 0 ? Math.round(milesRaw) : null;
+  const num = (v: unknown, max: number, step: number): number | null => {
+    const n = typeof v === "number" ? v : Number(v);
+    return v == null || v === "" || !Number.isFinite(n) || n < 0 || n > max ? null : Math.round(n / step) * step;
+  };
+  const beds = num(body.beds, 30, 1);
+  const baths = num(body.baths, 30, 0.5);
+  const sellerRaw = typeof body.seller_email === "string" ? body.seller_email.trim().toLowerCase().slice(0, 200) : "";
+  const sellerEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(sellerRaw) ? sellerRaw : null;
+  const timeShiftOk = body.time_shift_ok === true;
+  const textsOptIn = body.texts_opt_in === true;
   const clientType = first([body], ["client_type", "clientType"]).toLowerCase() || null;
   const pricingHash = first([body], ["pricing_hash", "pricingHash"]) || null;
   const timeWindow = first([timing, body], ["time_window", "timeWindow"]).toLowerCase() || null;
@@ -223,6 +242,7 @@ export function normalizeBookingPayload(body: Body): { ok: true; p: IntakePayloa
       givenId: givenId && givenId.toLowerCase() !== submissionId ? givenId : null,
       source: first([body], ["source"]) || "website",
       market,
+      travelMiles,
       clientType,
       items,
       pricingHash,
@@ -253,6 +273,11 @@ export function normalizeBookingPayload(body: Body): { ok: true; p: IntakePayloa
       desiredDate,
       startTime,
       launchDate,
+      beds,
+      baths,
+      sellerEmail,
+      timeShiftOk,
+      textsOptIn,
       paymentMethod,
       paymentDetail,
       additionalDetails,
@@ -319,18 +344,21 @@ export async function intakeBooking(p: IntakePayload): Promise<IntakeResult> {
     };
   }
 
-  // 2. Price it ourselves.
-  const q = quote(p.serviceIds, p.addonIds, { items: p.items, clientType: p.clientType, area: p.market });
+  // 2. Price it ourselves. A client with a saved discount (clients.discount_percent,
+  // src/lib/client-pricing.ts) gets it as its own line once the price is final.
+  const known = !business.clientDiscount ? null : await d.query.clients.findFirst({ where: eq(schema.clients.email, p.client.email), columns: { discountPercent: true } });
+  const q0 = quote(p.serviceIds, p.addonIds, { items: p.items, clientType: p.clientType, area: p.market, miles: p.travelMiles });
   // The price table's own reasons (a quoted size or item, a travel fee to
   // confirm, a builder's project quote), then ours.
-  const reasons: string[] = [...q.reasons];
+  const reasons: string[] = [...q0.reasons];
   if (p.unknownItems.length) reasons.push(`unrecognized: ${p.unknownItems.join(", ")}`);
-  if (!q.lineItems.length) reasons.push("no services chosen");
+  if (!q0.lineItems.length) reasons.push("no services chosen");
   if (p.pricingHash && p.pricingHash !== PRICING_HASH) reasons.push("the website's price table differs from the studio's (copy src/lib/pricing.ts over)");
-  const mismatch = p.websiteTotalCents != null && !q.inquire && p.websiteTotalCents !== q.totalCents;
+  const mismatch = p.websiteTotalCents != null && !q0.inquire && p.websiteTotalCents !== q0.totalCents;
   if (mismatch) reasons.push("website total differs");
-  if (!reasons.length && q.totalCents <= 0) reasons.push("nothing priced");
+  if (!reasons.length && q0.totalCents <= 0) reasons.push("nothing priced");
   const needsQuote = reasons.length > 0;
+  const q = needsQuote || !business.clientDiscount ? q0 : applyClientDiscount(q0, known?.discountPercent);
   const invoiceStatus: InvoiceStatus = needsQuote ? "needs_quote" : "open";
   // The business's way to pay when the form names none (business.payments):
   // a Stripe invoice, or no processor and a person marks it paid.
@@ -395,6 +423,7 @@ export async function intakeBooking(p: IntakePayload): Promise<IntakeResult> {
   };
   const bookingValues = {
     market: p.market,
+    travelMiles: p.travelMiles,
     paymentMethod,
     paymentDetail,
     desiredDate: p.desiredDate,
@@ -402,6 +431,11 @@ export async function intakeBooking(p: IntakePayload): Promise<IntakeResult> {
     startsAt,
     endsAt,
     launchDate: p.launchDate,
+    beds: p.beds,
+    baths: p.baths,
+    sellerEmail: p.sellerEmail,
+    timeShiftOk: p.timeShiftOk,
+    textsOptIn: p.textsOptIn,
     sqft: p.property.sqft,
     tier: q.tier >= 0 ? q.tier : null,
     serviceIds: p.serviceIds,

@@ -581,6 +581,17 @@ const DDL = [
   `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_key" text`,
   `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_bytes" bigint`,
   `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "drive_final_at" timestamp`,
+  // Nov 18 2026 (merged Nov 24): client-specific pricing (src/lib/client-pricing.ts), off unless business.clientDiscount.
+  `ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "discount_percent" integer DEFAULT 0 NOT NULL`,
+  `ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "pricing_note" text`,
+  // Nov 18 2026 (merged Nov 24): the travel bands' distance on the booking, and
+  // optional form fields (beds, baths, seller email, start-time notice, text opt-in), stored only.
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "travel_miles" integer`,
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "beds" real`,
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "baths" real`,
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "seller_email" text`,
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "time_shift_ok" boolean NOT NULL DEFAULT false`,
+  `ALTER TABLE "bookings" ADD COLUMN IF NOT EXISTS "texts_opt_in" boolean NOT NULL DEFAULT false`,
   `CREATE TABLE IF NOT EXISTS "leads" (
     "id" uuid PRIMARY KEY,
     "kind" text DEFAULT 'pricing' NOT NULL,

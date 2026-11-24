@@ -11,6 +11,8 @@ export type AdminClient = {
   team: string | null;
   teamName?: string | null;
   notes?: string | null;
+  discountPercent?: number;
+  pricingNote?: string | null;
   listingCount: number;
   createdAt: string;
 };

@@ -40,6 +40,27 @@ export type Area = (typeof AREAS)[number];
 export const HOME_AREAS = new Set<string>(["Within 25 miles of our studio (east Madison, near Sun Prairie)"]);
 export const isOutsideArea = (area: string | null | undefined) => Boolean(area && !HOME_AREAS.has(area));
 
+// The travel fee in mileage bands (studio template, Nov 18 2026; merged Nov 24).
+// The website works out the driving miles server side from the address and
+// sends travel_miles; the studio prices with the same table. Free inside
+// freeMiles, then each step's price up to its upToMiles, and a quote past the
+// last step. While steps is empty, or any upToMiles is null, the bands are off
+// and travel stays Pierre's rule above (free within 25 miles, then $0.50 a mile
+// round trip, confirmed with the client). Fill it in from Pierre's real prices
+// only, here and in the studio's copy, and bump PRICING_VERSION.
+export const TRAVEL: { origin: string; freeMiles: number; steps: readonly { upToMiles: number | null; cents: number }[] } = {
+  origin: "",
+  freeMiles: 0,
+  steps: [],
+};
+export const travelReady = (): boolean => TRAVEL.steps.length > 0 && TRAVEL.steps.every((s) => typeof s.upToMiles === "number");
+// The fee for one distance: 0 inside the free radius, a step's price, or null past the last step (quoted).
+export function travelCents(miles: number): number | null {
+  if (miles <= TRAVEL.freeMiles) return 0;
+  for (const s of TRAVEL.steps) if (s.upToMiles != null && miles <= s.upToMiles) return s.cents;
+  return null;
+}
+
 export const CLIENT_TYPES = ["agent", "homeowner", "builder", "other"] as const;
 export type ClientType = (typeof CLIENT_TYPES)[number];
 export const CLIENT_TYPE_LABELS: Record<ClientType, string> = {
@@ -70,7 +91,7 @@ export const CONFIRM_WITHIN = "the same day";
 // ==== BEGIN SHARED PRICE TABLE ====
 // Every amount is US cents. No sales tax line.
 
-export const PRICING_VERSION = "scm-v3-2026-11-23";
+export const PRICING_VERSION = "scm-v4-2026-11-24";
 
 // The client picks the home's size first; it sets the tier (0 to 5) for every
 // tier-priced item. Over 10,000 sq ft is a custom quote. "cents" is the
@@ -223,7 +244,7 @@ export function priceHint(item: Item, tier: number): string {
 }
 
 export type Selection = { id: string; qty?: number | null; option?: string | null };
-export type PricingInput = { package: string | null; items: readonly Selection[]; clientType: string | null; area?: string | null };
+export type PricingInput = { package: string | null; items: readonly Selection[]; clientType: string | null; area?: string | null; miles?: number | null }; // miles: driving miles for the travel bands (TRAVEL)
 export type PricedLine = { id: string; name: string; qty: number; unit: string; unitCents: number; cents: number; priced: boolean; from?: boolean; option?: string | null };
 export type PricedItem = { id: string; qty: number; option: string | null };
 export type PricedBooking = {
@@ -330,7 +351,16 @@ export function priceBooking(input: PricingInput): PricedBooking {
   }
   if (!pkg) reasons.push("Pick the size of the property.");
   if (!hasOrder) reasons.push("Pick a package, or a service booked on its own.");
-  if (isOutsideArea(input.area)) reasons.push("More than 25 miles from our studio, travel is $0.50 a mile round trip. We confirm it with you.");
+  const miles = typeof input.miles === "number" && Number.isFinite(input.miles) && input.miles >= 0 ? Math.round(input.miles) : null;
+  if (travelReady() && miles != null) {
+    const fee = travelCents(miles);
+    if (fee == null) {
+      lines.push({ id: "travel", name: `Travel (${miles} miles)`, qty: 1, unit: "item", unitCents: 0, cents: 0, priced: false });
+      reasons.push(`Past ${TRAVEL.steps[TRAVEL.steps.length - 1].upToMiles} miles, we will quote the travel.`);
+    } else if (fee > 0) {
+      lines.push({ id: "travel", name: `Travel (${miles} miles)`, qty: 1, unit: "item", unitCents: fee, cents: fee, priced: true });
+    }
+  } else if (isOutsideArea(input.area)) reasons.push("More than 25 miles from our studio, travel is $0.50 a mile round trip. We confirm it with you.");
   if (unknown.length) reasons.push(`Not on the price list: ${unknown.join(", ")}.`);
 
   const subtotalCents = lines.reduce((n, l) => n + (l.priced ? l.cents : 0), 0);
@@ -381,7 +411,7 @@ function fnv1a(s: string): string {
   }
   return (h >>> 0).toString(16).padStart(8, "0");
 }
-export const PRICE_TABLE = { version: PRICING_VERSION, customTier: CUSTOM_TIER, packages: PACKAGES, included: INCLUDED, travelFreeMiles: TRAVEL_FREE_MILES, travelCentsPerMile: TRAVEL_CENTS_PER_MILE, quotedClientTypes: QUOTED_CLIENT_TYPES, items: ITEMS };
+export const PRICE_TABLE = { version: PRICING_VERSION, customTier: CUSTOM_TIER, packages: PACKAGES, included: INCLUDED, travelFreeMiles: TRAVEL_FREE_MILES, travelCentsPerMile: TRAVEL_CENTS_PER_MILE, quotedClientTypes: QUOTED_CLIENT_TYPES, items: ITEMS, travel: TRAVEL };
 export const PRICE_TABLE_JSON = canonical(PRICE_TABLE);
 export const PRICING_HASH = fnv1a(PRICE_TABLE_JSON);
 // ==== END SHARED PRICE TABLE ====
@@ -398,6 +428,11 @@ const obj = (v: unknown): Obj => (v && typeof v === "object" && !Array.isArray(v
 const text = (v: unknown, max = 200): string => (typeof v === "string" ? v.trim().slice(0, max) : typeof v === "number" ? String(v) : "");
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const YMD_RE = /^\d{4}-\d{2}-\d{2}$/;
+// A count like beds (whole) or baths (halves), 0 to max, else null.
+const count = (v: unknown, max: number, step: number): number | null => {
+  const n = typeof v === "number" ? v : Number(v);
+  return v == null || v === "" || !Number.isFinite(n) || n < 0 || n > max ? null : Math.round(n / step) * step;
+};
 
 export function buildBookingPayload(input: Obj, submissionId: string): { ok: true; payload: Obj } | { ok: false; error: string } {
   const client = obj(input.client);
@@ -421,7 +456,9 @@ export function buildBookingPayload(input: Obj, submissionId: string): { ok: tru
   const company = text(client.company) || null;
   const brokerage = clientType === "agent" ? text(input.brokerage) || company : null;
   const items = (Array.isArray(input.items) ? input.items : []).slice(0, 40).map(obj).map((i) => ({ id: text(i.id, 40), qty: typeof i.qty === "number" ? i.qty : Number(i.qty) || 1, option: text(i.option, 40) || null }));
-  const priced = priceBooking({ package: text(input.package, 20) || null, items, clientType, area });
+  // travel_miles is set by the website's server route from the address (never the browser's word).
+  const miles = typeof input.travel_miles === "number" && Number.isFinite(input.travel_miles) ? input.travel_miles : null;
+  const priced = priceBooking({ package: text(input.package, 20) || null, items, clientType, area, miles });
   if (!priced.lines.length) return { ok: false, error: "nothing chosen" };
   if (priced.unknown.length) return { ok: false, error: "unknown items" };
   const shown = typeof input.total_cents === "number" ? Math.round(input.total_cents) : null;
@@ -440,10 +477,19 @@ export function buildBookingPayload(input: Obj, submissionId: string): { ok: tru
       off_island: isOutsideArea(area),
       service_area: area,
       outside_area: isOutsideArea(area),
+      travel_miles: miles,
       photo_use: "sale",
       time_window: timeWindow,
       desired_date: desiredDate,
       launch_date: launchDate,
+      // Optional fields a form may add: beds and baths, the seller's email,
+      // the start-time notice (the client agreed the start may shift) and the
+      // automated texts opt-in. The studio stores them on the booking.
+      beds: count(input.beds, 30, 1),
+      baths: count(input.baths, 30, 0.5),
+      seller_email: EMAIL_RE.test(text(input.seller_email, 200)) ? text(input.seller_email, 200).toLowerCase() : null,
+      time_shift_ok: input.time_shift_ok === true,
+      texts_opt_in: input.texts_opt_in === true,
       package: priced.package?.id ?? null,
       items: priced.items,
       line_items: priced.lineItems,

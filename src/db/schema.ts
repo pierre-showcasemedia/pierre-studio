@@ -6,7 +6,7 @@
 //
 // v1.1 adds the team side: shoots (one upload run through editing), their
 // files, a QC state on media, revision request status, and an activity log.
-import { pgTable, text, timestamp, boolean, integer, bigint, uuid, jsonb, date, index, uniqueIndex, check, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, bigint, real, uuid, jsonb, date, index, uniqueIndex, check, primaryKey } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import type { PhotoQcColumn } from "../lib/photo-qc";
 import type { BundleProgress } from "../lib/bundles";
@@ -27,6 +27,12 @@ export const clients = pgTable("clients", {
   // what they asked to change before), kept by the team on the Video card so
   // the next edit starts where the last revision ended. Team only.
   videoNotes: text("video_notes"),
+  // Nov 18 2026: client-specific pricing (src/lib/client-pricing.ts). A percentage
+  // off every new booking's priced lines (0 = none), shown as its own invoice
+  // line, and a note on the special plan for the team. Set on the client page.
+  // Used only with business.clientDiscount on.
+  discountPercent: integer("discount_percent").default(0).notNull(),
+  pricingNote: text("pricing_note"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -610,6 +616,7 @@ export const bookings = pgTable("bookings", {
   calendarVersion: integer("calendar_version").default(1).notNull(),
   source: text("source").default("website").notNull(),
   market: text("market"), // the service area the client picked on the website
+  travelMiles: integer("travel_miles"), // Nov 18 2026: driving miles from the base, for the travel bands (pricing TRAVEL; empty = unused)
   status: text("status", { enum: BOOKING_STATUSES }).default("requested").notNull(),
   paymentMethod: text("payment_method", { enum: BOOKING_PAYMENT_METHODS }),
   // Which other way (check | ach | cash) when payment_method is "other"; null otherwise.
@@ -619,6 +626,12 @@ export const bookings = pgTable("bookings", {
   startsAt: timestamp("starts_at"),
   endsAt: timestamp("ends_at"),
   launchDate: date("launch_date", { mode: "string" }),
+  // Optional form fields (studio template, Nov 22 2026), stored only.
+  beds: real("beds"),
+  baths: real("baths"),
+  sellerEmail: text("seller_email"),
+  timeShiftOk: boolean("time_shift_ok").notNull().default(false),
+  textsOptIn: boolean("texts_opt_in").notNull().default(false),
   sqft: integer("sqft"),
   tier: integer("tier"),
   serviceIds: jsonb("service_ids").$type<string[]>(),

@@ -64,7 +64,7 @@ export type Quote = {
   unknown: string[];
 };
 
-export type QuoteExtra = { items?: readonly Selection[] | null; clientType?: string | null; area?: string | null };
+export type QuoteExtra = { items?: readonly Selection[] | null; clientType?: string | null; area?: string | null; miles?: number | null };
 
 // Prices a booking: its service ids (size first), add-on ids and, when the
 // row has them, the items with quantities, the client type and the area.
@@ -74,7 +74,7 @@ export function quote(serviceIds: readonly string[], addonIds: readonly string[]
   const given = (extra.items ?? []).filter((s) => s && s.id && !SIZE_IDS.has(s.id));
   // Quantities from items; ids on the row that items doesn't name still count.
   const sel: Selection[] = [...given, ...fromIds.filter((f) => !given.some((g) => g.id === f.id))];
-  const p = priceBooking({ package: size, items: sel, clientType: extra.clientType ?? "agent", area: extra.area ?? null });
+  const p = priceBooking({ package: size, items: sel, clientType: extra.clientType ?? "agent", area: extra.area ?? null, miles: extra.miles ?? null });
   const lineItems: InvoiceLineItem[] = p.lines.map((l) => ({
     id: l.id,
     name: l.qty > 1 || (l.unit !== "item" && l.unit) ? `${l.name} (${l.qty} ${l.unit})` : l.name,
@@ -101,8 +101,8 @@ export function quote(serviceIds: readonly string[], addonIds: readonly string[]
 
 // The quote extras a booking row carries (items with quantities, the client
 // type, the service area in "market").
-export function bookingExtra(b: { items?: Selection[] | null; clientType?: string | null; market?: string | null }): QuoteExtra {
-  return { items: b.items ?? null, clientType: b.clientType ?? null, area: b.market ?? null };
+export function bookingExtra(b: { items?: Selection[] | null; clientType?: string | null; market?: string | null; travelMiles?: number | null }): QuoteExtra {
+  return { items: b.items ?? null, clientType: b.clientType ?? null, area: b.market ?? null, miles: b.travelMiles ?? null };
 }
 
 // Resolve ids or names ("Photos", "Virtual staging · $25") to known ids, in

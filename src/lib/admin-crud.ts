@@ -94,8 +94,10 @@ export async function adminClientDetail(id: string): Promise<AdminClientDetail |
     };
   }
   const d = db();
-  const row = await d.query.clients.findFirst({ where: eq(schema.clients.id, id), columns: { notes: true } });
+  const row = await d.query.clients.findFirst({ where: eq(schema.clients.id, id), columns: { notes: true, discountPercent: true, pricingNote: true } });
   client.notes = row?.notes ?? null;
+  client.discountPercent = row?.discountPercent ?? 0;
+  client.pricingNote = row?.pricingNote ?? null;
   const listingIds = listings.map((l) => l.id);
   const addr = new Map(listings.map((l) => [l.id, l.address]));
   const slugOf = new Map(listings.map((l) => [l.id, l.slug]));

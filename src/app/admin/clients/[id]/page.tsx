@@ -8,6 +8,7 @@ import { deleteClient, sendClientSignInLink, updateClient } from "../../crud-act
 import { enterViewAs } from "../../../portal/view-as-actions";
 import { ActivityFeed, BookingPill, Empty, ListingCard, PayPill, SectionHead, fmtMoney } from "@/components/admin/bits";
 import { requireAdmin } from "@/lib/admin";
+import { business } from "@/lib/business";
 
 type Search = { saved?: string; sent?: string; error?: string };
 
@@ -72,6 +73,12 @@ export default async function AdminClientPage({ params, searchParams }: { params
               </datalist>
             </div>
           </div>
+          {business.clientDiscount && (
+            <>
+              <div className="field"><label htmlFor="c-discount">Client discount, % off every new booking</label><input id="c-discount" name="discountPercent" type="number" min={0} max={100} step={1} defaultValue={c.discountPercent ?? 0} /></div>
+              <div className="field"><label htmlFor="c-plan">Special pricing plan, internal</label><input id="c-plan" name="pricingNote" defaultValue={c.pricingNote ?? ""} placeholder="e.g. Broker rate agreed Nov 2026" /></div>
+            </>
+          )}
           <div className="field"><label htmlFor="c-notes">Notes, internal</label><textarea id="c-notes" name="notes" rows={3} defaultValue={c.notes ?? ""} placeholder="Preferences, access, billing, anything worth knowing" style={{ minHeight: 0 }} /></div>
           <p className="muted" style={{ fontSize: 12.5, margin: 0 }}>Changing the email moves their sign-in to the new address. A team id that does not exist yet is created. Clear it to take them off their team.</p>
           <button type="submit" className="btn btn-primary" style={{ justifySelf: "start" }}>Save</button>

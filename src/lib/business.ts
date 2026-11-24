@@ -85,6 +85,11 @@ export const business = {
   // and no Dropbox anywhere. Both need the buyer's own keys before they work.
   // Pierre keeps his files in Dropbox (Nov 24 2026).
   fileStore: "dropbox" as FileStore,
+  // Client-specific pricing (studio template, Nov 18 2026): a "% off every new
+  // booking" and a pricing note on the admin client page, applied at intake as
+  // its own negative invoice line. Off: no fields, every client pays the price
+  // table. Pierre's agent rate sheets stay in src/lib/agent-rates.ts either way.
+  clientDiscount: false,
   // Pay at close through Titus (TITUS_* env vars). Off unless the buyer has a
   // Titus account and turns it on here.
   payAtClose: false,
