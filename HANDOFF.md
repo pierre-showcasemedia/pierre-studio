@@ -430,8 +430,8 @@ and Resend in one click each.
 
 One line per request or promise, from every build@ thread with Pierre (Nov 13
 to Nov 23) and the build. Missing blocks the "you're ready" email. Last re-run
-Nov 24 (night): the `new-scope` branches, the studio template's features
-and the test-run guard.
+Nov 26 (night): the logo and portrait stubs, the merge rehearsal, the polish
+pass, and the pricing page's page data.
 
 | # | Request or promise | Status |
 |---|---|---|
@@ -466,14 +466,19 @@ and the test-run guard.
 | 29 | Pierre can edit the site's content himself | Agreed (Hammad, Nov 21): bring the questions to the call; show him `src/config/site.ts`, `src/data/projects.json` and the README's plain-English commands |
 | 30 | Review call changes (Nov 23): floor plan add-on, booking form, landing, About, Portfolio, copy | Built and verified (website `d7de14a`, studio `4fbb16b`; prices `scm-v3`; booking form walked through in a browser) |
 | 31 | Pierre's content for the review: floor plan examples, tour links, new videos, staging examples, wording for the four boxes and pages | **Missing:** from Pierre |
-| 35 | Brokerage logos ("Trusted by") and a business portraits section | **Missing:** Pierre sent both as Dropbox folder links (Nov 22). Folders can't be downloaded from the build machine; Hammad puts the files in Drive (or allows the Dropbox download hosts in the environment's network settings), then we build both |
+| 35 | Brokerage logos ("Trusted by") and a business portraits section | Built as stubs on website `assets-stubs` (Nov 26): empty lists in `site.ts`, so nothing shows until files land; tested with sample files. **Missing:** Hammad puts the Dropbox files in Drive (none there Nov 26), then we add them |
 | 36 | New business portrait on Home and About (Nov 22) | Built and verified (website `99d090e`, `pierre-2026.jpg`) |
-| 37 | Tell Pierre the portrait and the sharper hero are done, with the file-size trade-off | **Missing:** per the master chat, the review email reached Pierre Nov 24 at 10:20 UTC without the preview link. A follow-up with the link is waiting for Hammad's OK |
-| 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | Built and verified on `new-scope` in both repos (Hammad's go-ahead Nov 24), not on `main`. **Missing:** 3 of the 4 website commits are not on GitHub yet (368b4f5, a2bcf25, df5db85; Hammad to OK the push). Then Hammad OKs merging to `main`, and a Google Maps key in Pierre's account (address suggestions stay off without it) |
+| 37 | Pierre can open the preview | Hammad has the preview address and says Pierre has access in his own Vercel (Nov 26). The Nov 25 10:06 UTC email went with the note to Hammad still at the top and no link; nothing new from Pierre since his Nov 25 04:52 email. **Missing:** Hammad confirms Pierre is on the right preview |
+| 32 | Pricing page behind a name and email form; a page per service; Google Maps autofill and distance; plat map upload | Built and verified on `new-scope` in both repos (Hammad's go-ahead Nov 24), not on `main`. On GitHub since Nov 25 (website `new-scope` df5db85, Hammad's push). **Missing:** Hammad OKs merging to `main` in both repos, and a Google Maps key in Pierre's account (address suggestions stay off without it) |
 | 33 | Pierre approves the preview site, then go live on showcasemedia.pro | **Missing:** Pierre's review and OK; domain switch on a call after that |
 | 34 | Extra Vercel seat (build@, $20 a month) | **Missing:** Hammad removes it before handover |
 | 38 | Studio template features: Google Drive, client discount, travel fields, shoot reminder, Book again, property page, upsell prompts, headshot and logo | Built and verified on studio `new-scope` (313c17b; 38 check scripts, 528 role checks) and the website's Book again. Every switch is off (HANDOFF section 12a). Turning one on: Agreed later (Pierre) |
-| 39 | Test runs can never reach Pierre's real Formspree, studio or Google key | Built and verified (website `368b4f5`, `npm run test:server`, 28 checks); on GitHub with row 32's push |
+| 39 | Test runs can never reach Pierre's real Formspree, studio or Google key | Built and verified (website `368b4f5`, `npm run test:server`, 28 checks); on GitHub since Nov 25 |
+| 40 | His Matterport and Zillow 3D tours (embed codes, Nov 25) on the site | Built and verified on website `tours-embeds` (a93e337, on GitHub; Portfolio and the 3D tours page, lazy 16:9 frames, 17 checks; no CSP on the site). **Missing:** the tours themselves were not seen loading (the build machine can't reach either host), so check them on the preview; then Hammad OKs merging with row 32 |
+| 41 | Newer walkthrough videos and floor plan examples (Nov 25) | **Missing:** from Pierre (he is pulling them) |
+| 42 | The site looks finished and nothing glitches (Hammad, Nov 26) | Built and verified on website `site-polish` (5fcda85): the hero opens dark and fades in on his film, each loop continues after the logo is drawn, the logo is no longer cropped on phones; clean service photos instead of the "360 Virtual Tours" stamp and camera overlay; branded 404; menu and footer fixes; 16 checks. **Missing:** a look on the preview after the merge (this machine can't reach Vercel, YouTube, Matterport or Zillow) |
+| 43 | Merging the website branches | Rehearsed Nov 26: `main` + `new-scope` + `tours-embeds` + `assets-stubs` merges cleanly, builds, and passes a 15-page desktop and phone smoke test (`site-polish` sits on top). **Missing:** Hammad OKs the merge to `main` |
+| 44 | Prices on `/pricing` stay behind the name and email form | Hidden on screen until the form is filled, but the prices are in the page's data (the booking form loads the same table), so it is a lead form, not a lock. **Missing:** Hammad decides whether that is fine or the prices must truly stay hidden |
 
 ## Open items
 
@@ -481,3 +486,29 @@ and the test-run guard.
 - After go-live: add Olesya Juodsnukis and Clinton Cunanan as Creative specialists; their pay
   rates if he wants the Shooter pay report to total their pay.
 - Later: the homepage hero video (he is making it) and, optionally, his animated logo.
+
+## Nudge for Pierre (Nov 27, text only, not sent)
+
+A short, friendly reply in his "Yesterday's onboarding meeting" thread, for
+Hammad to send if he wants. No placeholders: the preview is the one he opens
+from his own Vercel account.
+
+> Hi Pierre,
+>
+> Hope you're having a good week. Just checking in on three small things
+> whenever you have a moment:
+>
+> 1. Your review of the new site. Open Vercel, choose the pierre-site project
+>    and click Visit. Write down anything you'd like changed and send it in
+>    one email.
+> 2. A Google Maps key from your own Google account, so the booking form can
+>    suggest addresses and work out the distance. Happy to walk you through
+>    it on a quick call, it takes about five minutes.
+> 3. Your onboarding form answers. They didn't come through on our side, so
+>    could you send them again, or reply with them here?
+>
+> No rush on the walkthrough videos and floor plan examples. Send them when
+> they're ready.
+>
+> Thanks,
+> Hammad

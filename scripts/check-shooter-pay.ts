@@ -69,7 +69,7 @@ async function main() {
   ok(pay.lines.find((l) => l.kind === "visit")?.address === "b1 Example Street", "a visit takes its booking's address");
   const noVisits = shooterPay(rows, range, { ...rates, countVisits: false });
   ok(noVisits.totals.find((t) => t.shooter === "alex@example.com")?.shoots === 2, "countVisits off: additional shoots are not counted");
-  // Paid as a share of what the booking collected (Jerry: "50% of collected").
+  // Paid as a share of what the booking collected (e.g. "50% of collected").
   const paid = (id: string, bookingId: string, cents: number, status = "paid", refundedCents = 0) => ({ id, status, provider: "stripe", method: "card", amountCents: cents, refundedCents, paidYmd: "2026-11-10", createdYmd: "2026-11-01", clientEmail: null, clientName: null, clientCompany: null, listingId: null, address: null, bookingId });
   const pctRows: Rows = { ...rows, invoices: [paid("i1", "b1", 300_00), paid("i1b", "b1", 50_00), paid("i3", "b3", 200_00, "paid", 40_00), paid("i6", "b6", 999_00, "open")] };
   const half = shooterPay(pctRows, range, { perShoot: { "kim@example.com": 90_00 }, byItem: {}, countVisits: true, percentOfCollected: 50 });
