@@ -316,7 +316,7 @@ Built on the `new-scope` branch at Hammad's go-ahead (Nov 24), not on `main`.
 
 ### Google Drive file store (branch `new-scope`, merged Nov 24 2026, off)
 
-Ported from the studio template (Jerry's build, template commit 3940ca2), all
+Ported from the studio template (template commit 3940ca2), all
 eight parts. It is **off** for Showcase Media: `business.fileStore` is
 `"dropbox"`, so Settings shows the Dropbox card, clients see Add to Dropbox,
 uploads copy to Dropbox, and no Drive job is ever made. Switching to
