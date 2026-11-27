@@ -48,7 +48,7 @@ const CONCURRENCY = 3;
 // Nov 11 2026: 4, was 6, so a call of 42 MP frames stays well inside its time.
 const INGEST_BATCH = 4;
 // Upload links per call: the upload-urls route hands out at most 60 and
-// drops the rest (MAX_BATCH). Nov 1 2026: an 85 photo drop on 195 Oakleaf asked
+// drops the rest (MAX_BATCH). Nov 1 2026: an 85 photo drop on 195 Example Oakleaf asked
 // for all 85 at once, got 60 links, and the last 25 failed with "no upload
 // link". Asked for in chunks, like UploadToListing and push-to-listing.
 const URL_BATCH = 60;

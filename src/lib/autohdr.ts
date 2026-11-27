@@ -146,7 +146,7 @@ export type EditModel = {
 // Credit costs on the business's own account can differ from the public list the API
 // returns. STUDIO_CREDIT_OVERRIDES is "modelId=credits,modelId=credits"; the
 // default covers Aura, which bills the business 5 a photo (Nov 2 2026; the old
-// default of 3 under-read every shoot page by 40%, 925 Spruce showed 411 for
+// default of 3 under-read every shoot page by 40%, 925 Example Spruce showed 411 for
 // a 685-credit shoot).
 const DEFAULT_CREDIT_OVERRIDES = "37=5";
 export function accountCredits(modelId: number, apiCredits: number | null): number | null {

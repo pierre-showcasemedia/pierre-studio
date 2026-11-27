@@ -1,6 +1,6 @@
 "use client";
 // Fresh server data when a page comes back into view (Nov 5 2026). the owner had
-// the 925 Spruce listing open on his phone when the video editor uploaded the second
+// the 925 Example Spruce listing open on his phone when the video editor uploaded the second
 // cut; the page still showed one film until it was reloaded by hand. Now a
 // page that is shown again (the tab or the Home Screen app comes to the
 // front, or the browser restores it from its back-forward cache) refreshes

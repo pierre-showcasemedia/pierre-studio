@@ -548,7 +548,7 @@ export async function POST(request: Request) {
 
     if (body.op === "dropboxShootLink") {
       // A view link to the Dropbox folder(s) holding one shoot's raw copies
-      // (Nov 10 2026, 3330 Cedar: the hand-off to the editing service
+      // (Nov 10 2026, 3330 Example Cedar: the hand-off to the editing service
       // failed and the owner needed the raws as a link an outside editor can
       // open). The folder is whatever the mirror used: Photo or Video, or the
       // dropped folder's own name (shoot_files.dropbox_dir). A link Dropbox
