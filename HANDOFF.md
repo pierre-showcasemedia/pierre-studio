@@ -351,8 +351,8 @@ and Resend in one click each.
 
 One line per request or promise, from every build@ thread with Pierre (Nov 13
 to Nov 23) and the build. Missing blocks the "you're ready" email. Last re-run
-Nov 26 (night): the logo and portrait stubs, the merge rehearsal, the polish
-pass, and the pricing page's page data.
+Nov 27 (night): the template's updated checks, the address and name cleanup,
+today's pushes, and Pierre's silence since Nov 25.
 
 | # | Request or promise | Status |
 |---|---|---|
@@ -400,6 +400,10 @@ pass, and the pricing page's page data.
 | 42 | The site looks finished and nothing glitches (Hammad, Nov 26) | Built and verified on website `site-polish` (5fcda85): the hero opens dark and fades in on his film, each loop continues after the logo is drawn, the logo is no longer cropped on phones; clean service photos instead of the "360 Virtual Tours" stamp and camera overlay; branded 404; menu and footer fixes; 16 checks. **Missing:** a look on the preview after the merge (this machine can't reach Vercel, YouTube, Matterport or Zillow) |
 | 43 | Merging the website branches | Rehearsed Nov 26: `main` + `new-scope` + `tours-embeds` + `assets-stubs` merges cleanly, builds, and passes a 15-page desktop and phone smoke test (`site-polish` sits on top). **Missing:** Hammad OKs the merge to `main` |
 | 44 | Prices on `/pricing` stay behind the name and email form | Hidden on screen until the form is filled, but the prices are in the page's data (the booking form loads the same table), so it is a lead form, not a lock. **Missing:** Hammad decides whether that is fine or the prices must truly stay hidden |
+| 45 | Nothing from another client in Pierre's repos (Nov 27) | Built and verified, on GitHub since Nov 27 (studio `main` 90787c1, `new-scope` d4492d2, website `site-polish` a69dbfe): other studios' names, a sister site's folder, template addresses (real streets elsewhere) and place names replaced with clearly fictional ones; NDA fixtures read "Hideaway Example Lane" |
+| 46 | The template's updated role test (Nov 27) | Built and verified on studio `new-scope`: 836 HTTP checks on a fresh demo server (Pierre's Leads page and plat map route added; the template's photographer roster actions left out, his studio has none). `main` keeps the 528-check version until `new-scope` merges |
+| 47 | The template's hashed name check (Nov 27) | **Missing:** one of Pierre's contract photographers shares a first name with a former template client, and the hashed check has no exception. Hammad chooses: a local exception in Pierre's copy, or naming staff by role in this file and the runbook. Pierre's current check (31/31) stays until then |
+| 48 | Nudge to Pierre (text in "Nudge for Pierre", Nov 27) | **Missing:** Hammad sends it or not; nothing from Pierre since his Nov 25 04:52 email |
 
 ## Open items
 
