@@ -2,7 +2,7 @@
 // database, no network.
 //
 //   npx tsx scripts/check-pricing.ts
-//   SITE_DIR=../jsp-media-site npx tsx scripts/check-pricing.ts   # also compares the website's file
+//   SITE_DIR=../pierre-site npx tsx scripts/check-pricing.ts   # also compares the website's file
 //
 // 1. src/lib/booking-pricing.ts is the website's src/lib/pricing.ts, byte for
 //    byte (when SITE_DIR is set, or a sibling ../<name>-site / ../dwy-<name>-site
