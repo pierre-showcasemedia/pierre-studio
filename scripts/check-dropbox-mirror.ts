@@ -432,14 +432,14 @@ async function main() {
   ok(dropboxFolderName("12 A/B Street \\ Unit 3... ") === "12 A-B Street - Unit 3", "slashes become dashes, trailing dots and spaces go");
   ok(dropboxFolderName("  \t  ") === "Listing" && dropboxFolderName("...") === "Listing", "an empty name falls back to Listing");
   ok(dropboxFolderName("x".repeat(400)).length === 180, "names are capped at 180 characters");
-  ok(dropboxFolderName("Calle  Niño\u0007, SB") === "Calle Niño, SB", "control characters go and spaces collapse");
+  ok(dropboxFolderName("Calle  Niño\u0007, Springfield") === "Calle Niño, Springfield", "control characters go and spaces collapse");
   ok(dropboxRoot() === "/Listings", "the default root is /Listings");
   process.env.DROPBOX_LISTINGS_ROOT = "Studio/Listings/";
   ok(dropboxRoot() === "/Studio/Listings", "the root gets a leading slash and no trailing slash");
   process.env.DROPBOX_LISTINGS_ROOT = "/";
   ok(dropboxRoot() === "/Listings", "a bare slash root falls back to /Listings");
   delete process.env.DROPBOX_LISTINGS_ROOT;
-  ok(listingFolderPath("/Listings", "1 Main St, SB") === "/Listings/1 Main St, SB", "listingFolderPath joins root and name");
+  ok(listingFolderPath("/Listings", "1 Main St, Springfield") === "/Listings/1 Main St, Springfield", "listingFolderPath joins root and name");
   ok(mirrorTargetPath("/Listings/1 Main St", "raw", "DSC_0001.ARW") === "/Listings/1 Main St/Photo/DSC_0001.ARW", "raw photos go under Photo");
   ok(mirrorTargetPath("/Listings/1 Main St", "display", "a.jpg") === "/Listings/1 Main St/Photo/a.jpg", "display files go under Photo too");
   ok(mirrorTargetPath("/Listings/1 Main St", "raw_video", "C0001.MOV") === "/Listings/1 Main St/Video/C0001.MOV", "raw video goes under Video");
