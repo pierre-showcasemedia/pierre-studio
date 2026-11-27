@@ -278,7 +278,7 @@ export async function cancelBookingEvent(job: CalendarJob): Promise<{ eventId: s
 const DIRECTIONS = "(?:n|s|e|w|ne|nw|se|sw|north|south|east|west)";
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
-// "7702 Example Birch Lane, Springfield" → a pattern for "7702 birch" that also allows a direction ("21 E Mission").
+// "7702 Example Birch Lane, Springfield" → a pattern for "7702 birch" that also allows a direction ("21 E Main").
 export function streetPattern(address: string): RegExp | null {
   const words = norm(address.split(",")[0]).split(" ");
   const num = words[0];

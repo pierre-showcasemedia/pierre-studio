@@ -49,7 +49,7 @@ async function main() {
 
   // directionsUrl / directionsLine
   eq(directionsUrl(full), "https://www.google.com/maps/dir/?api=1&destination=3330%20Example%20Cedar%20Road%2C%20Springfield%2C%20CA%2090000", "directions URL, encoded");
-  eq(directionsUrl("12 Main St #4, Ojai & Co"), "https://www.google.com/maps/dir/?api=1&destination=12%20Main%20St%20%234%2C%20Ojai%20%26%20Co", "# and & encoded");
+  eq(directionsUrl("12 Main St #4, Springfield & Co"), "https://www.google.com/maps/dir/?api=1&destination=12%20Main%20St%20%234%2C%20Springfield%20%26%20Co", "# and & encoded");
   eq(directionsUrl("  "), null, "no address, no link");
   eq(directionsLine(full), `Directions: ${directionsUrl(full)}`, "directions line");
 

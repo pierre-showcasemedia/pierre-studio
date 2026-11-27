@@ -21,7 +21,7 @@ const day = (d: number, h = 10, m = 0) => new Date(Date.UTC(2026, 9, d, h + 7, m
 export const DEMO_CLIENTS: AdminClient[] = [
   { id: "demo-c1", email: "avery@example.com", name: "Avery Chen", company: "Harbor Realty", phone: null, team: null, listingCount: 3, createdAt: day(1) },
   { id: "demo-c2", email: "taylor@example.com", name: "Taylor Brooks", company: "Coastal Living Group", phone: null, team: "coastal-living", listingCount: 2, createdAt: day(3) },
-  { id: "demo-c3", email: "taylor@example.com", name: "Taylor Brooks", company: "Riviera Estates", phone: null, team: null, listingCount: 2, createdAt: day(6) },
+  { id: "demo-c3", email: "taylor@example.com", name: "Taylor Brooks", company: "Lakeside Estates", phone: null, team: null, listingCount: 2, createdAt: day(6) },
 ];
 
 // Demo mode only (no database, local): a QA team login and a creative

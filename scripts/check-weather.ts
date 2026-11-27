@@ -38,17 +38,17 @@ async function main() {
   const bizHour = (d: Date) => new Intl.DateTimeFormat("en-US", { timeZone: BUSINESS_TZ, hour: "numeric" }).format(d).replace(/\s|\u202f/g, "").toLowerCase();
 
   // Sun: Springfield, Tue Oct 27 2026. Published: sunset 6:10 PM PDT, civil dusk 6:36 PM.
-  const sb = { lat: 34.4208, lon: -119.6982 };
-  const sunset = eveningSunAt(sb.lat, sb.lon, "2026-10-27", 90.833)!;
+  const here = { lat: 34.4208, lon: -119.6982 };
+  const sunset = eveningSunAt(here.lat, here.lon, "2026-10-27", 90.833)!;
   const mins = (d: Date) => Number(pt(d).split(":")[0]) * 60 + Number(pt(d).split(":")[1].slice(0, 2));
-  ok(Math.abs(mins(sunset) - (6 * 60 + 10)) <= 2, `SB sunset Oct 27 near 6:10 PM (got ${pt(sunset)})`);
-  const sun = sunTimes(sb.lat, sb.lon, "2026-10-27");
+  ok(Math.abs(mins(sunset) - (6 * 60 + 10)) <= 2, `Test-point sunset Oct 27 near 6:10 PM (got ${pt(sunset)})`);
+  const sun = sunTimes(here.lat, here.lon, "2026-10-27");
   ok(sun.goldenFrom! < sun.sunset! && sun.sunset! < sun.dusk!, "golden hour, sunset, dusk in order");
   ok((sun.sunset!.getTime() - sun.goldenFrom!.getTime()) / 60_000 > 25 && (sun.sunset!.getTime() - sun.goldenFrom!.getTime()) / 60_000 < 50, "golden hour starts 25 to 50 min before sunset");
-  ok(Math.abs(mins(sun.dusk!) - (6 * 60 + 36)) <= 2, `SB dusk Oct 27 near 6:36 PM (got ${pt(sun.dusk!)})`);
+  ok(Math.abs(mins(sun.dusk!) - (6 * 60 + 36)) <= 2, `Test-point dusk Oct 27 near 6:36 PM (got ${pt(sun.dusk!)})`);
   // Winter time: published Dec 15 sunset 4:50 PM PST.
-  const dec = eveningSunAt(sb.lat, sb.lon, "2026-12-15", 90.833)!;
-  ok(Math.abs(mins(dec) - (4 * 60 + 50)) <= 2, `SB sunset Dec 15 near 4:50 PM (got ${pt(dec)})`);
+  const dec = eveningSunAt(here.lat, here.lon, "2026-12-15", 90.833)!;
+  ok(Math.abs(mins(dec) - (4 * 60 + 50)) <= 2, `Test-point sunset Dec 15 near 4:50 PM (got ${pt(dec)})`);
 
   // Emoji
   ok(hourEmoji({ text: "Sunny", pop: 0, isDaytime: true, sky: 5 }) === "☀️", "sunny");
