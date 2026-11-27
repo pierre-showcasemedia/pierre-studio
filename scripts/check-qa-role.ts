@@ -134,7 +134,7 @@ async function main() {
   // ---- 5. hub lines ----------------------------------------------------------
   const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
   const nda = { listing: { address: "35 Hideaway Example Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
-  const visLine = hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "internal", count: 2, filenames: ["35-Secret-Lane-01.jpg"] } }, nda) ?? "";
+  const visLine = hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "internal", count: 2, filenames: ["35-Hideaway-Example-Lane-01.jpg"] } }, nda) ?? "";
   ok(visLine.includes("an NDA listing") && !visLine.includes("Hideaway") && !visLine.includes(".jpg"), `NDA visibility line stays anonymous: ${visLine}`);
   ok(/client visible/i.test(hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "client", count: 1, waiting: 0 } }, place) ?? ""), "client visible hub line");
   ok(/on photo QC/.test(hubActivityText({ action: "admin.role_set", actorEmail: "boss@studio.test", meta: { email: "qa@example.com", role: "qa", from: "admin" } }, { listing: null, clientEmail: null }) ?? ""), "role hub line");
