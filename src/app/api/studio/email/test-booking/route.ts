@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   const visitMode = mode === "visit" || mode === "visit_again";
   const addedMode = mode === "added" || mode === "added_again" || visitMode;
 
-  const street = "1420 Alder Drive";
+  const street = "1420 Example Alder Drive";
   const rest = "Springfield, CA 90000";
   const address = `${street}, ${rest}`;
   const desiredDate = localYmd(3);

@@ -529,13 +529,13 @@ const demoCard = (o: Partial<VideoCard> & Pick<VideoCard, "id" | "stage" | "addr
 });
 
 export const DEMO_VIDEO_CARDS: VideoCard[] = [
-  demoCard({ id: "v1", stage: "queue", address: "2305 Hazel Road, Springfield, CA 90000", services: ["Cinematic listing film", "Vertical reel crop"], speed: "Slow / Cinematic", launchDate: "2026-10-30" }),
-  demoCard({ id: "v2", stage: "queue", address: "1550 Rowan Road, Springfield, CA 90000", shootDate: "2026-10-28", footage: false, services: ["Luxury social reel", "Agent on camera"], speed: "Faster" }),
-  demoCard({ id: "v3", stage: "editing", address: "88 Maple Road, Springfield, CA 90000", clientName: "Taylor Brooks", assignee: "editor@example.com", services: ["Property video", "Twilight video"] }),
-  demoCard({ id: "v4", stage: "review", address: "610 Beech Road, Springfield, CA 90000", clientName: "Taylor Brooks", assignee: "editor@example.com", films: 1 }),
-  demoCard({ id: "v5", stage: "queue", address: "1420 Alder Drive, Springfield, CA 90000", assignee: "editor@example.com", films: 1, filmsLive: 1, revision: { id: "demo-r-video", status: "new", round: 1, comments: 3 }, services: ["Cinematic listing film"], speed: "Slower" }),
-  demoCard({ id: "v6", stage: "sent", address: "2121 Juniper Drive, Springfield, CA 90000", clientName: "Taylor Brooks", films: 2, filmsLive: 2, services: ["Social reel"] }),
-  demoCard({ id: "v7", stage: "complete", address: "1127 Yew Road, Springfield, CA 90000", clientName: "Taylor Brooks", films: 1, filmsLive: 1 }),
+  demoCard({ id: "v1", stage: "queue", address: "2305 Example Hazel Road, Springfield, CA 90000", services: ["Cinematic listing film", "Vertical reel crop"], speed: "Slow / Cinematic", launchDate: "2026-10-30" }),
+  demoCard({ id: "v2", stage: "queue", address: "1550 Example Rowan Road, Springfield, CA 90000", shootDate: "2026-10-28", footage: false, services: ["Luxury social reel", "Agent on camera"], speed: "Faster" }),
+  demoCard({ id: "v3", stage: "editing", address: "88 Example Maple Road, Springfield, CA 90000", clientName: "Taylor Brooks", assignee: "editor@example.com", services: ["Property video", "Twilight video"] }),
+  demoCard({ id: "v4", stage: "review", address: "610 Example Beech Road, Springfield, CA 90000", clientName: "Taylor Brooks", assignee: "editor@example.com", films: 1 }),
+  demoCard({ id: "v5", stage: "queue", address: "1420 Example Alder Drive, Springfield, CA 90000", assignee: "editor@example.com", films: 1, filmsLive: 1, revision: { id: "demo-r-video", status: "new", round: 1, comments: 3 }, services: ["Cinematic listing film"], speed: "Slower" }),
+  demoCard({ id: "v6", stage: "sent", address: "2121 Example Juniper Drive, Springfield, CA 90000", clientName: "Taylor Brooks", films: 2, filmsLive: 2, services: ["Social reel"] }),
+  demoCard({ id: "v7", stage: "complete", address: "1127 Example Yew Road, Springfield, CA 90000", clientName: "Taylor Brooks", films: 1, filmsLive: 1 }),
 ];
 
 function demoVideoDetail(id: string): VideoCardDetail | null {
@@ -551,12 +551,12 @@ function demoVideoDetail(id: string): VideoCardDetail | null {
     editorNotes: c.id === "v5" ? "Song: Golden Hour instrumental. Selects in the Video folder under Selects." : null,
     client: { id: "demo-c1", name: c.clientName, team: null, videoNotes: "Likes slow, cinematic pacing. No drone in the first 5 seconds. Always a vertical with no music." },
     history: {
-      pastBookings: [{ date: "2026-09-14", street: "75 Aspen Road", services: ["Cinematic listing film", "Vertical reel crop"], speed: "Slow / Cinematic", music: null }],
+      pastBookings: [{ date: "2026-09-14", street: "75 Example Aspen Road", services: ["Cinematic listing film", "Vertical reel crop"], speed: "Slow / Cinematic", music: null }],
       revisions: [
         ...(c.revision
           ? [{ id: "demo-r-video", listingId: c.listingId, street: c.street, createdAt: "2026-10-25T18:12:00.000Z", status: "new", notes: "Overall the pacing feels a little fast for this house.", source: null, comments: [{ atMs: 12_000, filename: "1420-Alder-Film.mp4", note: "Hold the ocean view shot longer, it cuts away too soon." }, { atMs: 47_500, filename: "1420-Alder-Film.mp4", note: "The kitchen looks too blue here, warm it up to match the rest." }, { atMs: 83_000, filename: "1420-Alder-Film.mp4", note: "Swap this song section, the beat drop feels off for the twilight." }] }]
           : []),
-        { id: "demo-r-old", listingId: "demo-other", street: "75 Aspen Road", createdAt: "2026-09-20T18:00:00.000Z", status: "done", notes: "", source: "quo", comments: [{ atMs: 5_000, filename: "75-Aspen-Film.mp4", note: "Start on the front door, not the drone." }] },
+        { id: "demo-r-old", listingId: "demo-other", street: "75 Example Aspen Road", createdAt: "2026-09-20T18:00:00.000Z", status: "done", notes: "", source: "quo", comments: [{ atMs: 5_000, filename: "75-Aspen-Film.mp4", note: "Start on the front door, not the drone." }] },
       ],
       brainLines: ["Always deliver a horizontal film, a vertical reel, and a vertical with no music."],
     },

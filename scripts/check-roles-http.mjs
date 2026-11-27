@@ -118,8 +118,8 @@ const main = async () => {
   ok(crUpload.includes("Your uploads"), "creative upload page lists their uploads");
   ok(!crUpload.includes("New listing"), "creative upload page has no New listing button");
   ok(!MONEY.test(crUploadRaw), "creative upload page carries no dollar amount");
-  ok(/2305 Hazel Road|1127 Yew Road/.test(crUpload), "creative sees their own uploads listed");
-  ok(!/1900 Cypress Road/.test(crUpload), "creative does not see a shoot someone else uploaded");
+  ok(/2305 Example Hazel Road|1127 Example Yew Road/.test(crUpload), "creative sees their own uploads listed");
+  ok(!/1900 Example Cypress Road/.test(crUpload), "creative does not see a shoot someone else uploaded");
   ok(strip(await text("/admin/upload?denied=1", creative.cookie)).includes("That page is for admins"), "creative sees the denied note on Upload a shoot");
   const crShootRaw = await text("/admin/shoots/demo-s1", creative.cookie);
   const crShoot = strip(crShootRaw);

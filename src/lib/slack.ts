@@ -421,7 +421,7 @@ export function hubTextBookingCanceled(p: { bookingId: string; listing: { addres
 }
 
 // Additional shoots on a booking (Oct 27 2026, src/lib/booking-visits.ts):
-// "Second shoot added: 7702 Birch Lane, Return trip, Tue, Oct 28, 5:30 PM to
+// "Second shoot added: 7702 Example Birch Lane, Return trip, Tue, Oct 28, 5:30 PM to
 // 7:30 PM. Shooter: alex@example.com." and the same for a move, a
 // change, a cancel. The note stays off Slack (Oct 21: no paragraphs).
 // `invoiced`: the add went with "Create new invoice?" (the bookings channel

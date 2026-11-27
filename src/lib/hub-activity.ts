@@ -288,7 +288,7 @@ export function hubActivityText(a: HubActivityRow, place: Omit<HubPlace, "link">
     case "email.shooter_invite_sent":
       return m.method === "CANCEL" ? `Calendar cancel sent: ${name}, to ${str(m.to) ?? "the shooter"}.` : `Calendar invite sent: ${name}, to ${str(m.to) ?? "the shooter"}.`;
     case "booking.edited": {
-      // "Booking edited: 1420 Alder Drive (services, access notes). By the owner."
+      // "Booking edited: 1420 Example Alder Drive (services, access notes). By the owner."
       const changed = str(m.changed);
       return `Booking edited: ${name}${changed ? ` (${changed})` : ""}. By ${who}.`;
     }

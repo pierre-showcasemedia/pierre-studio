@@ -52,8 +52,8 @@ async function main() {
     dropboxFolder: null,
     ...over,
   });
-  const from = side({ id: "00000000-0000-4000-8000-000000000420", slug: "2420-fir-rd", address: "2420 Fir Rd, Springfield, CA 90000", street: "2420 Fir Rd", city: "Springfield", state: "CA", zip: "90000", shootDate: "2026-11-14", dropboxFolder: "/Listings/2420 Fir Rd" });
-  const into = side({ id: "00000000-0000-4000-8000-000000000320", slug: "2320-fir-road", address: "2320 Fir Road", street: "2320 Fir Road", shootDate: "2026-10-24", notes: "Gate code at the office", coverKey: "listings/2320/cover.jpg" });
+  const from = side({ id: "00000000-0000-4000-8000-000000000420", slug: "2420-example-fir-rd", address: "2420 Example Fir Rd, Springfield, CA 90000", street: "2420 Example Fir Rd", city: "Springfield", state: "CA", zip: "90000", shootDate: "2026-11-14", dropboxFolder: "/Listings/2420 Example Fir Rd" });
+  const into = side({ id: "00000000-0000-4000-8000-000000000320", slug: "2320-example-fir-road", address: "2320 Example Fir Road", street: "2320 Example Fir Road", shootDate: "2026-10-24", notes: "Gate code at the office", coverKey: "listings/2320/cover.jpg" });
 
   // ---- 1. fields: only where the target has none -------------------------------
   let f = fieldsToCopy(from, into, false);
@@ -83,17 +83,17 @@ async function main() {
 
   // ---- 3. notices ---------------------------------------------------------------
   const counts = { ...emptyCounts(), bookings: 1, invoices: 1, jobs: 9, activity: 8 };
-  const b = { id: "8a6703ca-8e3a-4721-885a-5389c2d40d2f", status: "confirmed", env: "development", clientId: "c1", shooter: "owner@studio.test", calendarVersion: 2, street: "2420 Fir Rd", retitle: true };
+  const b = { id: "8a6703ca-8e3a-4721-885a-5389c2d40d2f", status: "confirmed", env: "development", clientId: "c1", shooter: "owner@studio.test", calendarVersion: 2, street: "2420 Example Fir Rd", retitle: true };
   const inv = { id: "i1", status: "open", provider: "stripe", method: "card", propertyAddress: from.address, gates: true };
   const notes = mergeNotices({ from, into, counts, bookings: [b], invoices: [inv], fields: [] });
   const has = (re: RegExp) => notes.some((n) => re.test(n));
-  ok(has(/retitled to 2320 Fir Road/) && has(/Google emails the shooter on the event \(owner@studio\.test\) an update/), "the calendar retitle and the shooter's update email are spelled out");
+  ok(has(/retitled to 2320 Example Fir Road/) && has(/Google emails the shooter on the event \(owner@studio\.test\) an update/), "the calendar retitle and the shooter's update email are spelled out");
   ok(has(/No email goes to the client/), "says no client email goes out");
-  ok(has(/When the moved invoice is paid, downloads unlock on 2320 Fir Road/), "an open invoice will unlock the target");
+  ok(has(/When the moved invoice is paid, downloads unlock on 2320 Example Fir Road/), "an open invoice will unlock the target");
   ok(has(/Stripe invoice itself still names 2420/), "the Stripe invoice keeps the old address");
   ok(has(/shoot date stays 2026-10-24/), "the target's shoot date is kept and said");
-  ok(has(/\/portal\/2420-fir-rd stops working/), "the old portal link");
-  ok(has(/Dropbox folder \/Listings\/2420 Fir Rd stays/), "the old Dropbox folder");
+  ok(has(/\/portal\/2420-example-fir-rd stops working/), "the old portal link");
+  ok(has(/Dropbox folder \/Listings\/2420 Example Fir Rd stays/), "the old Dropbox folder");
   ok(!mergeNotices({ from, into: { ...into, downloadLocked: false }, counts, bookings: [b], invoices: [inv], fields: [] }).some((n) => /downloads unlock/.test(n)), "no unlock note when the target is already unlocked");
   ok(!mergeNotices({ from, into, counts, bookings: [b], invoices: [{ ...inv, gates: false }], fields: [] }).some((n) => /downloads unlock/.test(n)), "an add-on invoice never unlocks, so no note");
   ok(mergeNotices({ from, into, counts, bookings: [{ ...b, shooter: null }], invoices: [], fields: [] }).some((n) => /nobody is emailed/.test(n)), "no shooter: nobody is emailed");
@@ -104,7 +104,7 @@ async function main() {
   ok(!retitles({ status: "canceled", env: null, desiredDate: "2026-11-14" }, "production"), "a canceled booking is not");
   ok(!retitles({ status: "confirmed", env: "preview", desiredDate: "2026-11-14" }, "production"), "another site's booking is not");
   ok(!retitles({ status: "requested", env: null, desiredDate: null }, "production"), "a booking with no date is not");
-  ok(streetOf("2320 Fir Road, Springfield, CA 90000") === "2320 Fir Road" && streetOf("2320 Fir Road") === "2320 Fir Road", "street from an address");
+  ok(streetOf("2320 Example Fir Road, Springfield, CA 90000") === "2320 Example Fir Road" && streetOf("2320 Example Fir Road") === "2320 Example Fir Road", "street from an address");
 
   // ---- 5. every listing reference in the migrations is covered -------------------
   const ddl = readFileSync(path.join(ROOT, "src/app/api/portal/migrate/route.ts"), "utf8");
@@ -134,7 +134,7 @@ async function main() {
 
   // ---- 7. the activity line -------------------------------------------------------
   const line = describeActivity({ action: "listing.merged", actorEmail: "owner@studio.test", meta: { from: { address: from.address, slug: from.slug }, counts: { ...counts, media: 0 } } });
-  ok(line === "owner@studio.test merged 2420 Fir Rd into this listing (1 booking, 1 invoice)", `activity line (${line})`);
+  ok(line === "owner@studio.test merged 2420 Example Fir Rd into this listing (1 booking, 1 invoice)", `activity line (${line})`);
 
   console.log(`check-merge-listing: ${passes} passed, ${failures} failed`);
   if (failures) process.exit(1);

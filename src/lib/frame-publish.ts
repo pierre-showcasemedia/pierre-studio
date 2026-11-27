@@ -17,7 +17,7 @@
 // images section (media.revision) instead of the main gallery: swaps, fixes
 // and additions after the first delivery (src/lib/publish-plan.ts).
 //
-// Nov 3 2026 (925 Spruce Road): a shoot whose editing stopped (status failed)
+// Nov 3 2026 (925 Example Spruce Road): a shoot whose editing stopped (status failed)
 // publishes too. The editors deliver the corrected photos by hand through the
 // corrected photos box, which a failed shoot already accepts, and approve
 // them like any other frame; publishing closes the failure (status published,

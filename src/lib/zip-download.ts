@@ -51,5 +51,5 @@ export function zipResponse(entries: ZipEntry[], zipName: string, tag = "studio/
   });
 }
 
-// "1420 Alder Drive" (or "the business" for an NDA listing) for zip names.
+// "1420 Example Alder Drive" (or "the business" for an NDA listing) for zip names.
 export const zipStreet = (address: string, nda: boolean) => (nda ? `${brand.shortName}` : address.split(",")[0].trim().replace(/[^A-Za-z0-9 ]+/g, "").trim() || `${brand.shortName}`);

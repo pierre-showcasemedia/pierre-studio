@@ -1,6 +1,6 @@
 // Start over on an upload that never reached Submit (Oct 30 2026).
 //
-// the owner, 195 Oakleaf Road: an upload of raws paused, and the upload page kept
+// the owner, 195 Example Oakleaf Road: an upload of raws paused, and the upload page kept
 // offering to resume it. He wanted to begin again with JPGs, but the draft
 // shoot remembered every file it had handed a link to, so Submit would have
 // waited for raws that were never coming. This removes a draft shoot
@@ -18,7 +18,7 @@
 // Called by the upload page's Start over button (/api/studio/upload-discard)
 // and the operator op discardDraftShoot (dry run unless apply: true).
 //
-// Only some files (extensions, operators only): the same 195 Oakleaf Road
+// Only some files (extensions, operators only): the same 195 Example Oakleaf Road
 // draft, minutes later. the owner had already dropped the JPGs into it and they
 // were landing, while the 312 raws of the first try sat in the draft and
 // would have held Submit forever. With extensions ["arw", "dng"] only those

@@ -10,7 +10,7 @@
 //   listings/<slug>/bundles/group-<area>-mls.zip     a photo area at 2048px (photos, revised)
 // Only client-visible media (approved, published, shoot published) goes in.
 //
-// Oct 27 2026 (1030 Magnolia Drive: "Download all" gave the 61 main
+// Oct 27 2026 (1030 Example Magnolia Drive: "Download all" gave the 61 main
 // photos and none of the 17 New Images or 12 Revised Images): "Download all"
 // is everything the client can see (#48). Rule (Oct 27 2026): every
 // photo AND film, and every area of the gallery has its own download too.

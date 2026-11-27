@@ -1,7 +1,7 @@
 // Browser side of the upload calls (links, ingest, the run's end), shared by
 // UploadFinals, UploadToListing, the Video card's cut upload and Upload a shoot.
 //
-// Nov 10 2026 (3330 Cedar Road, 100 MP finals): when the server instance
+// Nov 10 2026 (3330 Example Cedar Road, 100 MP finals): when the server instance
 // holding a call is killed (it ran out of memory, the hosting logs say), the
 // platform answers with an HTML error page instead of the route's JSON, and
 // every row read "Unexpected token '<', "<!DOCTYPE "... is not valid JSON".

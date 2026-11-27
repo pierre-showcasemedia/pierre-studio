@@ -52,7 +52,7 @@ async function main() {
   const none = publishPlan(frames, { pick: ["p1", "r1"] });
   ok(none.ids.length === 0 && none.pending === 1 && none.rejected === 1, "nothing approved in the pick: nothing goes");
   ok(publishPlan([]).ids.length === 0, "no frames: empty plan");
-  // Nov 7 2026 (the business-4585 Via Maria): frames marked published on a shoot that
+  // Nov 7 2026 (the business-4585 Example Vista Way): frames marked published on a shoot that
   // was never published are waiting, not live, so Publish sends them.
   const neverPublished = publishPlan(frames, { shootPublished: false });
   ok(neverPublished.ids.join(",") === "a1,a2,live" && neverPublished.live === 0, `unpublished shoot: a published-marked approved frame goes (${JSON.stringify(neverPublished)})`);

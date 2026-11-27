@@ -26,7 +26,7 @@ export default async function NewListing({ searchParams }: { searchParams: Promi
         </div>
         <div className="field">
           <label htmlFor="address">Street address</label>
-          <input id="address" name="address" required placeholder="3201 Willow Drive" autoComplete="off" />
+          <input id="address" name="address" required placeholder="3201 Example Willow Drive" autoComplete="off" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 14 }}>
           <div className="field">

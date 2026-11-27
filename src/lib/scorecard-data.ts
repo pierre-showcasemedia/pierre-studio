@@ -169,7 +169,7 @@ const demoStore = () => (g.__scorecardDemo ??= new Map());
 
 function demoScorecard(now: Date): ScorecardData {
   const today = localYmd(now);
-  const streets = ["1475 Magnolia Dr", "3218 Willow Dr", "925 Spruce Rd", "4585 Via Maria", "806 Holly Rd", "1556 Linden Rd", "2320 Fir Rd", "571 Myrtle Rd"];
+  const streets = ["1475 Example Magnolia Dr", "3218 Example Willow Dr", "925 Example Spruce Rd", "4585 Example Vista Way", "806 Example Holly Rd", "1556 Example Linden Rd", "2320 Example Fir Rd", "571 Example Myrtle Rd"];
   const shooters = ["alex@example.com", "drew@example.com", "kim@example.com"];
   const shoots: ScShoot[] = [];
   for (let back = 1, i = 0; back < WINDOW_DAYS && shoots.length < 24; back++) {
@@ -194,9 +194,9 @@ function demoScorecard(now: Date): ScorecardData {
   }
   const next = nextBusinessDay(today);
   const upcoming: ScUpcoming[] = [
-    { bookingId: "demo-up-1", address: "21 Hemlock St", ymd: today, time: "14:00", status: "confirmed", shooter: "alex@example.com" },
-    { bookingId: "demo-up-2", address: "75 Aspen Rd", ymd: next, time: "10:00", status: "confirmed", shooter: "kim@example.com" },
-    { bookingId: "demo-up-3", address: "1030 Magnolia Dr", ymd: next, time: "15:30", status: "requested", shooter: null },
+    { bookingId: "demo-up-1", address: "21 Example Hemlock St", ymd: today, time: "14:00", status: "confirmed", shooter: "alex@example.com" },
+    { bookingId: "demo-up-2", address: "75 Example Aspen Rd", ymd: next, time: "10:00", status: "confirmed", shooter: "kim@example.com" },
+    { bookingId: "demo-up-3", address: "1030 Example Magnolia Dr", ymd: next, time: "15:30", status: "requested", shooter: null },
   ];
   const months: Record<string, number> = {};
   for (let n = 3; n >= 0; n--) months[addMonths(monthOf(today), -n)] = 3_850_000 + n * 410_000;
@@ -206,6 +206,6 @@ function demoScorecard(now: Date): ScorecardData {
     const after = i % 8 === 3 ? 150 : 12 + (i % 5) * 9;
     return { bookingId: `${s.bookingId}-b`, address: s.address, createdAt: s.createdAt, status: i % 9 === 8 ? "delivered" : s.status, confirmedAt: i % 9 === 8 ? null : new Date(created + after * 60_000).toISOString() };
   });
-  bookings.unshift({ bookingId: "demo-new", address: "1030 Magnolia Dr", createdAt: new Date(now.getTime() - 20 * 60_000).toISOString(), status: "requested", confirmedAt: null });
+  bookings.unshift({ bookingId: "demo-new", address: "1030 Example Magnolia Dr", createdAt: new Date(now.getTime() - 20 * 60_000).toISOString(), status: "requested", confirmedAt: null });
   return { shoots, bookings, upcoming, entries: [...demoStore().values()], estimate: months, tableMissing: false, demo: true };
 }

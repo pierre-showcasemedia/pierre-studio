@@ -77,10 +77,10 @@ async function main() {
 
   // ---- 5. Dropbox layout ----------------------------------------------------------
   ok(RAW_PHOTOS_SUBFOLDER === "Photo" && RAW_VIDEO_SUBFOLDER === "Video", "the folders are Photo and Video (the SOP)");
-  const folder = listingFolderPath("/Listings", "1420 Alder Drive, Springfield, CA 90000");
-  ok(folder === "/Listings/1420 Alder Drive, Springfield, CA 90000", "the listing folder is the address");
+  const folder = listingFolderPath("/Listings", "1420 Example Alder Drive, Springfield, CA 90000");
+  ok(folder === "/Listings/1420 Example Alder Drive, Springfield, CA 90000", "the listing folder is the address");
   ok(mirrorTargetPath(folder, "raw_video", "C0001.MP4") === `${folder}/Video/C0001.MP4` && mirrorTargetPath(folder, "raw", "A.ARW") === `${folder}/Photo/A.ARW`, "clips go to Video, raws to Photo");
-  ok(dropboxWebUrl(`${folder}/Video`) === "https://www.dropbox.com/home/Listings/1420%20Alder%20Drive%2C%20Springfield%2C%20CA%2090000/Video", "the web link encodes each part and keeps the slashes");
+  ok(dropboxWebUrl(`${folder}/Video`) === "https://www.dropbox.com/home/Listings/1420%20Example%20Alder%20Drive%2C%20Springfield%2C%20CA%2090000/Video", "the web link encodes each part and keeps the slashes");
   ok(videoFolderUrl({ dropboxFolder: folder, dropboxVideoLink: "https://www.dropbox.com/scl/fo/abc" })?.shared === true, "a saved share link wins");
   const web = videoFolderUrl({ dropboxFolder: folder, dropboxVideoLink: null });
   ok(web?.shared === false && web.url.endsWith("/Video"), "no share link: the folder on dropbox.com");

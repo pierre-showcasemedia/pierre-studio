@@ -73,7 +73,7 @@ export function isActive(s: ShootStatus): boolean {
 
 // Where frames can be published from (src/lib/frame-publish.ts and the shoot
 // page's Publish bar). Ready for review and published are the normal cases.
-// Failed is the recovery (Nov 3 2026, 925 Spruce Road): editing stopped
+// Failed is the recovery (Nov 3 2026, 925 Example Spruce Road): editing stopped
 // (credits ran out, a part never finished) and the editors delivered the
 // corrected photos by hand through the corrected photos box, which a failed
 // shoot already accepts. They are approved like any other frame, and

@@ -231,7 +231,7 @@ export default async function AdminListingDetail({
             </div>
             <div className="lset__fields">
               <div className="field">
-                <input id="edit-address" name="address" required defaultValue={listing.address} placeholder="3201 Willow Drive, Springfield, CA 90000" autoComplete="off" aria-label="Address" />
+                <input id="edit-address" name="address" required defaultValue={listing.address} placeholder="3201 Example Willow Drive, Springfield, CA 90000" autoComplete="off" aria-label="Address" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: 12 }}>
                 <div className="field">
@@ -256,7 +256,7 @@ export default async function AdminListingDetail({
             </div>
             <div className="lset__fields">
               <div className="field">
-                <input id="edit-slug" name="slug" defaultValue={listing.slug} pattern="[A-Za-z0-9-]+" placeholder="3201-willow-drive" autoComplete="off" style={{ fontFamily: "var(--font-mono)", fontSize: 14 }} />
+                <input id="edit-slug" name="slug" defaultValue={listing.slug} pattern="[A-Za-z0-9-]+" placeholder="3201-example-willow-drive" autoComplete="off" style={{ fontFamily: "var(--font-mono)", fontSize: 14 }} />
               </div>
             </div>
           </div>

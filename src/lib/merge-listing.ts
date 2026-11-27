@@ -1,8 +1,8 @@
 // Merge one listing into another (Oct 30 2026).
 //
-// the owner, 2420 Fir Rd: the booking form made a new listing from a
+// the owner, 2420 Example Fir Rd: the booking form made a new listing from a
 // typo in the client's address. It was the same house and the same client as
-// 2320 Fir Road, which already had its media, and nothing in the
+// 2320 Example Fir Road, which already had its media, and nothing in the
 // app could move a booking (or anything else) from one listing to another.
 // This moves every row that points at the source listing onto the target,
 // then deletes the empty source:

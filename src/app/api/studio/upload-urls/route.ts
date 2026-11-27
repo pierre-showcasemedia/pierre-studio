@@ -8,7 +8,7 @@
 // tops out at 5 GB, so a bigger clip is refused here with a clear message
 // instead of failing at the end of a long upload.
 //
-// Oct 27 2026: dir is the folder a file was dropped in ("2311 Elm Street -
+// Oct 27 2026: dir is the folder a file was dropped in ("2311 Example Elm Street -
 // 413 raw"); stored as shoot_files.dropbox_dir so the Dropbox copy keeps it.
 import { and, eq, inArray } from "drizzle-orm";
 import { db, hasDb, schema } from "@/db";

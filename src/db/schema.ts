@@ -516,7 +516,7 @@ export const shootFiles = pgTable("shoot_files", {
   dropboxPath: text("dropbox_path"),
   dropboxSyncedAt: timestamp("dropbox_synced_at"),
   // Oct 27 2026: the folder it was dropped in, from the dropped folder down
-  // ("2311 Elm Street - 413 raw", "video/A001"). The copy keeps that path
+  // ("2311 Example Elm Street - 413 raw", "video/A001"). The copy keeps that path
   // inside the listing folder; null = a loose file (Photo or Video).
   dropboxDir: text("dropbox_dir"),
   // Oct 27 2026: raws leave R2 once Dropbox holds a verified copy

@@ -91,15 +91,15 @@ async function main() {
   const fog = describeWeather(am, { day: "2026-10-28", start: new Date("2026-10-28T14:00:00Z"), end: new Date("2026-10-28T19:30:00Z") }, sun, now)!;
   ok(fog.block.includes("Patchy fog, ") && fog.block.includes(`Fog early, clearing by ${bizHour(new Date(Date.UTC(2026, 9, 28, 11 + 7)))}.`), `fog summary (got "${fog.block}")`);
   // Title
-  const title = "7702 Birch Lane - Devin Wong / photos + video";
+  const title = "7702 Example Birch Lane - Devin Wong / photos + video";
   ok(withBadge(title, "⛅ 66°") === `⛅ 66° ${title}`, "badge in front");
   ok(withBadge(`⛅ 66° ${title}`, "🌧️ 61° 70%", "⛅ 66°") === `🌧️ 61° 70% ${title}`, "badge replaced, not stacked");
   ok(withBadge(`[RESCHEDULED - UNCONFIRMED] ${title}`, "☀️ 72°") === `[RESCHEDULED - UNCONFIRMED] ☀️ 72° ${title}`, "badge after the reschedule tag");
   ok(withBadge(`☀️ 72° ${title}`, null, "☀️ 72°") === title, "badge removed");
 
   // Description
-  const rest = "7702 Birch Lane, Springfield\nServices: photos & video\n\nCLIENT NOTES: Devin";
-  const restHtml = "7702 Birch Lane, Springfield<br>Services: photos &amp; video<br><br>CLIENT NOTES: Devin";
+  const rest = "7702 Example Birch Lane, Springfield\nServices: photos & video\n\nCLIENT NOTES: Devin";
+  const restHtml = "7702 Example Birch Lane, Springfield<br>Services: photos &amp; video<br><br>CLIENT NOTES: Devin";
   ok(asHtml(rest) === restHtml, "plain text becomes HTML lines, escaped");
   ok(asText(restHtml) === rest, "and back");
   const d1 = withBlock(rest, c.block);
@@ -146,7 +146,7 @@ async function main() {
   // The short event text (Oct 31 2026).
   const booking = {
     id: "4871c7d6-035c-4208-8a4a-a162904e9e09", status: "confirmed", clientId: "c1", listingId: "l1",
-    listing: { address: "3330 Cedar Road, Springfield, CA 90000", nda: false },
+    listing: { address: "3330 Example Cedar Road, Springfield, CA 90000", nda: false },
     client: { name: "Riley Example", email: "riley@example.com", phone: "555-010-0177", company: "Example Homes" },
     property: { homeownerHome: "No", videoStyle: "Medium", status: "For Sale" },
     raw: null, serviceIds: [], addonIds: [], servicesLabel: "Photography + Basic property video", sqft: 3112,
@@ -156,7 +156,7 @@ async function main() {
   const when = { allDay: false as const, start: new Date("2026-11-01T17:00:00Z"), end: new Date("2026-11-01T21:45:00Z") };
   const body = calendarEventBody(booking, when);
   const url = "/admin/bookings/4871c7d6-035c-4208-8a4a-a162904e9e09";
-  const want = ["Directions: https://www.google.com/maps/dir/?api=1&destination=3330%20Cedar%20Road%2C%20Springfield%2C%20CA%2090000", "Services: Photography, Basic property video", "Square footage: 3,112 sq ft", "Access: Meet on site: Casey 555-010-0188.", "Requests: Possible virtual staging for two rooms. Possibly 2 images, TBD. Video style: Medium.", "Contact: Riley Example, 555-010-0177", ""];
+  const want = ["Directions: https://www.google.com/maps/dir/?api=1&destination=3330%20Example%20Cedar%20Road%2C%20Springfield%2C%20CA%2090000", "Services: Photography, Basic property video", "Square footage: 3,112 sq ft", "Access: Meet on site: Casey 555-010-0188.", "Requests: Possible virtual staging for two rooms. Possibly 2 images, TBD. Video style: Medium.", "Contact: Riley Example, 555-010-0177", ""];
   // One blank line between sections (Nov 4 2026), never two, none at the end.
   ok(body.description.startsWith(want.join("\n\n")) && body.description.endsWith(url) && body.description.split("\n\n").length === 7 && !/\n{3}/.test(body.description), `short description (got ${JSON.stringify(body.description)})`);
   ok(!/Email|Launch|Property|Example Homes/.test(body.description), "no email, launch, company or property line");

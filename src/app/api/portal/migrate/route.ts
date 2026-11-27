@@ -516,7 +516,7 @@ const DDL = [
   `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "dropbox_final_bytes" bigint`,
   `ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "dropbox_final_at" timestamp`,
   // Folder drops (Oct 27 2026): the folder a raw file was dropped in, relative
-  // to the drop ("2311 Elm Street - 413 raw", "video/A001"). The Dropbox
+  // to the drop ("2311 Example Elm Street - 413 raw", "video/A001"). The Dropbox
   // copy keeps that path inside the listing folder; null = Photo or Video.
   // Run this before the code that selects it serves.
   `ALTER TABLE "shoot_files" ADD COLUMN IF NOT EXISTS "dropbox_dir" text`,

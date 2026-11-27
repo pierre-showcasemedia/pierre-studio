@@ -132,8 +132,8 @@ async function main() {
   console.log("4. QA activity allowlist: ok");
 
   // ---- 5. hub lines ----------------------------------------------------------
-  const place = { listing: { address: "1420 Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
-  const nda = { listing: { address: "35 Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
+  const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
+  const nda = { listing: { address: "35 Example Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
   const visLine = hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "internal", count: 2, filenames: ["35-Secret-Lane-01.jpg"] } }, nda) ?? "";
   ok(visLine.includes("an NDA listing") && !visLine.includes("Secret") && !visLine.includes(".jpg"), `NDA visibility line stays anonymous: ${visLine}`);
   ok(/client visible/i.test(hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "client", count: 1, waiting: 0 } }, place) ?? ""), "client visible hub line");
@@ -155,9 +155,9 @@ async function main() {
   const tot = sumBatches([{ action: "media.uploaded", meta: { added: 6, replaced: 0 } }, { action: "media.uploaded", meta: { added: 4, replaced: 2 } }, { action: "media.finals_uploaded", meta: { added: 0, replaced: 3 } }]);
   ok(tot.added === 10 && tot.replaced === 2 && tot.corrected === 3 && tot.landed === 15, `batches add up (${JSON.stringify(tot)})`);
   ok(cleanRun(run) === run && cleanRun("x") === null && cleanRun("a b c d e f g h") === null && cleanRun(5) === null, "run ids are checked");
-  const ortega = { listing: { address: "2320 Fir Road, Springfield, CA", nda: false }, clientEmail: null, link: "<link|Open the listing>" };
+  const ortega = { listing: { address: "2320 Example Fir Road, Springfield, CA", nda: false }, clientEmail: null, link: "<link|Open the listing>" };
   const done = hubActivityLine({ action: "media.upload_finished", actorEmail: "owner@example.com", meta: { run, landed: 25, added: 25, total: 25, failed: 0, published: true } }, ortega, "production") ?? "";
-  ok(done === "Upload finished: 2320 Fir Road, 25 files, client visible. By owner@example.com. <link|Open the listing>", `one clean line: ${done}`);
+  ok(done === "Upload finished: 2320 Example Fir Road, 25 files, client visible. By owner@example.com. <link|Open the listing>", `one clean line: ${done}`);
   const mixed = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 8, added: 5, replaced: 3, total: 8, failed: 0, published: false, section: "Twilight" } }, ortega, "production") ?? "";
   ok(/8 files \(5 new, 3 replaced\) to Twilight, internal only/.test(mixed) && !mixed.startsWith(":exclamation:"), `new and replaced counted, plain: ${mixed}`);
   const partly = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 23, added: 23, total: 25, failed: 2, failedNames: ["Twilight-07.jpg", "Twilight-09.jpg"], published: true } }, ortega, "production") ?? "";

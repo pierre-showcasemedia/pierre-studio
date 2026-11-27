@@ -4,7 +4,7 @@
 //
 // Why: "Download all" was built in one go inside a cron run. A rebuild that
 // started late in a run, or needed longer than a run has, was cut off at the
-// platform's 300 s and began again from zero (3330 Cedar Road, Nov 10
+// platform's 300 s and began again from zero (3330 Example Cedar Road, Nov 10
 // 2026: fifteen cut-off runs in 75 minutes and a rebuild that never ended).
 // Now the bytes already in storage stay there. A run that is out of time
 // saves where it is (the cursor below) and the next run sends the next part.

@@ -46,21 +46,21 @@ async function main() {
     "On Tue, Oct 27, 2026 at 9:14 AM Studio Name <",
     "portal@example.com> wrote:",
     "",
-    "> Your photos for 123 Juniper Dr are ready.",
+    "> Your photos for 123 Example Juniper Dr are ready.",
     "> Open your gallery here.",
   ].join("\n");
   const g = splitReply(gmailReply);
   ok(g.fresh.startsWith("Hi! Can you brighten") && g.fresh.endsWith("Jane"), `Gmail reply: fresh is the client's words (got ${JSON.stringify(g.fresh)})`);
   ok(!g.fresh.includes("wrote:") && !g.fresh.includes("123 Juniper"), "Gmail reply: quoted history not in fresh");
-  ok(g.quoted.includes("123 Juniper Dr") && !/^>/m.test(g.quoted), "Gmail reply: quoted kept without > marks");
+  ok(g.quoted.includes("123 Example Juniper Dr") && !/^>/m.test(g.quoted), "Gmail reply: quoted kept without > marks");
 
-  const apple = splitReply("Darker twilights please\n\nSent from my iPhone\n\nOn Oct 27, 2026, at 9:14 AM, Studio Name <hello@example.com> wrote:\n\n> Here are the photos for 55 Ocean Ave");
+  const apple = splitReply("Darker twilights please\n\nSent from my iPhone\n\nOn Oct 27, 2026, at 9:14 AM, Studio Name <hello@example.com> wrote:\n\n> Here are the photos for 55 Example Ocean Ave");
   ok(apple.fresh === "Darker twilights please", `Apple Mail: footer and quote dropped (got ${JSON.stringify(apple.fresh)})`);
-  ok(apple.quoted.includes("55 Ocean Ave"), "Apple Mail: quoted names the listing");
+  ok(apple.quoted.includes("55 Example Ocean Ave"), "Apple Mail: quoted names the listing");
 
-  const outlook = splitReply("Please swap photo 12 for a vertical.\n\nFrom: Studio Name <portal@example.com>\nSent: Monday, October 26, 2026 4:02 PM\nTo: Jane\nSubject: Your photos are ready\n\nGallery for 9 Mesa Ln");
+  const outlook = splitReply("Please swap photo 12 for a vertical.\n\nFrom: Studio Name <portal@example.com>\nSent: Monday, October 26, 2026 4:02 PM\nTo: Jane\nSubject: Your photos are ready\n\nGallery for 9 Example Mesa Ln");
   ok(outlook.fresh === "Please swap photo 12 for a vertical.", `Outlook: header block cut (got ${JSON.stringify(outlook.fresh)})`);
-  ok(outlook.quoted.includes("9 Mesa Ln"), "Outlook: quoted kept");
+  ok(outlook.quoted.includes("9 Example Mesa Ln"), "Outlook: quoted kept");
 
   const sig = splitReply("Can we redo the drone shot?\n-- \nJane Doe | Realtor | 555-010-0100");
   ok(sig.fresh === "Can we redo the drone shot?", "signature after -- dropped");
@@ -85,7 +85,7 @@ async function main() {
       headers: [
         { name: "From", value: "Jane Doe <jane@realty.com>" },
         { name: "To", value: "hello@example.com" },
-        { name: "Subject", value: "Re: Your photos are ready: 123 Juniper Dr" },
+        { name: "Subject", value: "Re: Your photos are ready: 123 Example Juniper Dr" },
       ],
       parts: [
         { mimeType: "multipart/alternative", parts: [{ mimeType: "text/plain", body: { data: b64(gmailReply) } }] },
@@ -97,8 +97,8 @@ async function main() {
   };
   const e = parseMessage(msg);
   ok(e.fromEmail === "jane@realty.com" && e.fromName === "Jane Doe" && e.to === "hello@example.com", "message: sender and recipient");
-  ok(e.subject === "Re: Your photos are ready: 123 Juniper Dr", "message: subject");
-  ok(e.fresh.startsWith("Hi! Can you brighten") && e.quoted.includes("123 Juniper Dr"), "message: fresh and quoted");
+  ok(e.subject === "Re: Your photos are ready: 123 Example Juniper Dr", "message: subject");
+  ok(e.fresh.startsWith("Hi! Can you brighten") && e.quoted.includes("123 Example Juniper Dr"), "message: fresh and quoted");
   ok(e.images.length === 1 && e.images[0].url === "gmail:m1/att-big" && e.images[0].type === "image/jpeg", "message: the photo kept, logo and PDF not");
   ok(e.at.getTime() === Number(at), "message: time from internalDate");
   ok(skipReason(e, { self: "hello@example.com" }) === null, "a client's reply is read");
@@ -120,7 +120,7 @@ async function main() {
   ok(skipReason(like({ subject: "Out of Office: back Monday" }), self) === "auto-reply", "out of office subject");
   ok(skipReason(like({ headers: { ...e.headers, "list-unsubscribe": "<mailto:x>" } }), self) === "mailing list", "List-Unsubscribe");
   ok(skipReason(like({ headers: { ...e.headers, precedence: "bulk" } }), self) === "bulk mail", "Precedence bulk");
-  ok(skipReason(like({ subject: "Accepted: 123 Juniper Dr - Jane / Photos @ Tue Oct 27" }), self) === "calendar response", "calendar accept");
+  ok(skipReason(like({ subject: "Accepted: 123 Example Juniper Dr - Jane / Photos @ Tue Oct 27" }), self) === "calendar response", "calendar accept");
   ok(skipReason(like({ hasCalendar: true }), self) === "calendar response", "text/calendar part");
   ok(skipReason(like({ fresh: "", images: [], subject: "" }), self) === "empty", "empty");
   ok(skipReason(like({ fromEmail: "info@realtyone.com" }), self) === null, "info@ at a brokerage is read");

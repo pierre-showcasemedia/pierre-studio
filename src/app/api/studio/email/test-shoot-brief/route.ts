@@ -19,8 +19,8 @@ export const dynamic = "force-dynamic";
 function sample(): ShootBrief {
   return {
     bookingId: "00000000-0000-4000-8000-000000000000",
-    street: "1420 Alder Drive",
-    address: "1420 Alder Drive, Springfield, CA 90000",
+    street: "1420 Example Alder Drive",
+    address: "1420 Example Alder Drive, Springfield, CA 90000",
     timeLabel: "2:30 PM",
     dayLabel: "Thursday, November 5",
     confirmed: true,

@@ -1012,7 +1012,7 @@ export async function POST(request: Request) {
     }
 
     if (body.op === "discardDraftShoot") {
-      // Oct 30 2026 (the owner, 195 Oakleaf Road): an upload of raws paused and he
+      // Oct 30 2026 (the owner, 195 Example Oakleaf Road): an upload of raws paused and he
       // wanted to begin again with JPGs. The same wipe as the upload page's
       // Start over, for one shoot or every draft on a listing.
       let ids: string[] = typeof body.shootId === "string" && body.shootId ? [body.shootId] : [];
@@ -1029,7 +1029,7 @@ export async function POST(request: Request) {
     }
 
     if (body.op === "mergeListing") {
-      // Oct 30 2026 (the owner, 2420 into 2320 Fir Road): a listing the
+      // Oct 30 2026 (the owner, 2420 into 2320 Example Fir Road): a listing the
       // booking form made from a typo, merged into the real one. The same
       // code as the admin's Merge into another listing page.
       const pick = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null);

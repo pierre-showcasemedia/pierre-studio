@@ -1,6 +1,6 @@
 // How much image work one server instance does at a time (Nov 10 2026).
 //
-// Why this exists. Uploading corrected finals to 3330 Cedar Road failed
+// Why this exists. Uploading corrected finals to 3330 Example Cedar Road failed
 // file after file with "Unexpected token '<', "<!DOCTYPE "... is not valid
 // JSON". The hosting logs show the cause: "instance was killed because it ran
 // out of available memory", 37 times between Oct 28 and Nov 10, on the two
