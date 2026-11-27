@@ -407,3 +407,29 @@ pass, and the pricing page's page data.
 - After go-live: add Olesya Juodsnukis and Clinton Cunanan as Creative specialists; their pay
   rates if he wants the Shooter pay report to total their pay.
 - Later: the homepage hero video (he is making it) and, optionally, his animated logo.
+
+## Nudge for Pierre (Nov 27, text only, not sent)
+
+A short, friendly reply in his "Yesterday's onboarding meeting" thread, for
+Hammad to send if he wants. No placeholders: the preview is the one he opens
+from his own Vercel account.
+
+> Hi Pierre,
+>
+> Hope you're having a good week. Just checking in on three small things
+> whenever you have a moment:
+>
+> 1. Your review of the new site. Open Vercel, choose the pierre-site project
+>    and click Visit. Write down anything you'd like changed and send it in
+>    one email.
+> 2. A Google Maps key from your own Google account, so the booking form can
+>    suggest addresses and work out the distance. Happy to walk you through
+>    it on a quick call, it takes about five minutes.
+> 3. Your onboarding form answers. They didn't come through on our side, so
+>    could you send them again, or reply with them here?
+>
+> No rush on the walkthrough videos and floor plan examples. Send them when
+> they're ready.
+>
+> Thanks,
+> Hammad
