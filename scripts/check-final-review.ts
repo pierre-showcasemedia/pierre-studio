@@ -55,8 +55,8 @@ async function main() {
   ok(one.includes("1 corrected photo from") && one.includes("2 files did not upload."), "singular photo, failures counted");
   const none = finalReviewText({ shootId: s, listing: { address: "1 A St, X" }, corrected: 0, failed: 0, by: "e@x.com" });
   ok(none.includes("ready for final review: sent by e@x.com."), "a send with no corrections still reads");
-  const nda = finalReviewText({ shootId: s, listing: { address: "9 Example Secret Lane, X", nda: true }, corrected: 3, failed: 0, by: "e@x.com" });
-  ok(nda.startsWith("an NDA listing is ready for final review") && !nda.includes("Secret"), "an NDA listing is never named");
+  const nda = finalReviewText({ shootId: s, listing: { address: "9 Hideaway Example Lane, X", nda: true }, corrected: 3, failed: 0, by: "e@x.com" });
+  ok(nda.startsWith("an NDA listing is ready for final review") && !nda.includes("Hideaway"), "an NDA listing is never named");
 
   // ---- one message: the run line stays quiet when the send posts ----
   ok(hubChannelFor({ action: "media.upload_finished", meta: { run: "r1", landed: 3, review: true } }) === null, "a reviewed run's line is quiet");

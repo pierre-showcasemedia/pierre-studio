@@ -133,9 +133,9 @@ async function main() {
 
   // ---- 5. hub lines ----------------------------------------------------------
   const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
-  const nda = { listing: { address: "35 Example Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
+  const nda = { listing: { address: "35 Hideaway Example Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
   const visLine = hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "internal", count: 2, filenames: ["35-Secret-Lane-01.jpg"] } }, nda) ?? "";
-  ok(visLine.includes("an NDA listing") && !visLine.includes("Secret") && !visLine.includes(".jpg"), `NDA visibility line stays anonymous: ${visLine}`);
+  ok(visLine.includes("an NDA listing") && !visLine.includes("Hideaway") && !visLine.includes(".jpg"), `NDA visibility line stays anonymous: ${visLine}`);
   ok(/client visible/i.test(hubActivityText({ action: "media.visibility", actorEmail: "qa@example.com", meta: { to: "client", count: 1, waiting: 0 } }, place) ?? ""), "client visible hub line");
   ok(/on photo QC/.test(hubActivityText({ action: "admin.role_set", actorEmail: "boss@studio.test", meta: { email: "qa@example.com", role: "qa", from: "admin" } }, { listing: null, clientEmail: null }) ?? ""), "role hub line");
   const creativeLine = hubActivityText({ action: "admin.role_set", actorEmail: "boss@studio.test", meta: { email: "shooter@example.com", role: "creative", from: "qa" } }, { listing: null, clientEmail: null }) ?? "";
@@ -167,7 +167,7 @@ async function main() {
   const stopped = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 12, added: 12, stopped: true } }, ortega, "production") ?? "";
   ok(stopped.startsWith(":exclamation: *Upload stopped before it finished") && /12 files went in/.test(stopped), `a stopped upload is flagged: ${stopped}`);
   const ndaFail = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 3, total: 4, failed: 1, failedNames: ["35-Secret-Lane-01.jpg"], section: "Secret" } }, { ...nda, link: "<l|x>" }, "production") ?? "";
-  ok(/an NDA listing/.test(ndaFail) && !/Secret/.test(ndaFail), `NDA upload line names nothing: ${ndaFail}`);
+  ok(/an NDA listing/.test(ndaFail) && !/Hideaway/.test(ndaFail), `NDA upload line names nothing: ${ndaFail}`);
   console.log("5. hub lines: ok");
 
   // ---- 6. gate audit ---------------------------------------------------------

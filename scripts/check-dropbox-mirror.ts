@@ -465,13 +465,13 @@ async function main() {
   ok(photoFileCount({ fileCount: 186, options: { indoorModelId: 37, outdoorModelId: 37, skipHdr: false, twilight: { enabled: false, count: 6, look: "x" }, nda: false, files: { photos: 183, video: 3 } } }) === 183 && photoFileCount({ fileCount: 10, options: null }) === 10, "photoFileCount leaves the clips out of the credits estimate");
 
   const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
-  const ndaPlace = { listing: { address: "35 Example Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
+  const ndaPlace = { listing: { address: "35 Hideaway Example Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
   const done = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 14, video: 3, folder: "/Listings/1420 Example Alder Drive" } }, place) ?? "";
   ok(done === "Raw files copied to Dropbox: 1420 Example Alder Drive, 14 photos and 3 films.", `the hub line reads as asked (${done})`);
   const one = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 1, video: 0 } }, place) ?? "";
   ok(one === "Raw files copied to Dropbox: 1420 Example Alder Drive, 1 photo.", `singular and no films (${one})`);
-  const ndaLine = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 2, video: 1, folder: "/Listings/35 Example Secret Lane" } }, ndaPlace) ?? "";
-  ok(ndaLine.includes("an NDA listing") && !ndaLine.includes("Secret"), `an NDA listing stays anonymous with no folder (${ndaLine})`);
+  const ndaLine = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 2, video: 1, folder: "/Listings/35 Hideaway Example Lane" } }, ndaPlace) ?? "";
+  ok(ndaLine.includes("an NDA listing") && !ndaLine.includes("Hideaway"), `an NDA listing stays anonymous with no folder (${ndaLine})`);
   ok(dropboxCounts(0, 0) === "no files" && dropboxCounts(2, 2) === "2 photos and 2 films", "dropboxCounts words");
   for (const a of ["shoot.dropbox_synced", "shoot.dropbox_requeued", "dropbox.connected", "dropbox.disconnected"] as const) ok(hubChannelFor({ action: a }) === "hub", `${a} posts to the hub`);
   const conn = hubActivityText({ action: "dropbox.connected", actorEmail: "boss@studio.test", meta: { name: "Studio Name", email: "hello@example.test", root: "/Listings" } }, { listing: null, clientEmail: null }) ?? "";

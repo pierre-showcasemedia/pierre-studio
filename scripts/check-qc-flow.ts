@@ -126,7 +126,7 @@ async function main() {
   ok(line.includes("1656 Example Pine Road is ready for final review") && line.includes("3 QC flags not ticked.") && line.includes(`/admin/shoots/${s}|Open the shoot>`), `the line names the street, the open flags and links the shoot (${line})`);
   ok(finalReviewText({ ...base, openFlags: 0 }).includes("Every QC flag is ticked."), "all ticked reads so");
   ok(!finalReviewText(base).includes("QC flag"), "an upload and send without counts says nothing about flags");
-  ok(finalReviewText({ ...base, listing: { address: "9 Example Secret Lane, X", nda: true }, openFlags: 1 }).startsWith("an NDA listing"), "NDA listings stay unnamed");
+  ok(finalReviewText({ ...base, listing: { address: "9 Hideaway Example Lane, X", nda: true }, openFlags: 1 }).startsWith("an NDA listing"), "NDA listings stay unnamed");
 
   const posts: { url: string; text: string }[] = [];
   let reviewStatus = 200;

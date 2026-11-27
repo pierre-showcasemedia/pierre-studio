@@ -192,7 +192,7 @@ async function main() {
   const line = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services, access notes", bookingId: "b1" } }, place) ?? "";
   ok(line === "Booking edited: 1420 Example Alder Drive (services, access notes). By owner@example.com.", `hub line: ${line}`);
   ok(hubChannelFor({ action: "booking.edited" }) === "bookings", "booking.edited posts to the bookings channel");
-  const ndaLine = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services" } }, { listing: { address: "35 Example Secret Lane", nda: true }, clientEmail: null }) ?? "";
+  const ndaLine = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services" } }, { listing: { address: "35 Hideaway Example Lane", nda: true }, clientEmail: null }) ?? "";
   ok(ndaLine.startsWith("Booking edited: an NDA listing"), "NDA listings stay anonymous");
   ok(!MONEY_RE.test(line) && !MONEY_RE.test(describeActivity({ action: "invoice.addon_created", actorEmail: "x", meta: { items: "Twilight photos" } })), "no money in the hub or feed lines");
   const pl = { listing: { address: "1420 Example Alder Drive", nda: false }, bookingId: "b1", client: "Taylor Brooks (agent@example.com)", amount: "$300", method: "card", provider: "stripe" };
