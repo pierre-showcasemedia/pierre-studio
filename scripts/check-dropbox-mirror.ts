@@ -428,7 +428,7 @@ async function main() {
   }
 
   // ---- 3. names, kinds, statuses, hub lines --------------------------------------
-  ok(dropboxFolderName("1420 Alder Drive, Springfield, CA 90000") === "1420 Alder Drive, Springfield, CA 90000", "a plain address is its own folder name");
+  ok(dropboxFolderName("1420 Example Alder Drive, Springfield, CA 90000") === "1420 Example Alder Drive, Springfield, CA 90000", "a plain address is its own folder name");
   ok(dropboxFolderName("12 A/B Street \\ Unit 3... ") === "12 A-B Street - Unit 3", "slashes become dashes, trailing dots and spaces go");
   ok(dropboxFolderName("  \t  ") === "Listing" && dropboxFolderName("...") === "Listing", "an empty name falls back to Listing");
   ok(dropboxFolderName("x".repeat(400)).length === 180, "names are capped at 180 characters");
@@ -464,13 +464,13 @@ async function main() {
   ok(rail.length === 2 && rail[1].label === "Dropbox" && rail.every((s) => s.state === "done"), "the video-only rail is Uploaded then Dropbox");
   ok(photoFileCount({ fileCount: 186, options: { indoorModelId: 37, outdoorModelId: 37, skipHdr: false, twilight: { enabled: false, count: 6, look: "x" }, nda: false, files: { photos: 183, video: 3 } } }) === 183 && photoFileCount({ fileCount: 10, options: null }) === 10, "photoFileCount leaves the clips out of the credits estimate");
 
-  const place = { listing: { address: "1420 Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
-  const ndaPlace = { listing: { address: "35 Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
-  const done = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 14, video: 3, folder: "/Listings/1420 Alder Drive" } }, place) ?? "";
-  ok(done === "Raw files copied to Dropbox: 1420 Alder Drive, 14 photos and 3 films.", `the hub line reads as asked (${done})`);
+  const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
+  const ndaPlace = { listing: { address: "35 Example Secret Lane, Springfield, CA", nda: true }, clientEmail: "agent@example.com" };
+  const done = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 14, video: 3, folder: "/Listings/1420 Example Alder Drive" } }, place) ?? "";
+  ok(done === "Raw files copied to Dropbox: 1420 Example Alder Drive, 14 photos and 3 films.", `the hub line reads as asked (${done})`);
   const one = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 1, video: 0 } }, place) ?? "";
-  ok(one === "Raw files copied to Dropbox: 1420 Alder Drive, 1 photo.", `singular and no films (${one})`);
-  const ndaLine = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 2, video: 1, folder: "/Listings/35 Secret Lane" } }, ndaPlace) ?? "";
+  ok(one === "Raw files copied to Dropbox: 1420 Example Alder Drive, 1 photo.", `singular and no films (${one})`);
+  const ndaLine = hubActivityText({ action: "shoot.dropbox_synced", shootId: "s1", meta: { photos: 2, video: 1, folder: "/Listings/35 Example Secret Lane" } }, ndaPlace) ?? "";
   ok(ndaLine.includes("an NDA listing") && !ndaLine.includes("Secret"), `an NDA listing stays anonymous with no folder (${ndaLine})`);
   ok(dropboxCounts(0, 0) === "no files" && dropboxCounts(2, 2) === "2 photos and 2 films", "dropboxCounts words");
   for (const a of ["shoot.dropbox_synced", "shoot.dropbox_requeued", "dropbox.connected", "dropbox.disconnected"] as const) ok(hubChannelFor({ action: a }) === "hub", `${a} posts to the hub`);
@@ -484,7 +484,7 @@ async function main() {
   // ---- 4. FINAL DELIVERY (Oct 27 2026) ----
   const { FINAL_DELIVERY_FOLDER, finalSubfolder, finalTargetPath, finalAlternatePath } = await import("../src/lib/dropbox");
   const { needsFinalCopy, MIRROR_KINDS, FINAL_KIND, FINAL_SWEEP_KIND } = await import("../src/lib/dropbox-mirror");
-  const folder = "/Listings/123 Juniper Dr, Springfield, CA 90000";
+  const folder = "/Listings/123 Example Juniper Dr, Springfield, CA 90000";
   ok(FINAL_DELIVERY_FOLDER === "FINAL DELIVERY", "the folder is named FINAL DELIVERY");
   ok(finalTargetPath(folder, { kind: "photo", section: null, filename: "01.jpg" }) === `${folder}/FINAL DELIVERY/Photos/01.jpg`, "main gallery photo → Photos");
   ok(finalTargetPath(folder, { kind: "video", section: null, filename: "Film.mp4" }) === `${folder}/FINAL DELIVERY/Video/Film.mp4`, "main gallery film → Video");

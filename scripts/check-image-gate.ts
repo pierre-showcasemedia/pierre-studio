@@ -5,7 +5,7 @@
 //
 //   npx tsx scripts/check-image-gate.ts
 //
-// Why: Nov 10 2026, 3330 Cedar Road. 100 MP finals ran the server instance
+// Why: Nov 10 2026, 3330 Example Cedar Road. 100 MP finals ran the server instance
 // out of memory, the platform answered with an HTML error page, and every file
 // read "Unexpected token '<' ... is not valid JSON". What must stay true:
 //   1. the gate never lets more than its budget run, in order, an oversize

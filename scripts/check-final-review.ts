@@ -47,15 +47,15 @@ async function main() {
 
   // ---- the hub line ----
   const s = "0b6a1c2e-1111-2222-3333-444455556666";
-  const line = finalReviewText({ shootId: s, listing: { address: "1656 Pine Road, Springfield, CA 90000" }, corrected: 92, failed: 0, by: "editor@example.com" });
-  ok(line.startsWith("1656 Pine Road is ready for final review: 92 corrected photos from editor@example.com."), "names the street, the count and who sent it");
+  const line = finalReviewText({ shootId: s, listing: { address: "1656 Example Pine Road, Springfield, CA 90000" }, corrected: 92, failed: 0, by: "editor@example.com" });
+  ok(line.startsWith("1656 Example Pine Road is ready for final review: 92 corrected photos from editor@example.com."), "names the street, the count and who sent it");
   ok(line.includes(`/admin/shoots/${s}|Open the shoot>`), "links the shoot page");
   ok(!/\$\s?\d/.test(line) && !/—|--/.test(line), "no money, no dashes");
   const one = finalReviewText({ shootId: s, listing: { address: "1 A St, X" }, corrected: 1, failed: 2, by: "e@x.com" });
   ok(one.includes("1 corrected photo from") && one.includes("2 files did not upload."), "singular photo, failures counted");
   const none = finalReviewText({ shootId: s, listing: { address: "1 A St, X" }, corrected: 0, failed: 0, by: "e@x.com" });
   ok(none.includes("ready for final review: sent by e@x.com."), "a send with no corrections still reads");
-  const nda = finalReviewText({ shootId: s, listing: { address: "9 Secret Lane, X", nda: true }, corrected: 3, failed: 0, by: "e@x.com" });
+  const nda = finalReviewText({ shootId: s, listing: { address: "9 Example Secret Lane, X", nda: true }, corrected: 3, failed: 0, by: "e@x.com" });
   ok(nda.startsWith("an NDA listing is ready for final review") && !nda.includes("Secret"), "an NDA listing is never named");
 
   // ---- one message: the run line stays quiet when the send posts ----

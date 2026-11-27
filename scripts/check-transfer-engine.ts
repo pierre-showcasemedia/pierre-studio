@@ -22,7 +22,7 @@
 //   7. a shoot in flight on the previous code (one upstream shoot, links
 //      already issued, some files sent): carries on, nothing re-sent.
 //   8. two shoots sharing the cron: 20 s of every tick.
-//   9. production timing, 94 raws, ~60 s a PUT (3330 Cedar Road, Nov 2026):
+//   9. production timing, 94 raws, ~60 s a PUT (3330 Example Cedar Road, Nov 2026):
 //      parts are sized to the run (below 10 files when the link is that slow),
 //      no PUT starts on a stale link, and it finishes without stopping. On the
 //      engine before Nov 10 2026 it stopped after 5 fresh sets of links.

@@ -1,6 +1,6 @@
 // Checks for upload link renewal on Upload a shoot (Nov 1 2026,
 // src/components/admin/UploadWizard.tsx): every link used to come at Start and
-// lasts an hour, so on a long upload (3330 Cedar Road, 43 GB) every file
+// lasts an hour, so on a long upload (3330 Example Cedar Road, 43 GB) every file
 // that began after the hour failed. A link older than LINK_RENEW_MS is renewed
 // before its file starts, and every failed try gets a fresh one.
 // Same day: one click, then walk away (files start uploading when added, the

@@ -37,7 +37,7 @@ const baseName = (f: string) => f.replace(/\.[^.]+$/, "").toLowerCase();
 // Photos worked on at once inside one ingest call. Nov 11 2026: 2, was 3.
 // Each one holds its whole original in memory (20 to 40 MB for a big frame)
 // while it is fetched, stored and resized. Three at once, three decodes
-// each, is what ran the instance out of memory on 3330 Cedar Road (the
+// each, is what ran the instance out of memory on 3330 Example Cedar Road (the
 // hosting logs say so). The real ceiling is per instance, across every call
 // in it: src/lib/image-gate.ts.
 const FILE_PARALLEL = 2;

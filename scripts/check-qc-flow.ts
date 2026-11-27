@@ -121,12 +121,12 @@ async function main() {
 
   // ---- 6. the line and where it goes --------------------------------------------
   const s = "0b6a1c2e-1111-2222-3333-444455556666";
-  const base = { shootId: s, listing: { address: "1656 Pine Road, Springfield, CA 90000" }, corrected: 92, failed: 0, by: "editor@example.com" };
+  const base = { shootId: s, listing: { address: "1656 Example Pine Road, Springfield, CA 90000" }, corrected: 92, failed: 0, by: "editor@example.com" };
   const line = finalReviewText({ ...base, openFlags: 3, revisedUnchecked: 0 });
-  ok(line.includes("1656 Pine Road is ready for final review") && line.includes("3 QC flags not ticked.") && line.includes(`/admin/shoots/${s}|Open the shoot>`), `the line names the street, the open flags and links the shoot (${line})`);
+  ok(line.includes("1656 Example Pine Road is ready for final review") && line.includes("3 QC flags not ticked.") && line.includes(`/admin/shoots/${s}|Open the shoot>`), `the line names the street, the open flags and links the shoot (${line})`);
   ok(finalReviewText({ ...base, openFlags: 0 }).includes("Every QC flag is ticked."), "all ticked reads so");
   ok(!finalReviewText(base).includes("QC flag"), "an upload and send without counts says nothing about flags");
-  ok(finalReviewText({ ...base, listing: { address: "9 Secret Lane, X", nda: true }, openFlags: 1 }).startsWith("an NDA listing"), "NDA listings stay unnamed");
+  ok(finalReviewText({ ...base, listing: { address: "9 Example Secret Lane, X", nda: true }, openFlags: 1 }).startsWith("an NDA listing"), "NDA listings stay unnamed");
 
   const posts: { url: string; text: string }[] = [];
   let reviewStatus = 200;

@@ -67,7 +67,7 @@ async function watermarked(jpeg: Buffer, width: number, quality: number): Promis
 }
 
 // originalKey decides where the derivatives land (listings/<slug>/d/<variant>/<name>.jpg).
-// Nov 11 2026 (3330 Cedar Road, 100 MP finals): the original is decoded
+// Nov 11 2026 (3330 Example Cedar Road, 100 MP finals): the original is decoded
 // once, to the 2048px MLS size (kept as raw pixels, so no extra JPEG
 // generation), and the preview and thumb are made from that. It used to be
 // three decodes of the full original at once for every photo. That one

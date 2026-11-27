@@ -82,8 +82,8 @@ async function main() {
     addonIds: [],
     calendarVersion: 1,
     clientRescheduledAt: null,
-    property: { street: "1420 Alder Drive" },
-    listing: { address: "1420 Alder Drive, Springfield, CA 90000", slug: "1420-alder-drive" },
+    property: { street: "1420 Example Alder Drive" },
+    listing: { address: "1420 Example Alder Drive, Springfield, CA 90000", slug: "1420-example-alder-drive" },
     client: { name: "Taylor Brooks", email: "agent@example.com" },
   } as unknown as Parameters<typeof buildTimeEmail>[0];
   const local = (ymd: string, hour: number) => {
@@ -95,17 +95,17 @@ async function main() {
     throw new Error(`no instant for ${ymd} ${hour}`);
   };
   const thu = buildTimeEmail(booking, "reminder", { now: local("2026-11-26", 10) });
-  ok(thu.subject === "Your shoot is tomorrow: 1420 Alder Drive", `the day before: tomorrow (${thu.subject})`);
+  ok(thu.subject === "Your shoot is tomorrow: 1420 Example Alder Drive", `the day before: tomorrow (${thu.subject})`);
   ok(/See you tomorrow/.test(thu.html) && /Your shoot is tomorrow\./.test(thu.text), "the day before: eyebrow and headline");
   const fri = buildTimeEmail(booking, "reminder", { now: local("2026-11-27", 7) });
-  ok(fri.subject === "Your shoot is today: 1420 Alder Drive", `the same morning: today (${fri.subject})`);
+  ok(fri.subject === "Your shoot is today: 1420 Example Alder Drive", `the same morning: today (${fri.subject})`);
   ok(/See you today/.test(fri.html) && /Your shoot is today\./.test(fri.text) && !/tomorrow/i.test(fri.html + fri.text), "the same morning: never says tomorrow");
   const tue = buildTimeEmail(booking, "reminder", { now: local("2026-11-24", 15) });
-  ok(tue.subject === "Your shoot is on Friday: 1420 Alder Drive", `three days ahead: on Friday (${tue.subject})`);
+  ok(tue.subject === "Your shoot is on Friday: 1420 Example Alder Drive", `three days ahead: on Friday (${tue.subject})`);
   ok(/See you Friday/.test(tue.html) && /Your shoot is on Friday\./.test(tue.text) && !/tomorrow/i.test(tue.html + tue.text), "three days ahead: the weekday, never tomorrow");
   for (const e of [thu, fri, tue]) ok(!/—|--|!/.test(e.subject) && !/—/.test(e.text), `client copy rules: ${e.subject}`);
-  ok(buildTimeEmail(booking, "time_confirmed", { now: local("2026-11-24", 15) }).subject === "Your shoot time is confirmed: 1420 Alder Drive", "the other time emails are unchanged");
-  ok(bookingEmailSubject("1420 Alder Drive", false, "reminder") === "Your shoot is tomorrow: 1420 Alder Drive", "with no day worked out (an old caller) the subject keeps its old wording");
+  ok(buildTimeEmail(booking, "time_confirmed", { now: local("2026-11-24", 15) }).subject === "Your shoot time is confirmed: 1420 Example Alder Drive", "the other time emails are unchanged");
+  ok(bookingEmailSubject("1420 Example Alder Drive", false, "reminder") === "Your shoot is tomorrow: 1420 Example Alder Drive", "with no day worked out (an old caller) the subject keeps its old wording");
   const bte = code(read("src/lib/booking-time-email.ts"));
   ok(/reminderDay: mode === "reminder" \? reminderDay\(b\.desiredDate, opts\.now \?\? new Date\(\), BUSINESS_TZ\) : null/.test(bte), "buildTimeEmail works the day out from now, in the business's time zone");
   ok(/buildTimeEmail\(b, "reminder"\)/.test(bte), "the reminder job builds the email when it sends (now)");

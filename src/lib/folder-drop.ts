@@ -1,7 +1,7 @@
 // Folder drops on Upload a shoot (Oct 27 2026). A folder dropped on the
 // Photos or Video box (or picked with "Choose folder") is walked, subfolders
 // too, and every file keeps its path from the dropped folder down
-// ("2311 Elm Street - 413 raw", "video/A001"). The upload sends that path
+// ("2311 Example Elm Street - 413 raw", "video/A001"). The upload sends that path
 // along and the Dropbox copy recreates it inside the listing folder; editing
 // sees the photos exactly as before. Hidden and system files are left out.
 // Pure (browser entry objects in, plain objects out) so

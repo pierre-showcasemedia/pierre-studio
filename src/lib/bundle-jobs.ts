@@ -3,7 +3,7 @@
 // module, not a server action, so it is never reachable from a browser on its
 // own.
 //
-// Oct 27 2026 (reported on 1030 Magnolia Drive: "Download all" gave 10 of
+// Oct 27 2026 (reported on 1030 Example Magnolia Drive: "Download all" gave 10 of
 // the 17 photos, full resolution and MLS alike): the key used to be one per
 // listing per minute. The cron drains within
 // seconds, so a rebuild that started on the first upload batch or the first
@@ -39,7 +39,7 @@ const begun = sql<boolean>`(${schema.jobs.payload} -> 'bundle') is not null`;
 const notBegun = sql`(${schema.jobs.payload} -> 'bundle') is null`;
 
 // settleMs (Nov 10 2026): for uploads. Every ingest batch of a long upload
-// used to queue its own rebuild, so a 31 photo upload to 3330 Cedar Road
+// used to queue its own rebuild, so a 31 photo upload to 3330 Example Cedar Road
 // rebuilt the listing's multi GB zips again and again while the photos were
 // still arriving, beside the image work, on the same server. An upload now
 // asks for a rebuild that starts once the listing has been quiet this long:

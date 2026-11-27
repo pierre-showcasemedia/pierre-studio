@@ -29,7 +29,7 @@ const CLIENTS = [
 const CLIENT_PICK = [0, 0, 1, 0, 2, 3, 0, 1, 4, 2, 0, 3];
 const SHOOTERS = ["alex@example.com", DEMO_CREATIVE_EMAIL, "owner@example.com"];
 const AMOUNTS = [60000, 90000, 150000, 240000, 75000, 210000, 60000, 180000];
-const STREETS = ["1 Harbor View Lane", "412 Alameda Padre Serra", "77 Laurel Lane", "1600 Pine Road", "250 Chestnut Road", "3 Sea Ranch Drive", "905 Poplar Drive", "1288 Ironwood Road", "560 Acacia Road", "19 Rincon Point", "2 Springfield Lane", "840 Hawthorn Lane"];
+const STREETS = ["1 Example Harbor Lane", "412 Example Ridge Road", "77 Example Laurel Lane", "1600 Example Pine Road", "250 Example Chestnut Road", "3 Example Shore Drive", "905 Example Poplar Drive", "1288 Example Ironwood Road", "560 Example Acacia Road", "19 Example Point Road", "2 Example Field Lane", "840 Example Hawthorn Lane"];
 const CITIES = ["Springfield, CA 90000", "Springfield, CA 90000", "Springfield, CA 90000", "Springfield, CA 90000"];
 
 const ymdOf = (iso: string) => localYmd(new Date(iso));

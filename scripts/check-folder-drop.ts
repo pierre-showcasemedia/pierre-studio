@@ -43,10 +43,10 @@ async function main() {
 
   // ---- the shoot skill's two folders ----
   const raws = Array.from({ length: 413 }, (_, i) => fileEntry(`DSC0${String(i + 1).padStart(4, "0")}.ARW`));
-  const rawDir = dirEntry("2311 Elm Street - 413 raw", [...raws, fileEntry(".DS_Store"), fileEntry("._DSC00001.ARW")]);
+  const rawDir = dirEntry("2311 Example Elm Street - 413 raw", [...raws, fileEntry(".DS_Store"), fileEntry("._DSC00001.ARW")]);
   const got = await walkEntries([rawDir] as unknown as Entries);
   ok(got.length === 413, `raw folder: all 413 raws, batches of 100 read to the end (got ${got.length})`);
-  ok(got.every((p) => p.dir === "2311 Elm Street - 413 raw"), "raw folder: every file keeps the folder name");
+  ok(got.every((p) => p.dir === "2311 Example Elm Street - 413 raw"), "raw folder: every file keeps the folder name");
   ok(!got.some((p) => p.file.name.startsWith(".")), "raw folder: .DS_Store and ._ files left out");
 
   const video = dirEntry("video", [fileEntry("C0001.MP4"), dirEntry("A001", [fileEntry("DJI_0001.MP4")]), dirEntry("__MACOSX", [fileEntry("x.MP4")])]);
@@ -60,7 +60,7 @@ async function main() {
   ok(mixed.find((p) => p.file.name === "T1.ARW")?.dir === "Twilight", "the folder beside it keeps its name");
 
   // ---- Choose folder (webkitRelativePath) ----
-  ok(dirOf({ webkitRelativePath: "2311 Elm Street - 413 raw/DSC00001.ARW" }) === "2311 Elm Street - 413 raw", "picked folder: the folder part");
+  ok(dirOf({ webkitRelativePath: "2311 Example Elm Street - 413 raw/DSC00001.ARW" }) === "2311 Example Elm Street - 413 raw", "picked folder: the folder part");
   ok(dirOf({ webkitRelativePath: "video/A001/C0001.MP4" }) === "video/A001", "picked folder: nested");
   ok(dirOf({ webkitRelativePath: "" }) === "" && dirOf({}) === "", "a loose pick has no folder");
   ok(skipName(".DS_Store") && skipName("Thumbs.db") && !skipName("DSC00001.ARW"), "system files by name");
@@ -69,7 +69,7 @@ async function main() {
   ok(storedName("DSC00001.ARW") === "DSC00001.ARW", "camera names unchanged");
 
   // ---- the server side: the folder path stored, the Dropbox copy ----
-  ok(cleanDropboxDir("2311 Elm Street - 413 raw") === "2311 Elm Street - 413 raw", "the raw folder name kept as is");
+  ok(cleanDropboxDir("2311 Example Elm Street - 413 raw") === "2311 Example Elm Street - 413 raw", "the raw folder name kept as is");
   ok(cleanDropboxDir("video/A001") === "video/A001", "nested kept");
   ok(cleanDropboxDir("../../etc") === "etc", "no climbing out of the listing folder");
   ok(cleanDropboxDir("a/./b//c") === "a/b/c", "empty and . parts dropped");
@@ -78,8 +78,8 @@ async function main() {
   ok(cleanDropboxDir("1/2/3/4/5/6/7/8") === "1/2/3/4/5/6", "at most 6 deep");
   ok(cleanDropboxDir("") === null && cleanDropboxDir(undefined) === null && cleanDropboxDir(42) === null && cleanDropboxDir("/./") === null, "nothing left = a loose file");
 
-  const folder = "/Listings/2311 Elm Street, Springfield, CA";
-  ok(mirrorTargetPath(folder, "raw", "DSC00001.ARW", "2311 Elm Street - 413 raw") === `${folder}/2311 Elm Street - 413 raw/DSC00001.ARW`, "a dropped raw lands in the same-named folder");
+  const folder = "/Listings/2311 Example Elm Street, Springfield, CA";
+  ok(mirrorTargetPath(folder, "raw", "DSC00001.ARW", "2311 Example Elm Street - 413 raw") === `${folder}/2311 Example Elm Street - 413 raw/DSC00001.ARW`, "a dropped raw lands in the same-named folder");
   ok(mirrorTargetPath(folder, "raw_video", "C0001.MP4", "video") === `${folder}/video/C0001.MP4`, "a dropped clip lands in video (the Video folder)");
   ok(mirrorTargetPath(folder, "raw", "DSC00001.ARW", null) === `${folder}/Photo/DSC00001.ARW`, "a loose photo still lands in Photo");
   ok(mirrorTargetPath(folder, "raw_video", "C0001.MP4") === `${folder}/Video/C0001.MP4`, "a loose clip still lands in Video");

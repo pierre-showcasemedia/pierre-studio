@@ -96,7 +96,7 @@ export async function loadBrainNotes(): Promise<BrainNote[]> {
 const list = (v: string | string[] | undefined): string[] => (Array.isArray(v) ? v : v ? [v] : []);
 const digits = (s: string) => s.replace(/\D/g, "").slice(-10);
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-// "1475 Magnolia Drive, Springfield" → "1475 magnolia" (number plus the first street words).
+// "1475 Example Magnolia Drive, Springfield" → "1475 magnolia" (number plus the first street words).
 const streetKey = (s: string) => norm(s.split(",")[0]).replace(/\b(drive|dr|road|rd|lane|ln|street|st|avenue|ave|way|place|pl|court|ct|circle|cir|boulevard|blvd)\b/g, "").replace(/\s+/g, " ").trim();
 
 export function matchBrainNote(notes: BrainNote[], who: { email?: string | null; phone?: string | null; name?: string | null; company?: string | null; address?: string | null }): { note: BrainNote; matchedBy: string } | null {

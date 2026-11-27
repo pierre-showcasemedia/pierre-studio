@@ -14,7 +14,7 @@
 // Oct 27 2026: either box also takes a whole folder, dropped or picked with
 // "Choose folder" (src/lib/folder-drop.ts): every file inside, subfolders
 // too, keeps its folder path, and the Dropbox copy lands in a folder of the
-// same name inside the listing folder ("2311 Elm Street - 413 raw",
+// same name inside the listing folder ("2311 Example Elm Street - 413 raw",
 // "video"). Photos from a folder go to editing exactly like loose ones.
 //
 // Oct 30 2026: the resume note has Start over. It deletes the unfinished
@@ -253,7 +253,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
     setFiles([...filesRef.current]);
   }, []);
 
-  // Nov 10 2026 (3330 Cedar Road): picking another listing ("Change") kept
+  // Nov 10 2026 (3330 Example Cedar Road): picking another listing ("Change") kept
   // the last listing's shoot, files and resume, so every link for the new
   // listing came back "Shoot not found." Now a different listing starts clean.
   // The earlier upload is not deleted: it stays saved for its own listing.
@@ -550,7 +550,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
           let ok = false;
           for (let attempt = 0; attempt <= BACKOFF.length && !ok; attempt++) {
             try {
-              // Nov 1 2026 (3330 Cedar Road, 43 GB): every link came at
+              // Nov 1 2026 (3330 Example Cedar Road, 43 GB): every link came at
               // Start, so the 59 files that began after the hour all failed.
               if (!slot || Date.now() - slot.at > LINK_RENEW_MS) slot = (await fetchUrls([f], f.kind)).get(f.name);
               if (!slot) throw new Error("No upload link");
@@ -830,7 +830,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
           const miss = new Set(missing);
           for (const f of filesRef.current) if (miss.has(storedName(f.name))) patch(f.id, { state: "failed", loaded: 0, error: "did not land" });
           setStep(2);
-          // Nov 10 2026 (3330 Cedar Road): files from an earlier try on
+          // Nov 10 2026 (3330 Example Cedar Road): files from an earlier try on
           // this listing that never landed and are not in this list. Retry
           // cannot send them, so every submit failed with nothing to press.
           const listed = new Set(filesRef.current.map((f) => storedName(f.name)));
@@ -970,7 +970,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
                 <div className="kicker">New listing</div>
                 <button type="button" className="adm-chip adm-chip--quiet" onClick={() => setNewListingOpen(false)}>Back to the list</button>
               </div>
-              <div className="field"><label htmlFor="nl-addr">Street address</label><input id="nl-addr" value={newListing.address} onChange={(e) => setNewListing({ ...newListing, address: e.target.value })} placeholder="3201 Willow Drive" autoFocus /></div>
+              <div className="field"><label htmlFor="nl-addr">Street address</label><input id="nl-addr" value={newListing.address} onChange={(e) => setNewListing({ ...newListing, address: e.target.value })} placeholder="3201 Example Willow Drive" autoFocus /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 10 }}>
                 <div className="field"><label htmlFor="nl-city">City and state</label><input id="nl-city" value={newListing.city} onChange={(e) => setNewListing({ ...newListing, city: e.target.value })} placeholder="Springfield, CA 90000" /></div>
                 <div className="field"><label htmlFor="nl-date">Shoot date</label><input id="nl-date" type="date" value={newListing.shootDate} onChange={(e) => setNewListing({ ...newListing, shootDate: e.target.value })} /></div>

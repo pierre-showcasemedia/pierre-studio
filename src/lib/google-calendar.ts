@@ -278,7 +278,7 @@ export async function cancelBookingEvent(job: CalendarJob): Promise<{ eventId: s
 const DIRECTIONS = "(?:n|s|e|w|ne|nw|se|sw|north|south|east|west)";
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
-// "7702 Birch Lane, Springfield" → a pattern for "7702 birch" that also allows a direction ("21 E Mission").
+// "7702 Example Birch Lane, Springfield" → a pattern for "7702 birch" that also allows a direction ("21 E Mission").
 export function streetPattern(address: string): RegExp | null {
   const words = norm(address.split(",")[0]).split(" ");
   const num = words[0];
@@ -773,7 +773,7 @@ function adminBookingUrl(id: string): string {
 // visit's shooter as the one guest (Google emails the invite, the move and
 // the removal: sendUpdates=all), busy (opaque) so the website form and the
 // client's Reschedule see the time as taken. Title in the owner's format with the
-// kind in place of the services ("7702 Birch Lane - Devin Wong / Return
+// kind in place of the services ("7702 Example Birch Lane - Devin Wong / Return
 // trip: kitchen pickups"); the description is the kind, the note, the main
 // shoot's time, and the same shooter-visible details as the booking's event
 // (shootDetails(), never an amount). Same rules as the booking's event: a

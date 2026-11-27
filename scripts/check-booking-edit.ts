@@ -188,14 +188,14 @@ async function main() {
   console.log("2. diff and form: ok");
 
   // ---- 8. hub, payments and activity lines ------------------------------------------
-  const place = { listing: { address: "1420 Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
+  const place = { listing: { address: "1420 Example Alder Drive, Springfield, CA", nda: false }, clientEmail: "agent@example.com" };
   const line = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services, access notes", bookingId: "b1" } }, place) ?? "";
-  ok(line === "Booking edited: 1420 Alder Drive (services, access notes). By owner@example.com.", `hub line: ${line}`);
+  ok(line === "Booking edited: 1420 Example Alder Drive (services, access notes). By owner@example.com.", `hub line: ${line}`);
   ok(hubChannelFor({ action: "booking.edited" }) === "bookings", "booking.edited posts to the bookings channel");
-  const ndaLine = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services" } }, { listing: { address: "35 Secret Lane", nda: true }, clientEmail: null }) ?? "";
+  const ndaLine = hubActivityText({ action: "booking.edited", actorEmail: "owner@example.com", meta: { changed: "services" } }, { listing: { address: "35 Example Secret Lane", nda: true }, clientEmail: null }) ?? "";
   ok(ndaLine.startsWith("Booking edited: an NDA listing"), "NDA listings stay anonymous");
   ok(!MONEY_RE.test(line) && !MONEY_RE.test(describeActivity({ action: "invoice.addon_created", actorEmail: "x", meta: { items: "Twilight photos" } })), "no money in the hub or feed lines");
-  const pl = { listing: { address: "1420 Alder Drive", nda: false }, bookingId: "b1", client: "Taylor Brooks (agent@example.com)", amount: "$300", method: "card", provider: "stripe" };
+  const pl = { listing: { address: "1420 Example Alder Drive", nda: false }, bookingId: "b1", client: "Taylor Brooks (agent@example.com)", amount: "$300", method: "card", provider: "stripe" };
   ok(/\$300/.test(paymentsText.addonInvoice({ ...pl, by: "owner@example.com", items: "Twilight photos", paidAmount: "$2,000", needsQuote: false })), "payments channel carries the amount");
   ok(/Refund the difference by hand/.test(paymentsText.refundByHand({ ...pl, by: "owner@example.com", items: "Property film" })), "refund by hand line");
   for (const a of ["booking.edited", "invoice.addon_created", "invoice.refund_by_hand", "email.time_confirmed_sent", "email.rescheduled_sent"]) ok(!qaMaySee(a), `QA never reads ${a}`);
@@ -214,16 +214,16 @@ async function main() {
     addonIds: [addA],
     calendarVersion: 3,
     clientRescheduledAt: null,
-    property: { street: "1420 Alder Drive" },
-    listing: { address: "1420 Alder Drive, Springfield, CA 90000", slug: "1420-alder-drive" },
+    property: { street: "1420 Example Alder Drive" },
+    listing: { address: "1420 Example Alder Drive, Springfield, CA 90000", slug: "1420-example-alder-drive" },
     client: { name: "Taylor Brooks", email: "agent@example.com" },
   } as unknown as Parameters<typeof buildTimeEmail>[0];
   const re = buildTimeEmail(booking, "rescheduled");
-  ok(re.subject === "Your shoot has been rescheduled: 1420 Alder Drive" && re.ics === null && /Shoot has been rescheduled\./.test(re.text) && re.html.includes(`${brand.shortName} will confirm your new time shortly`) && /Nothing is confirmed until you hear from us/.test(re.html) && !/Total/.test(re.html) && !/shoot\.ics/.test(re.html), "rescheduled email: subject, headline, the note, no .ics, no payment row");
+  ok(re.subject === "Your shoot has been rescheduled: 1420 Example Alder Drive" && re.ics === null && /Shoot has been rescheduled\./.test(re.text) && re.html.includes(`${brand.shortName} will confirm your new time shortly`) && /Nothing is confirmed until you hear from us/.test(re.html) && !/Total/.test(re.html) && !/shoot\.ics/.test(re.html), "rescheduled email: subject, headline, the note, no .ics, no payment row");
   const nt = buildTimeEmail(booking, "new_time_confirmed");
-  ok(nt.subject === "Your new time is confirmed: 1420 Alder Drive" && nt.ics !== null && /SEQUENCE:2/.test(nt.ics!) && nt.ics!.includes(`UID:9b2e4c1a-5d6f-4a7b-8c9d-0e1f2a3b4c5d@${mailDomain()}`) && /Your new time is confirmed\./.test(nt.text) && nt.html.includes(SERVICES[0].name) && nt.html.includes(ADDONS[0].name) && /Where/.test(nt.html) && /pre-shoot checklist|Need to reschedule/.test(nt.html) && !/Total/.test(nt.html), "new time confirmed: subject, headline, services, add-ons, what happens next, shoot.ics with SEQUENCE = calendar_version - 1, no payment row");
+  ok(nt.subject === "Your new time is confirmed: 1420 Example Alder Drive" && nt.ics !== null && /SEQUENCE:2/.test(nt.ics!) && nt.ics!.includes(`UID:9b2e4c1a-5d6f-4a7b-8c9d-0e1f2a3b4c5d@${mailDomain()}`) && /Your new time is confirmed\./.test(nt.text) && nt.html.includes(SERVICES[0].name) && nt.html.includes(ADDONS[0].name) && /Where/.test(nt.html) && /pre-shoot checklist|Need to reschedule/.test(nt.html) && !/Total/.test(nt.html), "new time confirmed: subject, headline, services, add-ons, what happens next, shoot.ics with SEQUENCE = calendar_version - 1, no payment row");
   const tc = buildTimeEmail(booking, "time_confirmed");
-  ok(tc.subject === "Your shoot time is confirmed: 1420 Alder Drive" && tc.ics !== null && /Your shoot time is confirmed\./.test(tc.text), "time confirmed email");
+  ok(tc.subject === "Your shoot time is confirmed: 1420 Example Alder Drive" && tc.ics !== null && /Your shoot time is confirmed\./.test(tc.text), "time confirmed email");
   const mv = buildTimeEmail(booking, "time_moved");
   // Nov 24 2026: the reminder names the day from when it is built (the shoot is Oct 28).
   const rm = buildTimeEmail(booking, "reminder", { now: new Date("2026-10-27T18:00:00Z") });
@@ -232,10 +232,10 @@ async function main() {
   ok(rmFar.subject.startsWith("Your shoot is on Wednesday"), "a reminder four days out names the weekday, not tomorrow");
   const rmToday = buildTimeEmail(booking, "reminder", { now: new Date("2026-10-28T13:00:00Z") });
   ok(rmToday.subject.startsWith("Your shoot is today"), "a same-day reminder says today");
-  ok(mv.subject === "Your shoot has moved: 1420 Alder Drive" && mv.ics !== null && /Your shoot has moved\./.test(mv.text) && /Confirmed\./.test(mv.html), "shoot moved email");
-  const addedInput = { clientFirstName: "Taylor", street: "1420 Alder Drive", rest: "Springfield, CA 90000", when: "Wednesday, October 28 at 10:00 AM", launch: null, services: [], addons: [], added: ["Twilight photos"], payment: { kind: "card" as const, totalLabel: "$300", payUrl: "https://portal.example.com/portal/login" }, portalUrl: "https://portal.example.com/portal/login", updated: false, mode: "added" as const, address: "1420 Alder Drive, Springfield, CA 90000", event: null, checklistUrl: null };
+  ok(mv.subject === "Your shoot has moved: 1420 Example Alder Drive" && mv.ics !== null && /Your shoot has moved\./.test(mv.text) && /Confirmed\./.test(mv.html), "shoot moved email");
+  const addedInput = { clientFirstName: "Taylor", street: "1420 Example Alder Drive", rest: "Springfield, CA 90000", when: "Wednesday, October 28 at 10:00 AM", launch: null, services: [], addons: [], added: ["Twilight photos"], payment: { kind: "card" as const, totalLabel: "$300", payUrl: "https://portal.example.com/portal/login" }, portalUrl: "https://portal.example.com/portal/login", updated: false, mode: "added" as const, address: "1420 Example Alder Drive, Springfield, CA 90000", event: null, checklistUrl: null };
   const addedHtml = bookingEmailHtml(addedInput);
-  ok(bookingEmailSubject("1420 Alder Drive", false, "added") === "Your added items: 1420 Alder Drive" && /Added to your/.test(addedHtml) && /Twilight photos/.test(addedHtml) && /Pay invoice · \$300/.test(addedHtml) && /Due on receipt/.test(addedHtml) && !/Need to reschedule/.test(addedHtml) && !/reserves your date/.test(addedHtml), "added items email: subject, the added line, the pay button, no booking terms");
+  ok(bookingEmailSubject("1420 Example Alder Drive", false, "added") === "Your added items: 1420 Example Alder Drive" && /Added to your/.test(addedHtml) && /Twilight photos/.test(addedHtml) && /Pay invoice · \$300/.test(addedHtml) && /Due on receipt/.test(addedHtml) && !/Need to reschedule/.test(addedHtml) && !/reserves your date/.test(addedHtml), "added items email: subject, the added line, the pay button, no booking terms");
   const addedOther = bookingEmailText({ ...addedInput, payment: { kind: "other", totalLabel: "$300", detail: "check" } });
   ok(addedOther.includes(`${brand.shortName} will follow up about paying by check`) && !/Pay invoice/.test(addedOther), "added items paid another way: the amount, no button");
   // Copy rules on the words (the plain-text twin of each email, and the HTML
