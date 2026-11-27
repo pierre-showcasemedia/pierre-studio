@@ -233,7 +233,7 @@ async function main() {
   {
     // A big file in chunks across two ticks.
     const f = fakeDrive();
-    const folder = await apiFor(f, gd.DriveApi).ensurePath("root", ["Listings", "2 Elm", "Video"]);
+    const folder = await apiFor(f, gd.DriveApi).ensurePath("root", ["Listings", "2 Example Elm", "Video"]);
     const CH = 256 * 1024;
     const big = bytesOf(CH * 5 + 1234, 5);
     // Tick 1: enough time for about two chunks (8 MB/s planning: 256 KiB ≈ 33 ms + 2 s margin, tail 4 s).

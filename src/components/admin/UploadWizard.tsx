@@ -563,7 +563,7 @@ export default function UploadWizard({ demo, dropboxKey, drivePicker = null, sto
               if (attempt === BACKOFF.length) { patch(f.id, { state: "failed", loaded: 0, error: e instanceof Error ? e.message : "failed" }); break; }
               await sleep(BACKOFF[attempt]);
               // A fresh link for the next try, whatever the error. This used
-              // to happen on a 403 only, and on 3330 Cedar it never did:
+              // to happen on a 403 only, and on 3330 Example Cedar it never did:
               // the browser saw no 403 for the expired links.
               slot = undefined;
             }

@@ -51,7 +51,7 @@ async function main() {
   ].join("\n");
   const g = splitReply(gmailReply);
   ok(g.fresh.startsWith("Hi! Can you brighten") && g.fresh.endsWith("Jane"), `Gmail reply: fresh is the client's words (got ${JSON.stringify(g.fresh)})`);
-  ok(!g.fresh.includes("wrote:") && !g.fresh.includes("123 Juniper"), "Gmail reply: quoted history not in fresh");
+  ok(!g.fresh.includes("wrote:") && !g.fresh.includes("123 Example Juniper"), "Gmail reply: quoted history not in fresh");
   ok(g.quoted.includes("123 Example Juniper Dr") && !/^>/m.test(g.quoted), "Gmail reply: quoted kept without > marks");
 
   const apple = splitReply("Darker twilights please\n\nSent from my iPhone\n\nOn Oct 27, 2026, at 9:14 AM, Studio Name <hello@example.com> wrote:\n\n> Here are the photos for 55 Example Ocean Ave");

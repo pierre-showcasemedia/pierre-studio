@@ -74,8 +74,8 @@ async function main() {
   ok(qcMentionText(FINAL_REVIEW_DEFAULT) === "", "no final review team by default");
   const four = `${qcMentionText("U0AAAAAA1 U0BBBBBB2 U0CCCCCC3 U0DDDDDD4")} `;
   ok(four.split("<@").length - 1 === 4, "a final review list of four people tags four");
-  const cut = videoCutReadyText({ cardId: "card-1", listing: base.listing, count: 1, names: ["3330 Cedar v1.mp4"], by: "editor@example.com", mention: four, production: true });
-  ok(cut.startsWith(`${four}:exclamation: *Video for 3330 Example Cedar Road is ready for review: 1 cut uploaded by editor@example.com (3330 Cedar v1.mp4).`), "tags the four, says ready for review, who and which cut");
+  const cut = videoCutReadyText({ cardId: "card-1", listing: base.listing, count: 1, names: ["3330 Example Cedar v1.mp4"], by: "editor@example.com", mention: four, production: true });
+  ok(cut.startsWith(`${four}:exclamation: *Video for 3330 Example Cedar Road is ready for review: 1 cut uploaded by editor@example.com (3330 Example Cedar v1.mp4).`), "tags the four, says ready for review, who and which cut");
   ok(/\/admin\/video\/card-1\|Review it on the Video card>/.test(cut), "links the Video card");
   const cuts = videoCutReadyText({ cardId: "c", listing: { ...base.listing, nda: true }, count: 5, names: ["a", "b", "c", "d", "e"], by: "x", mention: "", production: true });
   ok(cuts.includes("an NDA listing is ready for review: 5 cuts uploaded by x.") && !cuts.includes("(a"), "NDA: no names");

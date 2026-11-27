@@ -30,7 +30,7 @@
 //
 // Nov 10 2026: a rebuild no longer has to fit in one cron run. It used to be
 // one stretch of work, cut off at the platform's 300 s when it started late
-// in a run or simply needed longer, and begun again from zero (3330 Cedar
+// in a run or simply needed longer, and begun again from zero (3330 Example Cedar
 // Road: a rebuild that never ended, fifteen cut-off runs in 75 minutes).
 // Now it works in slices:
 // - The first run reads the rows once and keeps that list on the job

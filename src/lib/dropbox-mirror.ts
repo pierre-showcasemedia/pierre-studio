@@ -394,7 +394,7 @@ export async function runDropboxFolder(job: JobRow): Promise<void> {
 
 // ---- The Video share link, asked for again (Nov 5 2026) ------------------------
 //
-// the owner: the Dropbox link on 925 Spruce's Video card did not work. The share
+// the owner: the Dropbox link on 925 Example Spruce's Video card did not work. The share
 // link is made by the folder job at upload; while Dropbox refused links (the
 // Nov 2 block) that step failed, the listing kept no link, and the card fell
 // back to the folder on dropbox.com, which only opens for people signed in

@@ -781,7 +781,7 @@ async function frameTwilight(job: JobRow, m: FrameRow): Promise<void> {
   try {
     st = await ah.transformJob(p.workflowUuid);
   } catch (e) {
-    // Oct 28 2026 (1656 Pine): with several frames converted back to
+    // Oct 28 2026 (1656 Example Pine): with several frames converted back to
     // back, AutoHDR answers 404 for a run it has not listed yet (queued behind
     // another frame's run). Keep polling quietly for the run's 2 hours, like
     // the shoot's twilight step: no attempt counted, no alert. Nothing was
@@ -822,7 +822,7 @@ async function frameTwilight(job: JobRow, m: FrameRow): Promise<void> {
   await logActivity({ actorEmail: p.requestedBy ?? null, action: "shoot.twilight_made", shootId: shoot.id, listingId: shoot.listingId, meta: { from: m.filename, file: filename } });
 }
 
-// Oct 28 2026 (1656 Pine): the run's output_image_version_uuid is minted
+// Oct 28 2026 (1656 Example Pine): the run's output_image_version_uuid is minted
 // when the run is SUBMITTED (same millisecond as the run id), and the version
 // that lands when the run finishes carries a different id; the reported one is
 // never in the photo's lineage. Setting the photo to the reported id answered
@@ -889,7 +889,7 @@ export async function probeFrameTwilight(jobId: string): Promise<Record<string, 
 
 // ---- Restore a frame's day version (Oct 27 2026) ----------------------------
 //
-// 1656 Pine: a day frame came in as its Champagne twilight, because the
+// 1656 Example Pine: a day frame came in as its Champagne twilight, because the
 // photo's current version upstream was a Champagne run when the import pulled
 // it. editingHistory lists every frame's lineage (the operator finds the
 // frame whose head is not the plain edit); restoreFrameVersion points the

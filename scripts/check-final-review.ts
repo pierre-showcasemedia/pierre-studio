@@ -28,7 +28,7 @@ async function main() {
   const { EMPTY_QC_TAGS, FINAL_REVIEW_DEFAULT, qcIds, qcMentionText } = await import("../src/lib/slack-qc");
   const { qaMaySee } = await import("../src/lib/activity");
 
-  // ---- upload links in chunks the route hands out in full (Nov 1 2026, 195 Oakleaf) ----
+  // ---- upload links in chunks the route hands out in full (Nov 1 2026, 195 Example Oakleaf) ----
   const { readFileSync } = await import("node:fs");
   const route = readFileSync("src/app/api/studio/shoots/[id]/finals/upload-urls/route.ts", "utf8");
   const box = readFileSync("src/components/admin/UploadFinals.tsx", "utf8");
