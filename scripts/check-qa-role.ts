@@ -166,7 +166,7 @@ async function main() {
   ok(failedAll.startsWith(":exclamation: *Upload failed") && /none of 6 files went in \(Network error\)/.test(failedAll), `a failed upload is flagged: ${failedAll}`);
   const stopped = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 12, added: 12, stopped: true } }, ortega, "production") ?? "";
   ok(stopped.startsWith(":exclamation: *Upload stopped before it finished") && /12 files went in/.test(stopped), `a stopped upload is flagged: ${stopped}`);
-  const ndaFail = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 3, total: 4, failed: 1, failedNames: ["35-Secret-Lane-01.jpg"], section: "Secret" } }, { ...nda, link: "<l|x>" }, "production") ?? "";
+  const ndaFail = hubActivityLine({ action: "media.upload_finished", actorEmail: "j@x.com", meta: { run, landed: 3, total: 4, failed: 1, failedNames: ["35-Hideaway-Example-Lane-01.jpg"], section: "Hideaway" } }, { ...nda, link: "<l|x>" }, "production") ?? "";
   ok(/an NDA listing/.test(ndaFail) && !/Hideaway/.test(ndaFail), `NDA upload line names nothing: ${ndaFail}`);
   console.log("5. hub lines: ok");
 
